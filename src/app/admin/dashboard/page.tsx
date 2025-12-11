@@ -5,6 +5,8 @@ export const dynamic = 'force-dynamic';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import Modal from '@/components/admin/Modal';
+import ProjectForm from '@/components/admin/ProjectForm';
 
 interface User {
     email: string;
@@ -39,6 +41,9 @@ export default function AdminDashboard() {
     const [loading, setLoading] = useState(true);
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const [user, setUser] = useState<User | null>(null);
+    const [showProjectModal, setShowProjectModal] = useState(false);
+    const [projectFormLoading, setProjectFormLoading] = useState(false);
+    const [refreshKey, setRefreshKey] = useState(0);
 
     // Check authentication on mount
     useEffect(() => {
@@ -87,6 +92,39 @@ export default function AdminDashboard() {
         publishedProjects: projects.filter((p) => p.status === 'published').length,
         totalSubmissions: submissions.length,
         newSubmissions: submissions.filter((s) => s.status === 'new').length,
+    };
+
+    const handleCreateProject = async (formData: any) => {
+        setProjectFormLoading(true);
+        try {
+            const response = await fetch(`${API_URL}/cms/${SITE_ID}/content/projects`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData),
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                alert(`Error: ${error.error}`);
+                setProjectFormLoading(false);
+                return;
+            }
+
+            alert('✅ Project created successfully!');
+            setShowProjectModal(false);
+            setRefreshKey((prev) => prev + 1);
+
+            // Reload projects
+            const projectsRes = await fetch(`${API_URL}/cms/${SITE_ID}/content/projects`);
+            if (projectsRes.ok) {
+                const data = await projectsRes.json();
+                setProjects(data.data?.content || []);
+            }
+        } catch (error) {
+            alert(`Error: ${error instanceof Error ? error.message : 'Failed to create project'}`);
+        } finally {
+            setProjectFormLoading(false);
+        }
     };
 
     return (
@@ -289,7 +327,10 @@ export default function AdminDashboard() {
                         <div>
                             <div className="flex justify-between items-center mb-6">
                                 <h2 className="text-2xl font-bold text-gray-900">All Projects</h2>
-                                <button className="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 font-medium">
+                                <button
+                                    onClick={() => setShowProjectModal(true)}
+                                    className="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 font-medium"
+                                >
                                     + New Project
                                 </button>
                             </div>
@@ -493,6 +534,19 @@ export default function AdminDashboard() {
                         </div>
                     )}
                 </div>
+
+                {/* Project Modal */}
+                <Modal
+                    isOpen={showProjectModal}
+                    title="Create New Project"
+                    onClose={() => setShowProjectModal(false)}
+                    isLoading={projectFormLoading}
+                >
+                    <ProjectForm
+                        onSubmit={handleCreateProject}
+                        isLoading={projectFormLoading}
+                    />
+                </Modal>
             </main>
         </div>
     );
