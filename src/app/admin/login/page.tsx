@@ -43,10 +43,12 @@ export default function LoginPage() {
             // Store token in localStorage
             localStorage.setItem('authToken', data.data.token);
             localStorage.setItem('userId', data.data.userId);
+            localStorage.setItem('userEmail', data.data.email);
 
             // Redirect to dashboard
             router.push('/admin/dashboard');
         } catch (err) {
+            console.error('Login error:', err);
             setError(err instanceof Error ? err.message : 'An error occurred');
             setLoading(false);
         }
