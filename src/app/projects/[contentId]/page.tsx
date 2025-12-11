@@ -1,6 +1,8 @@
 import { getContentById, getContent } from '@/lib/cms-client';
 import Link from 'next/link';
 
+export const dynamic = 'force-dynamic';
+
 interface Project {
     _id: string;
     contentId: string;
