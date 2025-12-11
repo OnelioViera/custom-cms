@@ -3,10 +3,10 @@ import { NextRequest, NextResponse } from 'next/server';
 export function middleware(request: NextRequest) {
     // Check if user is accessing admin routes
     if (request.nextUrl.pathname.startsWith('/admin/dashboard')) {
-        // Check for auth token
+        // Check for auth token in cookies
         const token = request.cookies.get('authToken')?.value;
 
-        // If no token and not on login page, redirect to login
+        // If no token, redirect to login
         if (!token) {
             return NextResponse.redirect(new URL('/admin/login', request.url));
         }
