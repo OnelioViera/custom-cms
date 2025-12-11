@@ -44,6 +44,7 @@ export default function AdminDashboard() {
     const [showProjectModal, setShowProjectModal] = useState(false);
     const [projectFormLoading, setProjectFormLoading] = useState(false);
     const [refreshKey, setRefreshKey] = useState(0);
+    const [editingProject, setEditingProject] = useState<any>(null);
 
     // Check authentication on mount
     useEffect(() => {
@@ -124,6 +125,77 @@ export default function AdminDashboard() {
             alert(`Error: ${error instanceof Error ? error.message : 'Failed to create project'}`);
         } finally {
             setProjectFormLoading(false);
+        }
+    };
+
+    const handleUpdateProject = async (formData: any) => {
+        if (!editingProject) return;
+
+        setProjectFormLoading(true);
+        try {
+            const response = await fetch(
+                `${API_URL}/cms/${SITE_ID}/content/projects/${editingProject.contentId}`,
+                {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData),
+                }
+            );
+
+            if (!response.ok) {
+                const error = await response.json();
+                alert(`Error: ${error.error}`);
+                setProjectFormLoading(false);
+                return;
+            }
+
+            alert('✅ Project updated successfully!');
+            setShowProjectModal(false);
+            setEditingProject(null);
+
+            // Reload projects
+            const projectsRes = await fetch(`${API_URL}/cms/${SITE_ID}/content/projects?status=all`);
+            if (projectsRes.ok) {
+                const data = await projectsRes.json();
+                setProjects(data.data?.content || []);
+            }
+        } catch (error) {
+            alert(`Error: ${error instanceof Error ? error.message : 'Failed to update project'}`);
+        } finally {
+            setProjectFormLoading(false);
+        }
+    };
+
+    const handleDeleteProject = async (contentId: string) => {
+        if (!confirm('Are you sure you want to delete this project?')) {
+            return;
+        }
+
+        try {
+            const response = await fetch(
+                `${API_URL}/cms/${SITE_ID}/content/projects/${contentId}`,
+                {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                }
+            );
+
+            if (!response.ok) {
+                const error = await response.json();
+                alert(`Error: ${error.error}`);
+                return;
+            }
+
+            alert('✅ Project deleted successfully!');
+
+            // Reload projects
+            const projectsRes = await fetch(`${API_URL}/cms/${SITE_ID}/content/projects?status=all`);
+            if (projectsRes.ok) {
+                const data = await projectsRes.json();
+                setProjects(data.data?.content || []);
+            }
+        } catch (error) {
+            alert(`Error: ${error instanceof Error ? error.message : 'Failed to delete project'}`);
         }
     };
 
@@ -358,10 +430,13 @@ export default function AdminDashboard() {
                                                     <td className="px-6 py-4 text-sm text-gray-600">{project.data?.client || '-'}</td>
                                                     <td className="px-6 py-4 text-sm">
                                                         <span
-                                                            className={`inline-flex px-3 py-1 rounded-full text-xs font-semibold ${project.status === 'published'
-                                                                ? 'bg-green-100 text-green-800'
-                                                                : 'bg-yellow-100 text-yellow-800'
-                                                                }`}
+                                                            className={`inline-flex px-3 py-1 rounded-full text-xs font-semibold ${
+                                                                project.status === 'published'
+                                                                    ? 'bg-green-100 text-green-800'
+                                                                    : project.status === 'draft'
+                                                                    ? 'bg-yellow-100 text-yellow-800'
+                                                                    : 'bg-gray-100 text-gray-800'
+                                                            }`}
                                                         >
                                                             {project.status}
                                                         </span>
@@ -370,8 +445,21 @@ export default function AdminDashboard() {
                                                         {new Date(project.createdAt).toLocaleDateString()}
                                                     </td>
                                                     <td className="px-6 py-4 text-sm flex gap-2">
-                                                        <button className="text-yellow-600 hover:text-yellow-700 font-medium">Edit</button>
-                                                        <button className="text-red-600 hover:text-red-700 font-medium">Delete</button>
+                                                        <button
+                                                            onClick={() => {
+                                                                setEditingProject(project);
+                                                                setShowProjectModal(true);
+                                                            }}
+                                                            className="text-yellow-600 hover:text-yellow-700 font-medium"
+                                                        >
+                                                            Edit
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleDeleteProject(project.contentId)}
+                                                            className="text-red-600 hover:text-red-700 font-medium"
+                                                        >
+                                                            Delete
+                                                        </button>
                                                     </td>
                                                 </tr>
                                             ))}
@@ -381,7 +469,10 @@ export default function AdminDashboard() {
                             ) : (
                                 <div className="bg-white rounded-lg border border-gray-200 p-12 text-center">
                                     <p className="text-gray-600 mb-4">No projects yet. Create your first project!</p>
-                                    <button className="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 font-medium">
+                                    <button
+                                        onClick={() => setShowProjectModal(true)}
+                                        className="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 font-medium"
+                                    >
                                         Create Project
                                     </button>
                                 </div>
@@ -538,13 +629,17 @@ export default function AdminDashboard() {
                 {/* Project Modal */}
                 <Modal
                     isOpen={showProjectModal}
-                    title="Create New Project"
-                    onClose={() => setShowProjectModal(false)}
+                    title={editingProject ? 'Edit Project' : 'Create New Project'}
+                    onClose={() => {
+                        setShowProjectModal(false);
+                        setEditingProject(null);
+                    }}
                     isLoading={projectFormLoading}
                 >
                     <ProjectForm
-                        onSubmit={handleCreateProject}
+                        onSubmit={editingProject ? handleUpdateProject : handleCreateProject}
                         isLoading={projectFormLoading}
+                        initialData={editingProject}
                     />
                 </Modal>
             </main>
