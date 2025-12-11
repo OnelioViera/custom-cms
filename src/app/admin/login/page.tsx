@@ -40,10 +40,13 @@ export default function LoginPage() {
                 return;
             }
 
-            // Store token in localStorage
+            // Store token in both localStorage AND cookies
             localStorage.setItem('authToken', data.data.token);
             localStorage.setItem('userId', data.data.userId);
             localStorage.setItem('userEmail', data.data.email);
+
+            // Set cookie for middleware authentication
+            document.cookie = `authToken=${data.data.token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
 
             // Redirect to dashboard
             router.push('/admin/dashboard');
