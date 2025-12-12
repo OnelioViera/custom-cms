@@ -34,8 +34,8 @@ export default function VideoBackground({ config, className = '' }: VideoBackgro
     const [isLoaded, setIsLoaded] = useState(false);
 
     useEffect(() => {
-        if (videoRef.current && config.playbackSpeed) {
-            videoRef.current.playbackRate = config.playbackSpeed;
+        if (videoRef.current) {
+            videoRef.current.playbackRate = config.playbackSpeed || 1;
         }
     }, [config.playbackSpeed]);
 
@@ -44,6 +44,14 @@ export default function VideoBackground({ config, className = '' }: VideoBackgro
             videoRef.current.load();
         }
     }, [config.videoUrl]);
+
+    // Set playback rate when video loads
+    const handleLoadedData = () => {
+        setIsLoaded(true);
+        if (videoRef.current) {
+            videoRef.current.playbackRate = config.playbackSpeed || 1;
+        }
+    };
 
     if (!config.enabled || !config.videoUrl) {
         return null;
@@ -63,7 +71,12 @@ export default function VideoBackground({ config, className = '' }: VideoBackgro
                 muted={config.muted}
                 loop={config.loop}
                 playsInline
-                onLoadedData={() => setIsLoaded(true)}
+                onLoadedData={handleLoadedData}
+                onCanPlay={() => {
+                    if (videoRef.current) {
+                        videoRef.current.playbackRate = config.playbackSpeed || 1;
+                    }
+                }}
                 className={`absolute w-full h-full transition-opacity duration-500 ${
                     isLoaded ? 'opacity-100' : 'opacity-0'
                 }`}

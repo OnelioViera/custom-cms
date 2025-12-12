@@ -51,10 +51,13 @@ export default function SiteContentPreview({ data }: SiteContentPreviewProps) {
                                         playsInline
                                         className="absolute inset-0 w-full h-full"
                                         style={{ objectFit: data.heroVideoConfig.objectFit || 'cover' }}
-                                        ref={(el) => {
-                                            if (el) {
-                                                el.playbackRate = data.heroVideoConfig?.playbackSpeed || 1;
-                                            }
+                                        onLoadedData={(e) => {
+                                            const video = e.currentTarget;
+                                            video.playbackRate = data.heroVideoConfig?.playbackSpeed || 1;
+                                        }}
+                                        onCanPlay={(e) => {
+                                            const video = e.currentTarget;
+                                            video.playbackRate = data.heroVideoConfig?.playbackSpeed || 1;
                                         }}
                                     />
                                     <div 

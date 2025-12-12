@@ -442,9 +442,10 @@ const SiteContentFormFields = forwardRef<SiteContentFormFieldsRef, SiteContentFo
                                     {/* Video Preview */}
                                     {formData.heroVideoConfig?.videoUrl && (
                                         <div className="pt-2 border-t border-gray-200">
-                                            <label className="block text-xs font-medium text-gray-700 mb-2">Preview</label>
+                                            <label className="block text-xs font-medium text-gray-700 mb-2">Preview (Speed: {formData.heroVideoConfig.playbackSpeed || 1}x)</label>
                                             <div className="relative aspect-video rounded-lg overflow-hidden bg-gray-900">
                                                 <video
+                                                    key={`video-${formData.heroVideoConfig.playbackSpeed}`}
                                                     src={formData.heroVideoConfig.videoUrl}
                                                     autoPlay
                                                     muted
@@ -452,6 +453,14 @@ const SiteContentFormFields = forwardRef<SiteContentFormFieldsRef, SiteContentFo
                                                     playsInline
                                                     className="w-full h-full"
                                                     style={{ objectFit: formData.heroVideoConfig.objectFit || 'cover' }}
+                                                    onLoadedData={(e) => {
+                                                        const video = e.currentTarget;
+                                                        video.playbackRate = formData.heroVideoConfig?.playbackSpeed || 1;
+                                                    }}
+                                                    onCanPlay={(e) => {
+                                                        const video = e.currentTarget;
+                                                        video.playbackRate = formData.heroVideoConfig?.playbackSpeed || 1;
+                                                    }}
                                                 />
                                                 <div
                                                     className="absolute inset-0 pointer-events-none"
