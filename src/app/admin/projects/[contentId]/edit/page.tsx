@@ -116,6 +116,7 @@ export default function EditProjectPage({ params }: PageProps) {
                     locationConfig: editData?.locationConfig || projectData.data?.locationConfig || { label: 'Location', icon: 'MapPin' },
                     projectSizeConfig: editData?.projectSizeConfig || projectData.data?.projectSizeConfig || { label: 'Project Size', icon: 'Ruler' },
                     capacityConfig: editData?.capacityConfig || projectData.data?.capacityConfig || { label: 'Capacity', icon: 'Zap' },
+                    ctaButtonConfig: editData?.ctaButtonConfig || projectData.data?.ctaButtonConfig || { show: true, text: 'Discuss This Project', link: '/#contact' },
                 });
                 
                 // Build activity from project data
