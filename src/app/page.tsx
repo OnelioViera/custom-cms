@@ -201,7 +201,7 @@ export default async function Home() {
       </section>
 
       {/* Featured Projects */}
-      <section id="projects" className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-50 scroll-mt-20">
+      <section id="projects" className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-50 scroll-mt-28">
         <div className="max-w-7xl mx-auto">
           <ScrollAnimation animation="fade-up">
             <div className="text-center mb-12">
@@ -274,7 +274,7 @@ export default async function Home() {
       </section>
 
       {/* Testimonials */}
-      <section id="testimonials" className="py-16 px-4 sm:px-6 lg:px-8 bg-white scroll-mt-20">
+      <section id="testimonials" className="py-16 px-4 sm:px-6 lg:px-8 bg-white scroll-mt-28">
         <div className="max-w-7xl mx-auto">
           <ScrollAnimation animation="fade-up">
             <div className="text-center mb-12">
@@ -321,7 +321,7 @@ export default async function Home() {
       </section>
 
       {/* Contact Section */}
-      <section id="contact" className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-50 scroll-mt-20">
+      <section id="contact" className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-50 scroll-mt-28">
         <div className="max-w-7xl mx-auto">
           <div className="grid md:grid-cols-2 gap-12">
             <ScrollAnimation animation="fade-right">
