@@ -1,11 +1,11 @@
 import Link from 'next/link';
 import { getContentServer, getSiteContentServer } from '@/lib/cms-server';
-import { 
-  Building2, 
-  Sun, 
-  Phone, 
-  Mail, 
-  MapPin, 
+import {
+  Building2,
+  Sun,
+  Phone,
+  Mail,
+  MapPin,
   Clock,
   Star
 } from 'lucide-react';
@@ -103,19 +103,18 @@ export default async function Home() {
                 {heroButtons.map((button: HeroButton) => {
                   const isExternal = button.isExternal;
                   const ButtonTag = isExternal ? 'a' : Link;
-                  const extraProps = isExternal 
+                  const extraProps = isExternal
                     ? { target: '_blank', rel: 'noopener noreferrer' }
                     : {};
-                  
+
                   return (
                     <ButtonTag
                       key={button.id}
                       href={button.link}
                       {...extraProps}
-                      className={`px-6 py-3 rounded-lg font-medium transition hover:opacity-90 ${
-                        button.style === 'outline' ? 'border-2' : ''
-                      }`}
-                      style={button.style === 'filled' 
+                      className={`px-6 py-3 rounded-lg font-medium transition hover:opacity-90 ${button.style === 'outline' ? 'border-2' : ''
+                        }`}
+                      style={button.style === 'filled'
                         ? { backgroundColor: button.bgColor, color: button.textColor }
                         : { borderColor: button.bgColor, color: button.textColor }
                       }
@@ -126,7 +125,7 @@ export default async function Home() {
                 })}
               </div>
             </div>
-            
+
             {/* Image */}
             <div className="rounded-lg h-96 overflow-hidden shadow-lg animate-fadeIn animation-delay-150">
               {siteContent?.heroImage ? (
@@ -153,14 +152,13 @@ export default async function Home() {
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {stats.map((stat: StatItem, index: number) => (
-              <div 
-                key={stat.id} 
-                className={`text-center animate-fadeInUp ${
-                  index === 0 ? 'animation-delay-200' :
-                  index === 1 ? 'animation-delay-250' :
-                  index === 2 ? 'animation-delay-300' :
-                  'animation-delay-350'
-                }`}
+              <div
+                key={stat.id}
+                className={`text-center animate-fadeInUp ${index === 0 ? 'animation-delay-200' :
+                    index === 1 ? 'animation-delay-250' :
+                      index === 2 ? 'animation-delay-300' :
+                        'animation-delay-350'
+                  }`}
               >
                 <h3 className="text-3xl md:text-4xl font-bold text-orange-500 mb-2">{stat.value}</h3>
                 <p className="text-sm md:text-base text-gray-400">{stat.label}</p>
@@ -185,15 +183,14 @@ export default async function Home() {
           </ScrollAnimation>
 
           {projects.length > 0 ? (
-            <div className={`grid gap-8 ${
-              projects.slice(0, 3).length === 1 ? 'grid-cols-1 max-w-md mx-auto' : 
-              projects.slice(0, 3).length === 2 ? 'grid-cols-1 md:grid-cols-2 max-w-4xl mx-auto' : 
-              'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
-            }`}>
+            <div className={`grid gap-8 ${projects.slice(0, 3).length === 1 ? 'grid-cols-1 max-w-md mx-auto' :
+                projects.slice(0, 3).length === 2 ? 'grid-cols-1 md:grid-cols-2 max-w-4xl mx-auto' :
+                  'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
+              }`}>
               {projects.slice(0, 3).map((project: Project, index: number) => (
-                <ScrollAnimation 
-                  key={project._id} 
-                  animation="fade-up" 
+                <ScrollAnimation
+                  key={project._id}
+                  animation="fade-up"
                   delay={index * 150}
                   className="h-full"
                 >
