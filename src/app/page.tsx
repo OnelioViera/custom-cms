@@ -1,99 +1,96 @@
-'use client';
+"use client"
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic"
 
-import { useEffect, useState } from 'react';
-import Link from 'next/link';
-import { getContent, submitContactForm } from '@/lib/cms-client';
+import { useEffect, useState } from "react"
+import Link from "next/link"
+import { getContent, submitContactForm } from "@/lib/cms-client"
 
 interface Project {
-  _id: string;
-  contentId: string;
-  title: string;
+  _id: string
+  contentId: string
+  title: string
   data: {
-    client: string;
-    projectImage?: string;
-    shortDescription?: string;
-    projectSize?: string;
-  };
+    client: string
+    projectImage?: string
+    shortDescription?: string
+    projectSize?: string
+  }
 }
 
 interface Testimonial {
-  _id: string;
-  contentId: string;
-  title: string;
+  _id: string
+  contentId: string
+  title: string
   data: {
-    quote: string;
-    authorName: string;
-    authorTitle: string;
-  };
+    quote: string
+    authorName: string
+    authorTitle: string
+  }
 }
 
-export default function Home() {
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+export default function Page() {
+  const [projects, setProjects] = useState<Project[]>([])
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([])
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    projectType: 'Solar Installation',
-    projectSize: 'Medium (1-5MW)',
-    description: '',
-  });
-  const [loading, setLoading] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
-  const [message, setMessage] = useState('');
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    projectType: "Solar Installation",
+    projectSize: "Medium (1-5MW)",
+    description: "",
+  })
+  const [loading, setLoading] = useState(true)
+  const [submitting, setSubmitting] = useState(false)
+  const [message, setMessage] = useState("")
 
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [projectsData, testimonialsData] = await Promise.all([
-          getContent('projects'),
-          getContent('testimonials'),
-        ]);
-        setProjects(projectsData);
-        setTestimonials(testimonialsData);
+        const [projectsData, testimonialsData] = await Promise.all([getContent("projects"), getContent("testimonials")])
+        setProjects(projectsData)
+        setTestimonials(testimonialsData)
       } catch (error) {
-        console.error('Error loading data:', error);
+        console.error("Error loading data:", error)
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-    };
-
-    loadData();
-  }, []);
-
-  const handleInputChange = (e: any) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = async (e: any) => {
-    e.preventDefault();
-    setSubmitting(true);
-    setMessage('');
-
-    const result = await submitContactForm(formData);
-
-    if (result.success) {
-      setMessage('✅ Thank you! We received your inquiry and will contact you soon.');
-      setFormData({
-        firstName: '',
-        lastName: '',
-        email: '',
-        phone: '',
-        projectType: 'Solar Installation',
-        projectSize: 'Medium (1-5MW)',
-        description: '',
-      });
-      setTimeout(() => setMessage(''), 5000);
-    } else {
-      setMessage(`❌ ${result.error}`);
     }
 
-    setSubmitting(false);
-  };
+    loadData()
+  }, [])
+
+  const handleInputChange = (e: any) => {
+    const { name, value } = e.target
+    setFormData((prev) => ({ ...prev, [name]: value }))
+  }
+
+  const handleSubmit = async (e: any) => {
+    e.preventDefault()
+    setSubmitting(true)
+    setMessage("")
+
+    const result = await submitContactForm(formData)
+
+    if (result.success) {
+      setMessage("✅ Thank you! We received your inquiry and will contact you soon.")
+      setFormData({
+        firstName: "",
+        lastName: "",
+        email: "",
+        phone: "",
+        projectType: "Solar Installation",
+        projectSize: "Medium (1-5MW)",
+        description: "",
+      })
+      setTimeout(() => setMessage(""), 5000)
+    } else {
+      setMessage(`❌ ${result.error}`)
+    }
+
+    setSubmitting(false)
+  }
 
   return (
     <main>
@@ -138,7 +135,8 @@ export default function Home() {
                 Premium Precast Concrete Solutions for Infrastructure
               </h1>
               <p className="text-lg text-gray-700 mb-4">
-                Engineering excellence meets manufacturing precision. From BESS foundations to custom grade beams, we deliver infrastructure components that power renewable energy and modern utilities.
+                Engineering excellence meets manufacturing precision. From BESS foundations to custom grade beams, we
+                deliver infrastructure components that power renewable energy and modern utilities.
               </p>
               <p className="text-gray-700 mb-8">
                 Serving solar farms, battery storage facilities, and utility systems across North America.
@@ -192,7 +190,7 @@ export default function Home() {
                   <div className="bg-linear-to-br from-blue-100 to-blue-200 h-48 flex items-center justify-center">
                     {project.data.projectImage ? (
                       <img
-                        src={project.data.projectImage}
+                        src={project.data.projectImage || "/placeholder.svg"}
                         alt={project.title}
                         className="w-full h-full object-cover"
                       />
@@ -204,9 +202,7 @@ export default function Home() {
                     <h3 className="font-semibold text-lg text-gray-900 mb-2">{project.title}</h3>
                     <p className="text-sm text-gray-700 mb-4 font-medium">{project.data.client}</p>
                     {project.data.shortDescription && (
-                      <p className="text-sm text-gray-600 mb-4">
-                        {project.data.shortDescription}
-                      </p>
+                      <p className="text-sm text-gray-600 mb-4">{project.data.shortDescription}</p>
                     )}
                     <Link
                       href={`/projects/${project.contentId}`}
@@ -257,16 +253,10 @@ export default function Home() {
                       </span>
                     ))}
                   </div>
-                  <p className="text-gray-700 mb-6 italic">
-                    &quot;{testimonial.data.quote}&quot;
-                  </p>
+                  <p className="text-gray-700 mb-6 italic">&quot;{testimonial.data.quote}&quot;</p>
                   <div>
-                    <p className="font-semibold text-gray-900">
-                      {testimonial.data.authorName}
-                    </p>
-                    <p className="text-sm text-gray-600">
-                      {testimonial.data.authorTitle}
-                    </p>
+                    <p className="font-semibold text-gray-900">{testimonial.data.authorName}</p>
+                    <p className="text-sm text-gray-600">{testimonial.data.authorTitle}</p>
                   </div>
                 </div>
               ))}
@@ -286,8 +276,7 @@ export default function Home() {
             <div>
               <h2 className="font-serif text-4xl font-bold mb-6 text-gray-900">Get in Touch</h2>
               <p className="text-lg text-gray-700 mb-8">
-                Have a project in mind? Let&apos;s discuss how we can deliver
-                precision-engineered solutions.
+                Have a project in mind? Let&apos;s discuss how we can deliver precision-engineered solutions.
               </p>
 
               <div className="space-y-6">
@@ -382,10 +371,11 @@ export default function Home() {
                 ></textarea>
 
                 {message && (
-                  <div className={`p-3 rounded-lg text-sm font-medium ${message.includes('✅')
-                    ? 'bg-green-100 text-green-800'
-                    : 'bg-red-100 text-red-800'
-                    }`}>
+                  <div
+                    className={`p-3 rounded-lg text-sm font-medium ${
+                      message.includes("✅") ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
+                    }`}
+                  >
                     {message}
                   </div>
                 )}
@@ -395,7 +385,7 @@ export default function Home() {
                   disabled={submitting}
                   className="w-full py-3 rounded-lg text-white font-medium bg-yellow-600 hover:bg-yellow-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
                 >
-                  {submitting ? 'Sending...' : 'Send Message'}
+                  {submitting ? "Sending..." : "Send Message"}
                 </button>
               </form>
             </div>
@@ -410,5 +400,5 @@ export default function Home() {
         </div>
       </footer>
     </main>
-  );
+  )
 }
