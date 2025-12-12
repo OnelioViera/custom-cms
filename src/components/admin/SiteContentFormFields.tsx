@@ -337,14 +337,14 @@ const SiteContentFormFields = forwardRef<SiteContentFormFieldsRef, SiteContentFo
                                                 onChange={(e) => updateFormData({
                                                     heroVideoConfig: { ...formData.heroVideoConfig, videoUrl: e.target.value }
                                                 })}
-                                                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg"
+                                                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white text-gray-900"
                                             />
                                         </div>
                                     )}
 
                                     <div className="grid grid-cols-2 gap-4">
                                         <div>
-                                            <label className="block text-xs text-gray-600 mb-1">Speed: {formData.heroVideoConfig?.playbackSpeed || 1}x</label>
+                                            <label className="block text-xs font-medium text-gray-700 mb-1">Speed: {formData.heroVideoConfig?.playbackSpeed || 1}x</label>
                                             <input
                                                 type="range" min="0.25" max="2" step="0.25"
                                                 value={formData.heroVideoConfig?.playbackSpeed || 1}
@@ -353,34 +353,50 @@ const SiteContentFormFields = forwardRef<SiteContentFormFieldsRef, SiteContentFo
                                                 })}
                                                 className="w-full accent-yellow-600"
                                             />
+                                            <div className="flex justify-between text-[10px] text-gray-400 mt-1">
+                                                <span>0.25x</span>
+                                                <span>1x</span>
+                                                <span>2x</span>
+                                            </div>
                                         </div>
                                         <div>
-                                            <label className="block text-xs text-gray-600 mb-1">Size</label>
+                                            <label className="block text-xs font-medium text-gray-700 mb-1">Size</label>
                                             <select
                                                 value={formData.heroVideoConfig?.objectFit || 'cover'}
                                                 onChange={(e) => updateFormData({
                                                     heroVideoConfig: { ...formData.heroVideoConfig, objectFit: e.target.value as any }
                                                 })}
-                                                className="w-full px-2 py-1 text-sm border border-gray-300 rounded"
+                                                className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded bg-white text-gray-900"
                                             >
-                                                <option value="cover">Cover</option>
-                                                <option value="contain">Contain</option>
-                                                <option value="fill">Fill</option>
+                                                <option value="cover">Cover (fill area)</option>
+                                                <option value="contain">Contain (fit inside)</option>
+                                                <option value="fill">Stretch to fill</option>
+                                                <option value="none">Original size</option>
                                             </select>
                                         </div>
                                         <div>
-                                            <label className="block text-xs text-gray-600 mb-1">Overlay Color</label>
-                                            <input
-                                                type="color"
-                                                value={formData.heroVideoConfig?.overlayColor || '#000000'}
-                                                onChange={(e) => updateFormData({
-                                                    heroVideoConfig: { ...formData.heroVideoConfig, overlayColor: e.target.value }
-                                                })}
-                                                className="w-full h-8 cursor-pointer"
-                                            />
+                                            <label className="block text-xs font-medium text-gray-700 mb-1">Overlay Color</label>
+                                            <div className="flex gap-2">
+                                                <input
+                                                    type="color"
+                                                    value={formData.heroVideoConfig?.overlayColor || '#000000'}
+                                                    onChange={(e) => updateFormData({
+                                                        heroVideoConfig: { ...formData.heroVideoConfig, overlayColor: e.target.value }
+                                                    })}
+                                                    className="w-10 h-9 cursor-pointer rounded border border-gray-300"
+                                                />
+                                                <input
+                                                    type="text"
+                                                    value={formData.heroVideoConfig?.overlayColor || '#000000'}
+                                                    onChange={(e) => updateFormData({
+                                                        heroVideoConfig: { ...formData.heroVideoConfig, overlayColor: e.target.value }
+                                                    })}
+                                                    className="flex-1 px-2 py-1.5 text-sm border border-gray-300 rounded bg-white text-gray-900"
+                                                />
+                                            </div>
                                         </div>
                                         <div>
-                                            <label className="block text-xs text-gray-600 mb-1">Overlay: {formData.heroVideoConfig?.overlayOpacity || 30}%</label>
+                                            <label className="block text-xs font-medium text-gray-700 mb-1">Overlay Opacity: {formData.heroVideoConfig?.overlayOpacity || 30}%</label>
                                             <input
                                                 type="range" min="0" max="100" step="5"
                                                 value={formData.heroVideoConfig?.overlayOpacity || 30}
@@ -389,8 +405,64 @@ const SiteContentFormFields = forwardRef<SiteContentFormFieldsRef, SiteContentFo
                                                 })}
                                                 className="w-full accent-yellow-600"
                                             />
+                                            <div className="flex justify-between text-[10px] text-gray-400 mt-1">
+                                                <span>0%</span>
+                                                <span>50%</span>
+                                                <span>100%</span>
+                                            </div>
                                         </div>
                                     </div>
+
+                                    {/* Muted and Loop options */}
+                                    <div className="flex gap-6 pt-2 border-t border-gray-200">
+                                        <label className="flex items-center gap-2 cursor-pointer">
+                                            <input
+                                                type="checkbox"
+                                                checked={formData.heroVideoConfig?.muted !== false}
+                                                onChange={(e) => updateFormData({
+                                                    heroVideoConfig: { ...formData.heroVideoConfig, muted: e.target.checked }
+                                                })}
+                                                className="w-4 h-4 text-yellow-600 bg-gray-100 border-gray-300 rounded focus:ring-yellow-500"
+                                            />
+                                            <span className="text-sm text-gray-700">Muted</span>
+                                        </label>
+                                        <label className="flex items-center gap-2 cursor-pointer">
+                                            <input
+                                                type="checkbox"
+                                                checked={formData.heroVideoConfig?.loop !== false}
+                                                onChange={(e) => updateFormData({
+                                                    heroVideoConfig: { ...formData.heroVideoConfig, loop: e.target.checked }
+                                                })}
+                                                className="w-4 h-4 text-yellow-600 bg-gray-100 border-gray-300 rounded focus:ring-yellow-500"
+                                            />
+                                            <span className="text-sm text-gray-700">Loop</span>
+                                        </label>
+                                    </div>
+
+                                    {/* Video Preview */}
+                                    {formData.heroVideoConfig?.videoUrl && (
+                                        <div className="pt-2 border-t border-gray-200">
+                                            <label className="block text-xs font-medium text-gray-700 mb-2">Preview</label>
+                                            <div className="relative aspect-video rounded-lg overflow-hidden bg-gray-900">
+                                                <video
+                                                    src={formData.heroVideoConfig.videoUrl}
+                                                    autoPlay
+                                                    muted
+                                                    loop
+                                                    playsInline
+                                                    className="w-full h-full"
+                                                    style={{ objectFit: formData.heroVideoConfig.objectFit || 'cover' }}
+                                                />
+                                                <div
+                                                    className="absolute inset-0 pointer-events-none"
+                                                    style={{
+                                                        backgroundColor: formData.heroVideoConfig.overlayColor || '#000000',
+                                                        opacity: (formData.heroVideoConfig.overlayOpacity || 30) / 100
+                                                    }}
+                                                />
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                             )}
                         </div>
@@ -419,17 +491,17 @@ const SiteContentFormFields = forwardRef<SiteContentFormFieldsRef, SiteContentFo
                                             <input
                                                 type="text" placeholder="Text" value={button.text}
                                                 onChange={(e) => updateHeroButton(button.id, { text: e.target.value })}
-                                                className="px-2 py-1.5 text-sm border border-gray-300 rounded"
+                                                className="px-2 py-1.5 text-sm border border-gray-300 rounded bg-white text-gray-900"
                                             />
                                             <input
                                                 type="text" placeholder="Link" value={button.link}
                                                 onChange={(e) => updateHeroButton(button.id, { link: e.target.value })}
-                                                className="px-2 py-1.5 text-sm border border-gray-300 rounded"
+                                                className="px-2 py-1.5 text-sm border border-gray-300 rounded bg-white text-gray-900"
                                             />
                                             <select
                                                 value={button.style}
                                                 onChange={(e) => updateHeroButton(button.id, { style: e.target.value as any })}
-                                                className="px-2 py-1.5 text-sm border border-gray-300 rounded"
+                                                className="px-2 py-1.5 text-sm border border-gray-300 rounded bg-white text-gray-900"
                                             >
                                                 <option value="filled">Filled</option>
                                                 <option value="outline">Outline</option>
@@ -485,12 +557,12 @@ const SiteContentFormFields = forwardRef<SiteContentFormFieldsRef, SiteContentFo
                                 <input
                                     type="text" placeholder="Value" value={stat.value}
                                     onChange={(e) => updateStat(stat.id, { value: e.target.value })}
-                                    className="w-full px-2 py-1 text-sm border border-gray-300 rounded mb-2 font-bold"
+                                    className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded mb-2 font-bold bg-white text-gray-900"
                                 />
                                 <input
                                     type="text" placeholder="Label" value={stat.label}
                                     onChange={(e) => updateStat(stat.id, { label: e.target.value })}
-                                    className="w-full px-2 py-1 text-sm border border-gray-300 rounded"
+                                    className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded bg-white text-gray-900"
                                 />
                             </div>
                         ))}
@@ -507,7 +579,7 @@ const SiteContentFormFields = forwardRef<SiteContentFormFieldsRef, SiteContentFo
                                 <input
                                     type="text" value={formData.projectsTitle}
                                     onChange={(e) => updateFormData({ projectsTitle: e.target.value })}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900"
                                 />
                             </div>
                             <div>
@@ -515,7 +587,7 @@ const SiteContentFormFields = forwardRef<SiteContentFormFieldsRef, SiteContentFo
                                 <input
                                     type="text" value={formData.projectsSubtitle}
                                     onChange={(e) => updateFormData({ projectsSubtitle: e.target.value })}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900"
                                 />
                             </div>
                         </div>
@@ -525,7 +597,7 @@ const SiteContentFormFields = forwardRef<SiteContentFormFieldsRef, SiteContentFo
                                 <input
                                     type="text" value={formData.testimonialsTitle}
                                     onChange={(e) => updateFormData({ testimonialsTitle: e.target.value })}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900"
                                 />
                             </div>
                             <div>
@@ -533,7 +605,7 @@ const SiteContentFormFields = forwardRef<SiteContentFormFieldsRef, SiteContentFo
                                 <input
                                     type="text" value={formData.testimonialsSubtitle}
                                     onChange={(e) => updateFormData({ testimonialsSubtitle: e.target.value })}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900"
                                 />
                             </div>
                         </div>
@@ -543,7 +615,7 @@ const SiteContentFormFields = forwardRef<SiteContentFormFieldsRef, SiteContentFo
                                 <input
                                     type="text" value={formData.contactTitle}
                                     onChange={(e) => updateFormData({ contactTitle: e.target.value })}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900"
                                 />
                             </div>
                             <div>
@@ -551,7 +623,7 @@ const SiteContentFormFields = forwardRef<SiteContentFormFieldsRef, SiteContentFo
                                 <input
                                     type="text" value={formData.contactSubtitle}
                                     onChange={(e) => updateFormData({ contactSubtitle: e.target.value })}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900"
                                 />
                             </div>
                         </div>
@@ -561,7 +633,7 @@ const SiteContentFormFields = forwardRef<SiteContentFormFieldsRef, SiteContentFo
                                 <input
                                     type="text" value={formData.ctaTitle}
                                     onChange={(e) => updateFormData({ ctaTitle: e.target.value })}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900"
                                 />
                             </div>
                             <div>
@@ -569,7 +641,7 @@ const SiteContentFormFields = forwardRef<SiteContentFormFieldsRef, SiteContentFo
                                 <input
                                     type="text" value={formData.ctaSubtitle}
                                     onChange={(e) => updateFormData({ ctaSubtitle: e.target.value })}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900"
                                 />
                             </div>
                         </div>
