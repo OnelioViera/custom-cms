@@ -69,9 +69,12 @@ export default function ProjectPreview({ data }: ProjectPreviewProps) {
                                     <h1 className="text-xl font-bold text-gray-900 mb-2 leading-tight">
                                         {data.title || 'Project Title'}
                                     </h1>
-                                    <p className="text-sm text-gray-600 mb-4 line-clamp-3">
-                                        {data.shortDescription || 'Short description will appear here...'}
-                                    </p>
+                                    <div 
+                                        className="text-sm text-gray-600 mb-4 line-clamp-3 rich-text-content"
+                                        dangerouslySetInnerHTML={{ 
+                                            __html: data.shortDescription || '<p>Short description will appear here...</p>' 
+                                        }}
+                                    />
 
                                     {/* Info Items */}
                                     <div className="space-y-3">
@@ -144,27 +147,30 @@ export default function ProjectPreview({ data }: ProjectPreviewProps) {
                                     {data.description && (
                                         <div>
                                             <h2 className="text-sm font-bold text-gray-900 mb-1">Project Overview</h2>
-                                            <p className="text-xs text-gray-600 line-clamp-4 whitespace-pre-line">
-                                                {data.description}
-                                            </p>
+                                            <div 
+                                                className="text-xs text-gray-600 line-clamp-4 rich-text-content"
+                                                dangerouslySetInnerHTML={{ __html: data.description }}
+                                            />
                                         </div>
                                     )}
 
                                     {data.challenges && (
                                         <div>
                                             <h2 className="text-sm font-bold text-gray-900 mb-1">Challenges</h2>
-                                            <p className="text-xs text-gray-600 line-clamp-3 whitespace-pre-line">
-                                                {data.challenges}
-                                            </p>
+                                            <div 
+                                                className="text-xs text-gray-600 line-clamp-3 rich-text-content"
+                                                dangerouslySetInnerHTML={{ __html: data.challenges }}
+                                            />
                                         </div>
                                     )}
 
                                     {data.results && (
                                         <div>
                                             <h2 className="text-sm font-bold text-gray-900 mb-1">Results</h2>
-                                            <p className="text-xs text-gray-600 line-clamp-3 whitespace-pre-line">
-                                                {data.results}
-                                            </p>
+                                            <div 
+                                                className="text-xs text-gray-600 line-clamp-3 rich-text-content"
+                                                dangerouslySetInnerHTML={{ __html: data.results }}
+                                            />
                                         </div>
                                     )}
                                 </div>

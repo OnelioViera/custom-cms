@@ -3,6 +3,7 @@
 import { useState, forwardRef, useImperativeHandle, useEffect } from 'react';
 import { Upload, Crop, X } from 'lucide-react';
 import ImageCropper from '@/components/ImageCropper';
+import RichTextEditor from '@/components/admin/RichTextEditor';
 
 export interface FormDataType {
     title: string;
@@ -137,6 +138,12 @@ const ProjectFormFields = forwardRef<ProjectFormFieldsRef, ProjectFormFieldsProp
             setTimeout(() => onFormChange?.(newData), 0);
         };
 
+        const handleRichTextChange = (field: keyof FormDataType) => (value: string) => {
+            const newData = { ...formData, [field]: value };
+            setFormData(newData);
+            setTimeout(() => onFormChange?.(newData), 0);
+        };
+
         return (
             <div className="space-y-6">
                 {/* Title */}
@@ -210,53 +217,44 @@ const ProjectFormFields = forwardRef<ProjectFormFieldsRef, ProjectFormFieldsProp
                 {/* Short Description */}
                 <div>
                     <label className="block text-sm font-medium text-gray-900 mb-1">Short Description *</label>
-                    <textarea
-                        name="shortDescription"
+                    <RichTextEditor
                         value={formData.shortDescription}
-                        onChange={handleInputChange}
-                        required
-                        rows={2}
+                        onChange={handleRichTextChange('shortDescription')}
                         placeholder="A brief summary of the project (shown in cards)"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 text-gray-900 placeholder-gray-400"
+                        minHeight="80px"
                     />
                 </div>
 
                 {/* Full Description */}
                 <div>
                     <label className="block text-sm font-medium text-gray-900 mb-1">Full Description</label>
-                    <textarea
-                        name="description"
+                    <RichTextEditor
                         value={formData.description}
-                        onChange={handleInputChange}
-                        rows={4}
+                        onChange={handleRichTextChange('description')}
                         placeholder="Detailed project description (shown on project page)"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 text-gray-900 placeholder-gray-400"
+                        minHeight="150px"
                     />
                 </div>
 
                 {/* Challenges */}
                 <div>
                     <label className="block text-sm font-medium text-gray-900 mb-1">Challenges</label>
-                    <textarea
-                        name="challenges"
+                    <RichTextEditor
                         value={formData.challenges}
-                        onChange={handleInputChange}
-                        rows={3}
+                        onChange={handleRichTextChange('challenges')}
                         placeholder="What challenges did this project face?"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 text-gray-900 placeholder-gray-400"
+                        minHeight="100px"
                     />
                 </div>
 
                 {/* Results */}
                 <div>
                     <label className="block text-sm font-medium text-gray-900 mb-1">Results & Impact</label>
-                    <textarea
-                        name="results"
+                    <RichTextEditor
                         value={formData.results}
-                        onChange={handleInputChange}
-                        rows={3}
+                        onChange={handleRichTextChange('results')}
                         placeholder="What were the outcomes and impact?"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 text-gray-900 placeholder-gray-400"
+                        minHeight="100px"
                     />
                 </div>
 

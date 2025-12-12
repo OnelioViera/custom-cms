@@ -140,7 +140,10 @@ export default async function ProjectDetailPage({ params }: PageProps) {
                     <div className="grid md:grid-cols-2 gap-8 items-center">
                         <div>
                             <h1 className="font-serif text-5xl font-bold text-gray-900 mb-4">{project.title}</h1>
-                            <p className="text-xl text-gray-700 mb-6">{project.data.shortDescription}</p>
+                            <div 
+                                className="text-xl text-gray-700 mb-6 rich-text-content"
+                                dangerouslySetInnerHTML={{ __html: project.data.shortDescription || '' }}
+                            />
 
                             <div className="space-y-4 mb-8">
                                 {project.data.client && (
@@ -218,9 +221,10 @@ export default async function ProjectDetailPage({ params }: PageProps) {
                     {project.data.description && (
                         <div className="mb-12">
                             <h2 className="font-serif text-3xl font-bold text-gray-900 mb-6">Project Overview</h2>
-                            <p className="text-gray-700 leading-relaxed whitespace-pre-line">
-                                {project.data.description}
-                            </p>
+                            <div 
+                                className="text-gray-700 leading-relaxed rich-text-content"
+                                dangerouslySetInnerHTML={{ __html: project.data.description }}
+                            />
                         </div>
                     )}
 
@@ -241,18 +245,20 @@ export default async function ProjectDetailPage({ params }: PageProps) {
                     {project.data.challenges && (
                         <div className="mb-12">
                             <h2 className="font-serif text-3xl font-bold text-gray-900 mb-6">Challenges</h2>
-                            <p className="text-gray-700 leading-relaxed whitespace-pre-line">
-                                {project.data.challenges}
-                            </p>
+                            <div 
+                                className="text-gray-700 leading-relaxed rich-text-content"
+                                dangerouslySetInnerHTML={{ __html: project.data.challenges }}
+                            />
                         </div>
                     )}
 
                     {project.data.results && (
                         <div className="mb-12">
                             <h2 className="font-serif text-3xl font-bold text-gray-900 mb-6">Results</h2>
-                            <p className="text-gray-700 leading-relaxed whitespace-pre-line">
-                                {project.data.results}
-                            </p>
+                            <div 
+                                className="text-gray-700 leading-relaxed rich-text-content"
+                                dangerouslySetInnerHTML={{ __html: project.data.results }}
+                            />
                         </div>
                     )}
 
