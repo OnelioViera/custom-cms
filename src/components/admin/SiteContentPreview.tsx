@@ -39,16 +39,35 @@ export default function SiteContentPreview({ data }: SiteContentPreviewProps) {
                         </div>
 
                         {/* Hero Section */}
-                        <div className={`relative p-6 ${!data.heroVideoConfig?.enabled ? 'bg-gradient-to-b from-gray-50 to-white' : 'bg-gray-900'}`}>
-                            {/* Video Background Indicator */}
+                        <div className={`relative p-6 overflow-hidden ${!data.heroVideoConfig?.enabled ? 'bg-gradient-to-b from-gray-50 to-white' : 'bg-gray-900'}`}>
+                            {/* Video Background */}
                             {data.heroVideoConfig?.enabled && data.heroVideoConfig?.videoUrl && (
-                                <div 
-                                    className="absolute inset-0"
-                                    style={{
-                                        backgroundColor: data.heroVideoConfig.overlayColor,
-                                        opacity: data.heroVideoConfig.overlayOpacity / 100
-                                    }}
-                                />
+                                <>
+                                    <video
+                                        src={data.heroVideoConfig.videoUrl}
+                                        autoPlay
+                                        muted
+                                        loop={data.heroVideoConfig.loop !== false}
+                                        playsInline
+                                        className="absolute inset-0 w-full h-full object-cover"
+                                        style={{ 
+                                            objectFit: data.heroVideoConfig.objectFit || 'cover',
+                                            playbackRate: data.heroVideoConfig.playbackSpeed || 1
+                                        }}
+                                        ref={(el) => {
+                                            if (el) {
+                                                el.playbackRate = data.heroVideoConfig?.playbackSpeed || 1;
+                                            }
+                                        }}
+                                    />
+                                    <div 
+                                        className="absolute inset-0"
+                                        style={{
+                                            backgroundColor: data.heroVideoConfig.overlayColor,
+                                            opacity: data.heroVideoConfig.overlayOpacity / 100
+                                        }}
+                                    />
+                                </>
                             )}
                             
                             <div className="relative z-10 grid grid-cols-2 gap-4">
