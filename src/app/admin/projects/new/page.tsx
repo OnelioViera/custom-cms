@@ -44,6 +44,7 @@ export default function NewProjectPage() {
         locationConfig: { label: 'Location', icon: 'MapPin' },
         projectSizeConfig: { label: 'Project Size', icon: 'Ruler' },
         capacityConfig: { label: 'Capacity', icon: 'Zap' },
+        ctaButtonConfig: { show: true, text: 'Discuss This Project', link: '/#contact' },
     });
 
     const handleFormChange = (data: FormDataType) => {
