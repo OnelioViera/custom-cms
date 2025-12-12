@@ -4,6 +4,8 @@ import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Link from '@tiptap/extension-link';
 import Placeholder from '@tiptap/extension-placeholder';
+import TextStyle from '@tiptap/extension-text-style';
+import Color from '@tiptap/extension-color';
 import { 
     Bold, 
     Italic, 
@@ -15,9 +17,11 @@ import {
     Heading2,
     Undo,
     Redo,
-    Quote
+    Quote,
+    Palette,
+    X
 } from 'lucide-react';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState, useRef } from 'react';
 
 interface RichTextEditorProps {
     value: string;
@@ -26,12 +30,30 @@ interface RichTextEditorProps {
     minHeight?: string;
 }
 
+// Predefined color palette
+const COLOR_PALETTE = [
+    { name: 'Default', value: '' },
+    { name: 'Black', value: '#000000' },
+    { name: 'Dark Gray', value: '#374151' },
+    { name: 'Gray', value: '#6b7280' },
+    { name: 'Red', value: '#dc2626' },
+    { name: 'Orange', value: '#ea580c' },
+    { name: 'Yellow', value: '#ca8a04' },
+    { name: 'Green', value: '#16a34a' },
+    { name: 'Blue', value: '#2563eb' },
+    { name: 'Purple', value: '#9333ea' },
+    { name: 'Pink', value: '#db2777' },
+];
+
 export default function RichTextEditor({ 
     value, 
     onChange, 
     placeholder = 'Start typing...',
     minHeight = '120px'
 }: RichTextEditorProps) {
+    const [showColorPicker, setShowColorPicker] = useState(false);
+    const colorPickerRef = useRef<HTMLDivElement>(null);
+
     const editor = useEditor({
         extensions: [
             StarterKit.configure({
@@ -48,6 +70,8 @@ export default function RichTextEditor({
             Placeholder.configure({
                 placeholder,
             }),
+            TextStyle,
+            Color,
         ],
         content: value,
         immediatelyRender: false, // Prevents SSR hydration mismatch
@@ -68,6 +92,18 @@ export default function RichTextEditor({
         }
     }, [value, editor]);
 
+    // Close color picker when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (colorPickerRef.current && !colorPickerRef.current.contains(event.target as Node)) {
+                setShowColorPicker(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
     const setLink = useCallback(() => {
         if (!editor) return;
 
@@ -83,6 +119,22 @@ export default function RichTextEditor({
 
         editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
     }, [editor]);
+
+    const setColor = useCallback((color: string) => {
+        if (!editor) return;
+        
+        if (color === '') {
+            editor.chain().focus().unsetColor().run();
+        } else {
+            editor.chain().focus().setColor(color).run();
+        }
+        setShowColorPicker(false);
+    }, [editor]);
+
+    const getCurrentColor = () => {
+        if (!editor) return '';
+        return editor.getAttributes('textStyle').color || '';
+    };
 
     if (!editor) {
         return (
@@ -142,6 +194,74 @@ export default function RichTextEditor({
                 >
                     <Italic className="w-4 h-4" />
                 </ToolbarButton>
+
+                {/* Color Picker */}
+                <div className="relative" ref={colorPickerRef}>
+                    <button
+                        type="button"
+                        onClick={() => setShowColorPicker(!showColorPicker)}
+                        title="Text Color"
+                        className={`p-1.5 rounded transition-colors flex items-center gap-1 ${
+                            showColorPicker || getCurrentColor()
+                                ? 'bg-yellow-100 text-yellow-700' 
+                                : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                        }`}
+                    >
+                        <Palette className="w-4 h-4" />
+                        <div 
+                            className="w-3 h-3 rounded-sm border border-gray-300"
+                            style={{ backgroundColor: getCurrentColor() || '#374151' }}
+                        />
+                    </button>
+
+                    {showColorPicker && (
+                        <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg p-2 z-50 min-w-[180px]">
+                            <div className="flex items-center justify-between mb-2 pb-2 border-b border-gray-100">
+                                <span className="text-xs font-medium text-gray-700">Text Color</span>
+                                <button
+                                    type="button"
+                                    onClick={() => setShowColorPicker(false)}
+                                    className="text-gray-400 hover:text-gray-600"
+                                >
+                                    <X className="w-3 h-3" />
+                                </button>
+                            </div>
+                            <div className="grid grid-cols-4 gap-1">
+                                {COLOR_PALETTE.map((color) => (
+                                    <button
+                                        key={color.name}
+                                        type="button"
+                                        onClick={() => setColor(color.value)}
+                                        title={color.name}
+                                        className={`w-7 h-7 rounded border-2 transition-all hover:scale-110 ${
+                                            getCurrentColor() === color.value 
+                                                ? 'border-yellow-500 ring-2 ring-yellow-200' 
+                                                : 'border-gray-200 hover:border-gray-300'
+                                        }`}
+                                        style={{ 
+                                            backgroundColor: color.value || '#ffffff',
+                                            backgroundImage: color.value === '' ? 'linear-gradient(45deg, #ccc 25%, transparent 25%), linear-gradient(-45deg, #ccc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ccc 75%), linear-gradient(-45deg, transparent 75%, #ccc 75%)' : 'none',
+                                            backgroundSize: '8px 8px',
+                                            backgroundPosition: '0 0, 0 4px, 4px -4px, -4px 0px'
+                                        }}
+                                    />
+                                ))}
+                            </div>
+                            {/* Custom color input */}
+                            <div className="mt-2 pt-2 border-t border-gray-100">
+                                <label className="flex items-center gap-2">
+                                    <span className="text-xs text-gray-500">Custom:</span>
+                                    <input
+                                        type="color"
+                                        value={getCurrentColor() || '#000000'}
+                                        onChange={(e) => setColor(e.target.value)}
+                                        className="w-6 h-6 rounded cursor-pointer border border-gray-200"
+                                    />
+                                </label>
+                            </div>
+                        </div>
+                    )}
+                </div>
 
                 <div className="w-px h-5 bg-gray-300 mx-1" />
 
@@ -235,4 +355,3 @@ export default function RichTextEditor({
         </div>
     );
 }
-
