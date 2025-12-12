@@ -5,7 +5,7 @@ import ImageLightbox from '@/components/ImageLightbox';
 import ImageGallery from '@/components/ImageGallery';
 import Footer from '@/components/Footer';
 import Navigation from '@/components/Navigation';
-import { getIconComponent } from '@/components/admin/IconSelector';
+import ProjectInfoItem from '@/components/ProjectInfoItem';
 
 export const dynamic = 'force-dynamic';
 
@@ -117,62 +117,34 @@ export default async function ProjectDetailPage({ params }: PageProps) {
                             />
 
                             <div className="space-y-4 mb-8">
-                                {project.data.client && (() => {
-                                    const ClientIcon = getIconComponent(project.data.clientConfig?.icon || 'Building2');
-                                    return (
-                                        <div className="flex items-start gap-3">
-                                            <div className="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                                                <ClientIcon className="w-5 h-5 text-slate-600" />
-                                            </div>
-                                            <div>
-                                                <p className="text-sm text-gray-600">{project.data.clientConfig?.label || 'Client'}</p>
-                                                <p className="font-semibold text-gray-900">{project.data.client}</p>
-                                            </div>
-                                        </div>
-                                    );
-                                })()}
-                                {project.data.location && (() => {
-                                    const LocationIcon = getIconComponent(project.data.locationConfig?.icon || 'MapPin');
-                                    return (
-                                        <div className="flex items-start gap-3">
-                                            <div className="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                                                <LocationIcon className="w-5 h-5 text-slate-600" />
-                                            </div>
-                                            <div>
-                                                <p className="text-sm text-gray-600">{project.data.locationConfig?.label || 'Location'}</p>
-                                                <p className="font-semibold text-gray-900">{project.data.location}</p>
-                                            </div>
-                                        </div>
-                                    );
-                                })()}
-                                {project.data.projectSize && (() => {
-                                    const SizeIcon = getIconComponent(project.data.projectSizeConfig?.icon || 'Ruler');
-                                    return (
-                                        <div className="flex items-start gap-3">
-                                            <div className="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                                                <SizeIcon className="w-5 h-5 text-slate-600" />
-                                            </div>
-                                            <div>
-                                                <p className="text-sm text-gray-600">{project.data.projectSizeConfig?.label || 'Project Size'}</p>
-                                                <p className="font-semibold text-gray-900">{project.data.projectSize}</p>
-                                            </div>
-                                        </div>
-                                    );
-                                })()}
-                                {project.data.capacity && (() => {
-                                    const CapacityIcon = getIconComponent(project.data.capacityConfig?.icon || 'Zap');
-                                    return (
-                                        <div className="flex items-start gap-3">
-                                            <div className="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                                                <CapacityIcon className="w-5 h-5 text-slate-600" />
-                                            </div>
-                                            <div>
-                                                <p className="text-sm text-gray-600">{project.data.capacityConfig?.label || 'Capacity'}</p>
-                                                <p className="font-semibold text-gray-900">{project.data.capacity}</p>
-                                            </div>
-                                        </div>
-                                    );
-                                })()}
+                                {project.data.client && (
+                                    <ProjectInfoItem
+                                        value={project.data.client}
+                                        label={project.data.clientConfig?.label || 'Client'}
+                                        iconName={project.data.clientConfig?.icon || 'Building2'}
+                                    />
+                                )}
+                                {project.data.location && (
+                                    <ProjectInfoItem
+                                        value={project.data.location}
+                                        label={project.data.locationConfig?.label || 'Location'}
+                                        iconName={project.data.locationConfig?.icon || 'MapPin'}
+                                    />
+                                )}
+                                {project.data.projectSize && (
+                                    <ProjectInfoItem
+                                        value={project.data.projectSize}
+                                        label={project.data.projectSizeConfig?.label || 'Project Size'}
+                                        iconName={project.data.projectSizeConfig?.icon || 'Ruler'}
+                                    />
+                                )}
+                                {project.data.capacity && (
+                                    <ProjectInfoItem
+                                        value={project.data.capacity}
+                                        label={project.data.capacityConfig?.label || 'Capacity'}
+                                        iconName={project.data.capacityConfig?.icon || 'Zap'}
+                                    />
+                                )}
                             </div>
 
                             <a
