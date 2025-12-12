@@ -8,6 +8,12 @@ interface InfoFieldConfig {
     icon: IconName;
 }
 
+interface CtaButtonConfig {
+    show: boolean;
+    text: string;
+    link: string;
+}
+
 interface ProjectPreviewProps {
     data: {
         title: string;
@@ -25,6 +31,7 @@ interface ProjectPreviewProps {
         locationConfig?: InfoFieldConfig;
         projectSizeConfig?: InfoFieldConfig;
         capacityConfig?: InfoFieldConfig;
+        ctaButtonConfig?: CtaButtonConfig;
     };
 }
 
@@ -146,6 +153,15 @@ export default function ProjectPreview({ data }: ProjectPreviewProps) {
                                             );
                                         })()}
                                     </div>
+                                    
+                                    {/* CTA Button */}
+                                    {(data.ctaButtonConfig?.show !== false) && (
+                                        <div className="mt-4">
+                                            <span className="inline-block px-4 py-2 bg-yellow-600 text-white rounded-lg font-medium text-xs">
+                                                {data.ctaButtonConfig?.text || 'Discuss This Project'}
+                                            </span>
+                                        </div>
+                                    )}
                                 </div>
 
                                 {/* Image - 2 columns */}

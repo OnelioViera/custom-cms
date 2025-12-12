@@ -14,6 +14,12 @@ interface InfoFieldConfig {
     icon: string;
 }
 
+interface CtaButtonConfig {
+    show: boolean;
+    text: string;
+    link: string;
+}
+
 interface Project {
     _id: string;
     contentId: string;
@@ -38,6 +44,7 @@ interface Project {
         locationConfig?: InfoFieldConfig;
         projectSizeConfig?: InfoFieldConfig;
         capacityConfig?: InfoFieldConfig;
+        ctaButtonConfig?: CtaButtonConfig;
     };
     status: string;
     createdAt: string;
@@ -147,12 +154,14 @@ export default async function ProjectDetailPage({ params }: PageProps) {
                                 )}
                             </div>
 
-                            <a
-                                href="/#contact"
-                                className="px-6 py-3 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 font-medium inline-block transition"
-                            >
-                                Discuss This Project
-                            </a>
+                            {(project.data.ctaButtonConfig?.show !== false) && (
+                                <a
+                                    href={project.data.ctaButtonConfig?.link || '/#contact'}
+                                    className="px-6 py-3 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 font-medium inline-block transition"
+                                >
+                                    {project.data.ctaButtonConfig?.text || 'Discuss This Project'}
+                                </a>
+                            )}
                         </div>
 
                         <div className="bg-gradient-to-br from-slate-100 to-slate-200 rounded-lg h-96 flex items-center justify-center border-2 border-slate-200 overflow-hidden">

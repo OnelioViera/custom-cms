@@ -11,6 +11,12 @@ export interface InfoFieldConfig {
     icon: IconName;
 }
 
+export interface CtaButtonConfig {
+    show: boolean;
+    text: string;
+    link: string;
+}
+
 export interface FormDataType {
     title: string;
     client: string;
@@ -28,6 +34,8 @@ export interface FormDataType {
     locationConfig: InfoFieldConfig;
     projectSizeConfig: InfoFieldConfig;
     capacityConfig: InfoFieldConfig;
+    // CTA Button configuration
+    ctaButtonConfig: CtaButtonConfig;
 }
 
 interface ProjectFormFieldsProps {
@@ -45,6 +53,7 @@ const DEFAULT_CONFIGS = {
     locationConfig: { label: 'Location', icon: 'MapPin' as IconName },
     projectSizeConfig: { label: 'Project Size', icon: 'Ruler' as IconName },
     capacityConfig: { label: 'Capacity', icon: 'Zap' as IconName },
+    ctaButtonConfig: { show: true, text: 'Discuss This Project', link: '/#contact' },
 };
 
 const ProjectFormFields = forwardRef<ProjectFormFieldsRef, ProjectFormFieldsProps>(
@@ -65,6 +74,7 @@ const ProjectFormFields = forwardRef<ProjectFormFieldsRef, ProjectFormFieldsProp
             locationConfig: initialData?.data?.locationConfig || DEFAULT_CONFIGS.locationConfig,
             projectSizeConfig: initialData?.data?.projectSizeConfig || DEFAULT_CONFIGS.projectSizeConfig,
             capacityConfig: initialData?.data?.capacityConfig || DEFAULT_CONFIGS.capacityConfig,
+            ctaButtonConfig: initialData?.data?.ctaButtonConfig || DEFAULT_CONFIGS.ctaButtonConfig,
         });
 
         const [imagePreview, setImagePreview] = useState<string | null>(initialData?.data?.projectImage || null);
@@ -95,6 +105,7 @@ const ProjectFormFields = forwardRef<ProjectFormFieldsRef, ProjectFormFieldsProp
                     locationConfig: initialData.data?.locationConfig || DEFAULT_CONFIGS.locationConfig,
                     projectSizeConfig: initialData.data?.projectSizeConfig || DEFAULT_CONFIGS.projectSizeConfig,
                     capacityConfig: initialData.data?.capacityConfig || DEFAULT_CONFIGS.capacityConfig,
+                    ctaButtonConfig: initialData.data?.ctaButtonConfig || DEFAULT_CONFIGS.ctaButtonConfig,
                 });
                 setImagePreview(initialData.data?.projectImage || null);
                 setIsInitialized(true);
@@ -120,6 +131,7 @@ const ProjectFormFields = forwardRef<ProjectFormFieldsRef, ProjectFormFieldsProp
                     locationConfig: formData.locationConfig,
                     projectSizeConfig: formData.projectSizeConfig,
                     capacityConfig: formData.capacityConfig,
+                    ctaButtonConfig: formData.ctaButtonConfig,
                 },
             }),
         }));
@@ -128,6 +140,14 @@ const ProjectFormFields = forwardRef<ProjectFormFieldsRef, ProjectFormFieldsProp
         const handleConfigChange = (field: 'clientConfig' | 'locationConfig' | 'projectSizeConfig' | 'capacityConfig', key: 'label' | 'icon', value: string) => {
             const newConfig = { ...formData[field], [key]: value };
             const newData = { ...formData, [field]: newConfig };
+            setFormData(newData);
+            setTimeout(() => onFormChange?.(newData), 0);
+        };
+
+        // Handler for CTA button config
+        const handleCtaButtonConfigChange = (key: 'show' | 'text' | 'link', value: boolean | string) => {
+            const newConfig = { ...formData.ctaButtonConfig, [key]: value };
+            const newData = { ...formData, ctaButtonConfig: newConfig };
             setFormData(newData);
             setTimeout(() => onFormChange?.(newData), 0);
         };
@@ -564,6 +584,62 @@ const ProjectFormFields = forwardRef<ProjectFormFieldsRef, ProjectFormFieldsProp
                             className="hidden"
                         />
                     </label>
+                </div>
+
+                {/* CTA Button Configuration */}
+                <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                    <div className="flex items-center justify-between mb-3">
+                        <label className="block text-sm font-medium text-gray-900">
+                            Call-to-Action Button
+                        </label>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                            <input
+                                type="checkbox"
+                                checked={formData.ctaButtonConfig.show}
+                                onChange={(e) => handleCtaButtonConfigChange('show', e.target.checked)}
+                                className="sr-only peer"
+                            />
+                            <div className="w-9 h-5 bg-gray-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-yellow-500 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-yellow-600"></div>
+                            <span className="ms-2 text-sm font-medium text-gray-600">
+                                {formData.ctaButtonConfig.show ? 'Visible' : 'Hidden'}
+                            </span>
+                        </label>
+                    </div>
+                    
+                    {formData.ctaButtonConfig.show && (
+                        <div className="space-y-3 pt-2">
+                            <div>
+                                <label className="block text-xs font-medium text-gray-600 mb-1">Button Text</label>
+                                <input
+                                    type="text"
+                                    value={formData.ctaButtonConfig.text}
+                                    onChange={(e) => handleCtaButtonConfigChange('text', e.target.value)}
+                                    placeholder="e.g., Discuss This Project"
+                                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 text-gray-900 bg-white"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-medium text-gray-600 mb-1">Button Link</label>
+                                <input
+                                    type="text"
+                                    value={formData.ctaButtonConfig.link}
+                                    onChange={(e) => handleCtaButtonConfigChange('link', e.target.value)}
+                                    placeholder="e.g., /#contact or https://example.com"
+                                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 text-gray-900 bg-white"
+                                />
+                            </div>
+                            <div className="pt-2">
+                                <p className="text-xs text-gray-500">Preview:</p>
+                                <a
+                                    href="#"
+                                    onClick={(e) => e.preventDefault()}
+                                    className="inline-block mt-1 px-6 py-3 bg-yellow-600 text-white rounded-lg font-medium text-sm"
+                                >
+                                    {formData.ctaButtonConfig.text || 'Button Text'}
+                                </a>
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 {/* Image Cropper Modal */}
