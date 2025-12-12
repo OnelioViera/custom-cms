@@ -39,6 +39,7 @@ export default function NewProjectPage() {
         challenges: '',
         results: '',
         projectImage: '',
+        galleryImages: [],
     });
 
     const handleFormChange = (data: FormDataType) => {

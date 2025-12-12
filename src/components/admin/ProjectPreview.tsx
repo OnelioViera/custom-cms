@@ -1,6 +1,6 @@
 'use client';
 
-import { Building2, MapPin, Ruler, Zap, Monitor } from 'lucide-react';
+import { Building2, MapPin, Ruler, Zap, Monitor, Images } from 'lucide-react';
 
 interface ProjectPreviewProps {
     data: {
@@ -14,6 +14,7 @@ interface ProjectPreviewProps {
         challenges: string;
         results: string;
         projectImage: string;
+        galleryImages?: string[];
     };
 }
 
@@ -173,6 +174,37 @@ export default function ProjectPreview({ data }: ProjectPreviewProps) {
                                             />
                                         </div>
                                     )}
+                                </div>
+                            )}
+
+                            {/* Gallery Preview */}
+                            {data.galleryImages && data.galleryImages.length > 0 && (
+                                <div className="mt-6 border-t border-gray-200 pt-4">
+                                    <h2 className="text-sm font-bold text-gray-900 mb-2 flex items-center gap-2">
+                                        <Images className="w-4 h-4" />
+                                        Gallery ({data.galleryImages.length} images)
+                                    </h2>
+                                    <div className="grid grid-cols-4 gap-1">
+                                        {data.galleryImages.slice(0, 4).map((image, index) => (
+                                            <div 
+                                                key={index} 
+                                                className="aspect-square bg-gray-100 rounded overflow-hidden relative"
+                                            >
+                                                <img
+                                                    src={image}
+                                                    alt={`Gallery ${index + 1}`}
+                                                    className="w-full h-full object-cover"
+                                                />
+                                                {index === 3 && data.galleryImages && data.galleryImages.length > 4 && (
+                                                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                                                        <span className="text-white text-xs font-medium">
+                                                            +{data.galleryImages.length - 4}
+                                                        </span>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
                             )}
                         </div>

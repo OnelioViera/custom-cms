@@ -2,6 +2,7 @@ import { getContentByIdServer, getContentServer } from '@/lib/cms-server';
 import Link from 'next/link';
 import { Building2, MapPin, Ruler, Zap, Sun, CheckCircle } from 'lucide-react';
 import ImageLightbox from '@/components/ImageLightbox';
+import ImageGallery from '@/components/ImageGallery';
 import Footer from '@/components/Footer';
 import Navigation from '@/components/Navigation';
 
@@ -26,6 +27,7 @@ interface Project {
         results?: string;
         testimonial?: string;
         testimonialAuthor?: string;
+        galleryImages?: string[];
     };
     status: string;
     createdAt: string;
@@ -173,6 +175,16 @@ export default async function ProjectDetailPage({ params }: PageProps) {
                     </div>
                 </div>
             </section>
+
+            {/* Image Gallery */}
+            {project.data.galleryImages && project.data.galleryImages.length > 0 && (
+                <section className="py-12 px-4 sm:px-6 lg:px-8 bg-white border-t border-gray-100">
+                    <div className="max-w-7xl mx-auto">
+                        <h2 className="font-serif text-3xl font-bold text-gray-900 mb-8">Project Gallery</h2>
+                        <ImageGallery images={project.data.galleryImages} alt={project.title} />
+                    </div>
+                </section>
+            )}
 
             {/* Project Details */}
             <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white">

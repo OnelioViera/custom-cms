@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, forwardRef, useImperativeHandle, useEffect } from 'react';
-import { Upload, Crop, X } from 'lucide-react';
+import { Upload, Crop, X, Plus, GripVertical } from 'lucide-react';
 import ImageCropper from '@/components/ImageCropper';
 import RichTextEditor from '@/components/admin/RichTextEditor';
 
@@ -16,6 +16,7 @@ export interface FormDataType {
     challenges: string;
     results: string;
     projectImage: string;
+    galleryImages: string[];
 }
 
 interface ProjectFormFieldsProps {
@@ -40,11 +41,14 @@ const ProjectFormFields = forwardRef<ProjectFormFieldsRef, ProjectFormFieldsProp
             challenges: initialData?.data?.challenges || '',
             results: initialData?.data?.results || '',
             projectImage: initialData?.data?.projectImage || '',
+            galleryImages: initialData?.data?.galleryImages || [],
         });
 
         const [imagePreview, setImagePreview] = useState<string | null>(initialData?.data?.projectImage || null);
         const [showCropper, setShowCropper] = useState(false);
         const [tempImage, setTempImage] = useState<string | null>(null);
+        const [showGalleryCropper, setShowGalleryCropper] = useState(false);
+        const [tempGalleryImage, setTempGalleryImage] = useState<string | null>(null);
 
         const [isInitialized, setIsInitialized] = useState(false);
 
@@ -62,6 +66,7 @@ const ProjectFormFields = forwardRef<ProjectFormFieldsRef, ProjectFormFieldsProp
                     challenges: initialData.data?.challenges || '',
                     results: initialData.data?.results || '',
                     projectImage: initialData.data?.projectImage || '',
+                    galleryImages: initialData.data?.galleryImages || [],
                 });
                 setImagePreview(initialData.data?.projectImage || null);
                 setIsInitialized(true);
@@ -82,6 +87,7 @@ const ProjectFormFields = forwardRef<ProjectFormFieldsRef, ProjectFormFieldsProp
                     challenges: formData.challenges,
                     results: formData.results,
                     projectImage: formData.projectImage,
+                    galleryImages: formData.galleryImages,
                 },
             }),
         }));
@@ -135,6 +141,42 @@ const ProjectFormFields = forwardRef<ProjectFormFieldsRef, ProjectFormFieldsProp
             setFormData(newData);
             setImagePreview(null);
             // Call onFormChange after state update is scheduled
+            setTimeout(() => onFormChange?.(newData), 0);
+        };
+
+        // Gallery image handlers
+        const handleGalleryImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+            const file = e.target.files?.[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    const base64 = reader.result as string;
+                    setTempGalleryImage(base64);
+                    setShowGalleryCropper(true);
+                };
+                reader.readAsDataURL(file);
+                e.target.value = '';
+            }
+        };
+
+        const handleGalleryCropComplete = (croppedImage: string) => {
+            const newGalleryImages = [...formData.galleryImages, croppedImage];
+            const newData = { ...formData, galleryImages: newGalleryImages };
+            setFormData(newData);
+            setShowGalleryCropper(false);
+            setTempGalleryImage(null);
+            setTimeout(() => onFormChange?.(newData), 0);
+        };
+
+        const handleGalleryCropCancel = () => {
+            setShowGalleryCropper(false);
+            setTempGalleryImage(null);
+        };
+
+        const removeGalleryImage = (index: number) => {
+            const newGalleryImages = formData.galleryImages.filter((_, i) => i !== index);
+            const newData = { ...formData, galleryImages: newGalleryImages };
+            setFormData(newData);
             setTimeout(() => onFormChange?.(newData), 0);
         };
 
@@ -314,12 +356,72 @@ const ProjectFormFields = forwardRef<ProjectFormFieldsRef, ProjectFormFieldsProp
                     </div>
                 </div>
 
+                {/* Gallery Images */}
+                <div>
+                    <label className="block text-sm font-medium text-gray-900 mb-2">
+                        Gallery Images
+                        <span className="text-gray-500 font-normal ml-2">({formData.galleryImages.length} images)</span>
+                    </label>
+                    <p className="text-sm text-gray-500 mb-3">
+                        Add additional images that users can view in a carousel
+                    </p>
+                    
+                    {/* Gallery Grid */}
+                    {formData.galleryImages.length > 0 && (
+                        <div className="grid grid-cols-3 md:grid-cols-4 gap-3 mb-4">
+                            {formData.galleryImages.map((image, index) => (
+                                <div key={index} className="relative aspect-[4/3] bg-gray-100 rounded-lg overflow-hidden group">
+                                    <img
+                                        src={image}
+                                        alt={`Gallery ${index + 1}`}
+                                        className="w-full h-full object-cover"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => removeGalleryImage(index)}
+                                        className="absolute top-1 right-1 p-1 bg-red-600 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-700"
+                                        title="Remove image"
+                                    >
+                                        <X className="w-3 h-3" />
+                                    </button>
+                                    <div className="absolute bottom-1 left-1 px-2 py-0.5 bg-black/50 text-white text-xs rounded">
+                                        {index + 1}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+
+                    {/* Add Gallery Image Button */}
+                    <label className="flex items-center justify-center gap-2 px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-yellow-500 hover:bg-yellow-50 transition-colors">
+                        <Plus className="w-5 h-5 text-gray-500" />
+                        <span className="text-gray-600 font-medium">Add Gallery Image</span>
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleGalleryImageChange}
+                            className="hidden"
+                        />
+                    </label>
+                </div>
+
                 {/* Image Cropper Modal */}
                 {showCropper && tempImage && (
                     <ImageCropper
                         imageSrc={tempImage}
                         onCropComplete={handleCropComplete}
                         onCancel={handleCropCancel}
+                        aspectRatio={4 / 3}
+                        backgroundColor="#dbeafe"
+                    />
+                )}
+
+                {/* Gallery Image Cropper Modal */}
+                {showGalleryCropper && tempGalleryImage && (
+                    <ImageCropper
+                        imageSrc={tempGalleryImage}
+                        onCropComplete={handleGalleryCropComplete}
+                        onCancel={handleGalleryCropCancel}
                         aspectRatio={4 / 3}
                         backgroundColor="#dbeafe"
                     />

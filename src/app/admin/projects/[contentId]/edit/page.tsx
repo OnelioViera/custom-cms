@@ -61,6 +61,7 @@ export default function EditProjectPage({ params }: PageProps) {
         challenges: '',
         results: '',
         projectImage: '',
+        galleryImages: [],
     });
 
     useEffect(() => {
@@ -105,6 +106,7 @@ export default function EditProjectPage({ params }: PageProps) {
                     challenges: editData?.challenges || projectData.data?.challenges || '',
                     results: editData?.results || projectData.data?.results || '',
                     projectImage: editData?.projectImage || projectData.data?.projectImage || '',
+                    galleryImages: editData?.galleryImages || projectData.data?.galleryImages || [],
                 });
                 
                 // Build activity from project data
