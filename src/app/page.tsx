@@ -129,7 +129,7 @@ export default async function Home() {
                 {siteContent?.heroDescription || 'Serving solar farms, battery storage facilities, and utility systems across North America.'}
               </p>
               <div className="flex flex-wrap gap-4">
-                {heroButtons.map((button) => {
+                {heroButtons.map((button: HeroButton) => {
                   const isExternal = button.isExternal;
                   const ButtonTag = isExternal ? 'a' : Link;
                   const extraProps = isExternal 
