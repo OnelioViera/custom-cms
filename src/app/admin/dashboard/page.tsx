@@ -2,7 +2,7 @@
 
 export const dynamic = 'force-dynamic';
 
-import { useEffect, useState, Suspense } from 'react';
+import { useEffect, useState, Suspense, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { 
@@ -60,6 +60,7 @@ function AdminDashboardContent() {
     const [loading, setLoading] = useState(true);
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const [user, setUser] = useState<User | null>(null);
+    const hasShownToast = useRef<string | null>(null);
 
     // Handle URL params for tab and success messages
     useEffect(() => {
@@ -70,7 +71,10 @@ function AdminDashboardContent() {
             setActiveTab(tab);
         }
         
-        if (success) {
+        // Only show toast if we haven't already shown it for this success param
+        if (success && hasShownToast.current !== success) {
+            hasShownToast.current = success;
+            
             const messages: Record<string, string> = {
                 created: 'Project created successfully!',
                 updated: 'Project updated successfully!',
@@ -81,8 +85,8 @@ function AdminDashboardContent() {
                 toast.success(message);
             }
             
-            // Clear the URL params
-            router.replace('/admin/dashboard' + (tab ? `?tab=${tab}` : ''));
+            // Clear the URL params immediately
+            router.replace('/admin/dashboard' + (tab ? `?tab=${tab}` : ''), { scroll: false });
         }
     }, [searchParams, router, toast]);
 
