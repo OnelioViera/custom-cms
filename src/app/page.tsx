@@ -81,7 +81,7 @@ export default async function Home() {
   const heroButtons = siteContent?.heroButtons && siteContent.heroButtons.length > 0 ? siteContent.heroButtons : defaultButtons;
 
   return (
-    <main>
+    <main suppressHydrationWarning>
       <Navigation currentPage="home" showTestimonials={true} />
 
       {/* Hero Section */}

@@ -27,7 +27,7 @@ export default async function ProjectsPage() {
     ]);
 
     return (
-        <main>
+        <main suppressHydrationWarning>
             <Navigation currentPage="projects" />
 
             {/* Header */}

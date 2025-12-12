@@ -65,7 +65,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
 
     if (!project) {
         return (
-            <main>
+            <main suppressHydrationWarning>
                 <Navigation currentPage="project-detail" />
 
                 {/* 404 Section */}
@@ -92,7 +92,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
     ).slice(0, 3);
 
     return (
-        <main>
+        <main suppressHydrationWarning>
             <Navigation currentPage="project-detail" />
 
             {/* Breadcrumb */}
