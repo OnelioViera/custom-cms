@@ -465,20 +465,95 @@ export default function SiteContentPage() {
 
                                 {formData.heroVideoConfig?.enabled && (
                                     <div className="space-y-4">
-                                        {/* Video URL */}
+                                        {/* Video Source */}
                                         <div>
-                                            <label className="block text-xs font-medium text-gray-600 mb-1">Video URL (MP4)</label>
-                                            <input
-                                                type="text"
-                                                value={formData.heroVideoConfig?.videoUrl || ''}
-                                                onChange={(e) => setFormData(prev => ({
-                                                    ...prev,
-                                                    heroVideoConfig: { ...prev.heroVideoConfig, videoUrl: e.target.value }
-                                                }))}
-                                                placeholder="https://example.com/video.mp4"
-                                                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 text-gray-900 bg-white"
-                                            />
-                                            <p className="text-xs text-gray-500 mt-1">Enter a direct link to an MP4 video file</p>
+                                            <label className="block text-xs font-medium text-gray-600 mb-2">Video Source</label>
+                                            
+                                            {formData.heroVideoConfig?.videoUrl ? (
+                                                <div className="relative mb-3">
+                                                    <video
+                                                        src={formData.heroVideoConfig.videoUrl}
+                                                        className="w-full h-32 object-cover rounded-lg border border-gray-200"
+                                                        muted
+                                                        playsInline
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setFormData(prev => ({
+                                                            ...prev,
+                                                            heroVideoConfig: { ...prev.heroVideoConfig, videoUrl: '' }
+                                                        }))}
+                                                        className="absolute top-2 right-2 p-1.5 bg-red-600 text-white rounded-full hover:bg-red-700 transition"
+                                                        title="Remove video"
+                                                    >
+                                                        <X className="w-4 h-4" />
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                <div className="space-y-3">
+                                                    {/* Upload from computer */}
+                                                    <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-yellow-500 hover:bg-yellow-50/50 transition">
+                                                        <div className="flex flex-col items-center justify-center py-4">
+                                                            <Upload className="w-8 h-8 text-gray-400 mb-2" />
+                                                            <p className="text-sm text-gray-600 font-medium">Click to upload video</p>
+                                                            <p className="text-xs text-gray-400 mt-1">MP4, WebM up to 50MB</p>
+                                                        </div>
+                                                        <input
+                                                            type="file"
+                                                            accept="video/mp4,video/webm"
+                                                            onChange={(e) => {
+                                                                const file = e.target.files?.[0];
+                                                                if (!file) return;
+                                                                
+                                                                // Validate file size (max 50MB)
+                                                                if (file.size > 50 * 1024 * 1024) {
+                                                                    toast.error('Video must be less than 50MB');
+                                                                    return;
+                                                                }
+                                                                
+                                                                // Validate file type
+                                                                if (!file.type.startsWith('video/')) {
+                                                                    toast.error('Please upload a video file');
+                                                                    return;
+                                                                }
+                                                                
+                                                                const reader = new FileReader();
+                                                                reader.onloadend = () => {
+                                                                    setFormData(prev => ({
+                                                                        ...prev,
+                                                                        heroVideoConfig: { ...prev.heroVideoConfig, videoUrl: reader.result as string }
+                                                                    }));
+                                                                    toast.success('Video uploaded successfully');
+                                                                };
+                                                                reader.onerror = () => {
+                                                                    toast.error('Failed to read video file');
+                                                                };
+                                                                reader.readAsDataURL(file);
+                                                                e.target.value = '';
+                                                            }}
+                                                            className="hidden"
+                                                        />
+                                                    </label>
+                                                    
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="flex-1 h-px bg-gray-200"></div>
+                                                        <span className="text-xs text-gray-400">or enter URL</span>
+                                                        <div className="flex-1 h-px bg-gray-200"></div>
+                                                    </div>
+                                                    
+                                                    {/* URL input */}
+                                                    <input
+                                                        type="text"
+                                                        value={formData.heroVideoConfig?.videoUrl || ''}
+                                                        onChange={(e) => setFormData(prev => ({
+                                                            ...prev,
+                                                            heroVideoConfig: { ...prev.heroVideoConfig, videoUrl: e.target.value }
+                                                        }))}
+                                                        placeholder="https://example.com/video.mp4"
+                                                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 text-gray-900 bg-white"
+                                                    />
+                                                </div>
+                                            )}
                                         </div>
 
                                         <div className="grid grid-cols-2 gap-4">
