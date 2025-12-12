@@ -19,7 +19,9 @@ import {
     Redo,
     Quote,
     Palette,
-    X
+    X,
+    Moon,
+    Sun
 } from 'lucide-react';
 import { useCallback, useEffect, useState, useRef } from 'react';
 
@@ -33,6 +35,8 @@ interface RichTextEditorProps {
 // Predefined color palette
 const COLOR_PALETTE = [
     { name: 'Default', value: '' },
+    { name: 'White', value: '#ffffff' },
+    { name: 'Light Gray', value: '#e5e7eb' },
     { name: 'Black', value: '#000000' },
     { name: 'Dark Gray', value: '#374151' },
     { name: 'Gray', value: '#6b7280' },
@@ -52,6 +56,7 @@ export default function RichTextEditor({
     minHeight = '120px'
 }: RichTextEditorProps) {
     const [showColorPicker, setShowColorPicker] = useState(false);
+    const [darkMode, setDarkMode] = useState(false);
     const colorPickerRef = useRef<HTMLDivElement>(null);
 
     const editor = useEditor({
@@ -328,6 +333,22 @@ export default function RichTextEditor({
 
                 <div className="flex-1" />
 
+                {/* Dark Mode Toggle */}
+                <button
+                    type="button"
+                    onClick={() => setDarkMode(!darkMode)}
+                    title={darkMode ? "Switch to light preview" : "Switch to dark preview (for light text)"}
+                    className={`p-1.5 rounded transition-colors flex items-center gap-1 ${
+                        darkMode 
+                            ? 'bg-gray-800 text-yellow-400' 
+                            : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                    }`}
+                >
+                    {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                </button>
+
+                <div className="w-px h-5 bg-gray-300 mx-1" />
+
                 <ToolbarButton
                     onClick={() => editor.chain().focus().undo().run()}
                     disabled={!editor.can().undo()}
@@ -347,10 +368,12 @@ export default function RichTextEditor({
 
             {/* Editor Content */}
             <div 
-                className="px-3 py-2 bg-white rounded-b-lg"
+                className={`px-3 py-2 rounded-b-lg transition-colors ${
+                    darkMode ? 'bg-gray-900' : 'bg-white'
+                }`}
                 style={{ minHeight }}
             >
-                <EditorContent editor={editor} />
+                <EditorContent editor={editor} className={darkMode ? 'dark-editor' : ''} />
             </div>
         </div>
     );

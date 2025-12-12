@@ -196,6 +196,30 @@ section[id] {
   height: 0;
 }
 
+/* Dark mode editor styles for previewing light text */
+.dark-editor .ProseMirror {
+  color: #e5e7eb;
+}
+
+.dark-editor .ProseMirror h1,
+.dark-editor .ProseMirror h2,
+.dark-editor .ProseMirror h3 {
+  color: #f3f4f6;
+}
+
+.dark-editor .ProseMirror p.is-editor-empty:first-child::before {
+  color: #6b7280;
+}
+
+.dark-editor .ProseMirror blockquote {
+  color: #9ca3af;
+  border-left-color: #ca8a04;
+}
+
+.dark-editor .ProseMirror a {
+  color: #fbbf24;
+}
+
 /* Rich text content display styles */
 .rich-text-content h1 {
   font-size: 1.5em;
