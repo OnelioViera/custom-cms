@@ -80,9 +80,9 @@ export default async function Home() {
   const heroButtons = siteContent?.heroButtons && siteContent.heroButtons.length > 0 ? siteContent.heroButtons : defaultButtons;
 
   return (
-    <main>
+    <main suppressHydrationWarning>
       {/* Navigation */}
-      <nav className="fixed w-full bg-white shadow-sm z-50 border-b border-gray-100">
+      <nav className="fixed w-full bg-white shadow-sm z-50 border-b border-gray-100" suppressHydrationWarning>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center">
             <img 
