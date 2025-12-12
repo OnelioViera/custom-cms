@@ -50,6 +50,7 @@ export default function RichTextEditor({
             }),
         ],
         content: value,
+        immediatelyRender: false, // Prevents SSR hydration mismatch
         onUpdate: ({ editor }) => {
             onChange(editor.getHTML());
         },
