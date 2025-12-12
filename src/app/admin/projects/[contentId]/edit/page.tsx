@@ -14,10 +14,12 @@ import {
     Calendar,
     CheckCircle,
     FileEdit,
-    Upload as UploadIcon,
-    AlertCircle
+    AlertCircle,
+    PanelRightClose,
+    PanelRightOpen
 } from 'lucide-react';
-import ProjectFormFields from '@/components/admin/ProjectFormFields';
+import ProjectFormFields, { FormDataType } from '@/components/admin/ProjectFormFields';
+import ProjectPreview from '@/components/admin/ProjectPreview';
 import { useToast } from '@/components/Toast';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || '/api';
@@ -47,6 +49,19 @@ export default function EditProjectPage({ params }: PageProps) {
     const [deleting, setDeleting] = useState(false);
     const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
     const [activity, setActivity] = useState<ActivityItem[]>([]);
+    const [showPreview, setShowPreview] = useState(true);
+    const [previewData, setPreviewData] = useState<FormDataType>({
+        title: '',
+        client: '',
+        location: '',
+        projectSize: '',
+        capacity: '',
+        shortDescription: '',
+        description: '',
+        challenges: '',
+        results: '',
+        projectImage: '',
+    });
 
     useEffect(() => {
         const loadProject = async () => {
@@ -63,6 +78,20 @@ export default function EditProjectPage({ params }: PageProps) {
 
                 const data = await response.json();
                 setProject(data.data);
+                
+                // Initialize preview data
+                setPreviewData({
+                    title: data.data.title || '',
+                    client: data.data.data?.client || '',
+                    location: data.data.data?.location || '',
+                    projectSize: data.data.data?.projectSize || '',
+                    capacity: data.data.data?.capacity || '',
+                    shortDescription: data.data.data?.shortDescription || '',
+                    description: data.data.data?.description || '',
+                    challenges: data.data.data?.challenges || '',
+                    results: data.data.data?.results || '',
+                    projectImage: data.data.data?.projectImage || '',
+                });
                 
                 // Build activity from project data
                 const activityItems: ActivityItem[] = [];
@@ -104,6 +133,11 @@ export default function EditProjectPage({ params }: PageProps) {
 
         loadProject();
     }, [params, toast]);
+
+    const handleFormChange = (data: FormDataType) => {
+        setPreviewData(data);
+        setHasUnsavedChanges(true);
+    };
 
     const handleSaveDraft = async () => {
         if (!formRef.current) return;
@@ -189,7 +223,7 @@ export default function EditProjectPage({ params }: PageProps) {
         }
     };
 
-    const handlePreview = () => {
+    const handlePreviewNewTab = () => {
         window.open(`/projects/${contentId}`, '_blank');
     };
 
@@ -271,19 +305,19 @@ export default function EditProjectPage({ params }: PageProps) {
     return (
         <div className="min-h-screen bg-gray-100 flex">
             {/* Left Sidebar - Stationary */}
-            <aside className="w-72 bg-white border-r border-gray-200 fixed left-0 top-0 h-full z-20 flex flex-col">
+            <aside className="w-64 bg-white border-r border-gray-200 fixed left-0 top-0 h-full z-20 flex flex-col">
                 {/* Sidebar Header */}
                 <div className="p-4 border-b border-gray-200">
                     <Link
                         href="/admin/dashboard?tab=projects"
-                        className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition mb-4"
+                        className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition mb-3"
                     >
                         <ArrowLeft className="w-4 h-4" />
                         <span className="text-sm font-medium">Back to Projects</span>
                     </Link>
-                    <h2 className="text-lg font-bold text-gray-900 truncate">{project?.title}</h2>
+                    <h2 className="text-base font-bold text-gray-900 truncate">{project?.title}</h2>
                     <div className="flex items-center gap-2 mt-2">
-                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
                             project?.status === 'published' 
                                 ? 'bg-green-100 text-green-800' 
                                 : project?.status === 'draft'
@@ -295,28 +329,28 @@ export default function EditProjectPage({ params }: PageProps) {
                         {hasUnsavedChanges && (
                             <span className="inline-flex items-center gap-1 text-xs text-orange-600">
                                 <AlertCircle className="w-3 h-3" />
-                                Unsaved changes
+                                Unsaved
                             </span>
                         )}
                     </div>
                 </div>
 
                 {/* Action Buttons */}
-                <div className="p-4 space-y-3 border-b border-gray-200">
-                    {/* Preview Button */}
+                <div className="p-3 space-y-2 border-b border-gray-200">
+                    {/* Preview in New Tab Button */}
                     <button
-                        onClick={handlePreview}
-                        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition font-medium"
+                        onClick={handlePreviewNewTab}
+                        className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition text-sm font-medium"
                     >
                         <Eye className="w-4 h-4" />
-                        Preview
+                        Open in New Tab
                     </button>
 
                     {/* Save Draft Button */}
                     <button
                         onClick={handleSaveDraft}
                         disabled={savingDraft || publishing}
-                        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition font-medium disabled:opacity-50"
+                        className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition text-sm font-medium disabled:opacity-50"
                     >
                         {savingDraft ? (
                             <Loader2 className="w-4 h-4 animate-spin" />
@@ -330,7 +364,7 @@ export default function EditProjectPage({ params }: PageProps) {
                     <button
                         onClick={handlePublish}
                         disabled={savingDraft || publishing}
-                        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-medium disabled:opacity-50"
+                        className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm font-medium disabled:opacity-50"
                     >
                         {publishing ? (
                             <Loader2 className="w-4 h-4 animate-spin" />
@@ -342,43 +376,40 @@ export default function EditProjectPage({ params }: PageProps) {
                 </div>
 
                 {/* Activity Log */}
-                <div className="flex-1 overflow-y-auto p-4">
-                    <h3 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                        <Clock className="w-4 h-4" />
+                <div className="flex-1 overflow-y-auto p-3">
+                    <h3 className="text-xs font-semibold text-gray-900 mb-3 flex items-center gap-2 uppercase tracking-wide">
+                        <Clock className="w-3 h-3" />
                         Activity
                     </h3>
                     
                     {activity.length > 0 ? (
-                        <div className="space-y-4">
+                        <div className="space-y-3">
                             {activity.map((item) => (
-                                <div key={item.id} className="flex gap-3">
+                                <div key={item.id} className="flex gap-2">
                                     <div className="flex-shrink-0 mt-0.5">
                                         {getActivityIcon(item.action)}
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-sm font-medium text-gray-900">{item.action}</p>
-                                        <p className="text-xs text-gray-500 flex items-center gap-1 mt-0.5">
+                                        <p className="text-xs font-medium text-gray-900">{item.action}</p>
+                                        <p className="text-[10px] text-gray-500 flex items-center gap-1 mt-0.5">
                                             <Calendar className="w-3 h-3" />
                                             {formatDate(item.timestamp)}
                                         </p>
-                                        {item.details && (
-                                            <p className="text-xs text-gray-500 mt-1">{item.details}</p>
-                                        )}
                                     </div>
                                 </div>
                             ))}
                         </div>
                     ) : (
-                        <p className="text-sm text-gray-500 text-center py-4">No activity yet</p>
+                        <p className="text-xs text-gray-500 text-center py-4">No activity yet</p>
                     )}
                 </div>
 
                 {/* Delete Button */}
-                <div className="p-4 border-t border-gray-200">
+                <div className="p-3 border-t border-gray-200">
                     <button
                         onClick={handleDeleteProject}
                         disabled={deleting}
-                        className="w-full flex items-center justify-center gap-2 px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition font-medium disabled:opacity-50"
+                        className="w-full flex items-center justify-center gap-2 px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg transition text-sm font-medium disabled:opacity-50"
                     >
                         {deleting ? (
                             <Loader2 className="w-4 h-4 animate-spin" />
@@ -390,29 +421,54 @@ export default function EditProjectPage({ params }: PageProps) {
                 </div>
             </aside>
 
-            {/* Main Content */}
-            <main className="flex-1 ml-72">
+            {/* Main Content Area */}
+            <div className={`flex-1 ml-64 ${showPreview ? 'mr-96' : ''} transition-all duration-300`}>
                 {/* Header */}
                 <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
-                    <div className="px-8 py-4">
-                        <h1 className="text-xl font-bold text-gray-900">Edit Project</h1>
-                        <p className="text-sm text-gray-500">Update your project details below</p>
+                    <div className="px-6 py-4 flex items-center justify-between">
+                        <div>
+                            <h1 className="text-lg font-bold text-gray-900">Edit Project</h1>
+                            <p className="text-sm text-gray-500">Update your project details below</p>
+                        </div>
+                        <button
+                            onClick={() => setShowPreview(!showPreview)}
+                            className="flex items-center gap-2 px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition text-sm font-medium"
+                        >
+                            {showPreview ? (
+                                <>
+                                    <PanelRightClose className="w-4 h-4" />
+                                    Hide Preview
+                                </>
+                            ) : (
+                                <>
+                                    <PanelRightOpen className="w-4 h-4" />
+                                    Show Preview
+                                </>
+                            )}
+                        </button>
                     </div>
                 </header>
 
                 {/* Form Content */}
-                <div className="p-8">
-                    <div className="max-w-3xl">
-                        <div className="bg-white rounded-lg border border-gray-200 p-6 sm:p-8">
+                <div className="p-6">
+                    <div className="max-w-2xl">
+                        <div className="bg-white rounded-lg border border-gray-200 p-6">
                             <ProjectFormFields
                                 ref={formRef}
                                 initialData={project}
-                                onFormChange={() => setHasUnsavedChanges(true)}
+                                onFormChange={handleFormChange}
                             />
                         </div>
                     </div>
                 </div>
-            </main>
+            </div>
+
+            {/* Right Preview Panel - Fixed */}
+            {showPreview && (
+                <aside className="w-96 bg-gray-50 border-l border-gray-200 fixed right-0 top-0 h-full z-20 flex flex-col">
+                    <ProjectPreview data={previewData} />
+                </aside>
+            )}
         </div>
     );
 }

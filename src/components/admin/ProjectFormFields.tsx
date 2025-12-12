@@ -4,9 +4,22 @@ import { useState, forwardRef, useImperativeHandle, useEffect } from 'react';
 import { Upload, Crop, X } from 'lucide-react';
 import ImageCropper from '@/components/ImageCropper';
 
+export interface FormDataType {
+    title: string;
+    client: string;
+    location: string;
+    projectSize: string;
+    capacity: string;
+    shortDescription: string;
+    description: string;
+    challenges: string;
+    results: string;
+    projectImage: string;
+}
+
 interface ProjectFormFieldsProps {
     initialData?: any;
-    onFormChange?: () => void;
+    onFormChange?: (data: FormDataType) => void;
 }
 
 export interface ProjectFormFieldsRef {
@@ -15,7 +28,7 @@ export interface ProjectFormFieldsRef {
 
 const ProjectFormFields = forwardRef<ProjectFormFieldsRef, ProjectFormFieldsProps>(
     ({ initialData, onFormChange }, ref) => {
-        const [formData, setFormData] = useState({
+        const [formData, setFormData] = useState<FormDataType>({
             title: initialData?.title || '',
             client: initialData?.data?.client || '',
             location: initialData?.data?.location || '',
@@ -71,8 +84,11 @@ const ProjectFormFields = forwardRef<ProjectFormFieldsRef, ProjectFormFieldsProp
 
         const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
             const { name, value } = e.target;
-            setFormData((prev) => ({ ...prev, [name]: value }));
-            onFormChange?.();
+            setFormData((prev) => {
+                const newData = { ...prev, [name]: value };
+                onFormChange?.(newData);
+                return newData;
+            });
         };
 
         const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -90,11 +106,14 @@ const ProjectFormFields = forwardRef<ProjectFormFieldsRef, ProjectFormFieldsProp
         };
 
         const handleCropComplete = (croppedImage: string) => {
-            setFormData((prev) => ({ ...prev, projectImage: croppedImage }));
+            setFormData((prev) => {
+                const newData = { ...prev, projectImage: croppedImage };
+                onFormChange?.(newData);
+                return newData;
+            });
             setImagePreview(croppedImage);
             setShowCropper(false);
             setTempImage(null);
-            onFormChange?.();
         };
 
         const handleCropCancel = () => {
@@ -110,9 +129,12 @@ const ProjectFormFields = forwardRef<ProjectFormFieldsRef, ProjectFormFieldsProp
         };
 
         const removeImage = () => {
-            setFormData((prev) => ({ ...prev, projectImage: '' }));
+            setFormData((prev) => {
+                const newData = { ...prev, projectImage: '' };
+                onFormChange?.(newData);
+                return newData;
+            });
             setImagePreview(null);
-            onFormChange?.();
         };
 
         return (
