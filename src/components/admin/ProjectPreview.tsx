@@ -97,8 +97,8 @@ export default function ProjectPreview({ data }: ProjectPreviewProps) {
                                                         <ClientIcon className="w-4 h-4 text-slate-600" />
                                                     </div>
                                                     <div>
-                                                        <p className="text-xs text-gray-500">{data.clientConfig?.label || 'Client'}</p>
-                                                        <p className="text-sm font-medium text-gray-900">{data.client}</p>
+                                                        <p className="text-xs font-semibold text-gray-900">{data.clientConfig?.label || 'Client'}</p>
+                                                        <p className="text-sm text-gray-600">{data.client}</p>
                                                     </div>
                                                 </div>
                                             );
@@ -111,8 +111,8 @@ export default function ProjectPreview({ data }: ProjectPreviewProps) {
                                                         <LocationIcon className="w-4 h-4 text-slate-600" />
                                                     </div>
                                                     <div>
-                                                        <p className="text-xs text-gray-500">{data.locationConfig?.label || 'Location'}</p>
-                                                        <p className="text-sm font-medium text-gray-900">{data.location}</p>
+                                                        <p className="text-xs font-semibold text-gray-900">{data.locationConfig?.label || 'Location'}</p>
+                                                        <p className="text-sm text-gray-600">{data.location}</p>
                                                     </div>
                                                 </div>
                                             );
@@ -125,8 +125,8 @@ export default function ProjectPreview({ data }: ProjectPreviewProps) {
                                                         <SizeIcon className="w-4 h-4 text-slate-600" />
                                                     </div>
                                                     <div>
-                                                        <p className="text-xs text-gray-500">{data.projectSizeConfig?.label || 'Size'}</p>
-                                                        <p className="text-sm font-medium text-gray-900">{data.projectSize}</p>
+                                                        <p className="text-xs font-semibold text-gray-900">{data.projectSizeConfig?.label || 'Size'}</p>
+                                                        <p className="text-sm text-gray-600">{data.projectSize}</p>
                                                     </div>
                                                 </div>
                                             );
@@ -139,8 +139,8 @@ export default function ProjectPreview({ data }: ProjectPreviewProps) {
                                                         <CapacityIcon className="w-4 h-4 text-slate-600" />
                                                     </div>
                                                     <div>
-                                                        <p className="text-xs text-gray-500">{data.capacityConfig?.label || 'Capacity'}</p>
-                                                        <p className="text-sm font-medium text-gray-900">{data.capacity}</p>
+                                                        <p className="text-xs font-semibold text-gray-900">{data.capacityConfig?.label || 'Capacity'}</p>
+                                                        <p className="text-sm text-gray-600">{data.capacity}</p>
                                                     </div>
                                                 </div>
                                             );

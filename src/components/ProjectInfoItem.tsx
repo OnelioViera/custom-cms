@@ -17,8 +17,8 @@ export default function ProjectInfoItem({ value, label, iconName }: ProjectInfoI
                 <Icon className="w-5 h-5 text-slate-600" />
             </div>
             <div>
-                <p className="text-sm text-gray-600">{label}</p>
-                <p className="font-semibold text-gray-900">{value}</p>
+                <p className="text-sm font-semibold text-gray-900">{label}</p>
+                <p className="text-gray-600">{value}</p>
             </div>
         </div>
     );
