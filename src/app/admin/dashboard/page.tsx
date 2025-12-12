@@ -2,7 +2,7 @@
 
 export const dynamic = 'force-dynamic';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { 
@@ -50,7 +50,7 @@ interface FormSubmission {
 const API_URL = process.env.NEXT_PUBLIC_API_URL || '/api';
 const SITE_ID = process.env.NEXT_PUBLIC_SITE_ID || 'lindsayprecast';
 
-export default function AdminDashboard() {
+function AdminDashboardContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const toast = useToast();
@@ -634,5 +634,13 @@ export default function AdminDashboard() {
                 </div>
             </main>
         </div>
+    );
+}
+
+export default function AdminDashboard() {
+    return (
+        <Suspense fallback={<div className="min-h-screen bg-gray-100 flex items-center justify-center"><p>Loading...</p></div>}>
+            <AdminDashboardContent />
+        </Suspense>
     );
 }
