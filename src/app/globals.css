@@ -220,6 +220,44 @@ section[id] {
   color: #fbbf24;
 }
 
+/* Make white/light text visible in light mode editor with text shadow */
+.ProseMirror span[style*="color: rgb(255, 255, 255)"],
+.ProseMirror span[style*="color: #ffffff"],
+.ProseMirror span[style*="color: #FFFFFF"],
+.ProseMirror span[style*="color: white"],
+.ProseMirror span[style*="color: rgb(229, 231, 235)"],
+.ProseMirror span[style*="color: #e5e7eb"],
+.ProseMirror span[style*="color: rgb(243, 244, 246)"],
+.ProseMirror span[style*="color: #f3f4f6"],
+.ProseMirror span[style*="color: rgb(249, 250, 251)"],
+.ProseMirror span[style*="color: #f9fafb"] {
+  text-shadow: 
+    -1px -1px 0 #374151,
+    1px -1px 0 #374151,
+    -1px 1px 0 #374151,
+    1px 1px 0 #374151,
+    0 0 3px rgba(0, 0, 0, 0.3);
+  background-color: rgba(55, 65, 81, 0.1);
+  padding: 0 2px;
+  border-radius: 2px;
+}
+
+/* Remove the text shadow in dark mode since it's not needed */
+.dark-editor .ProseMirror span[style*="color: rgb(255, 255, 255)"],
+.dark-editor .ProseMirror span[style*="color: #ffffff"],
+.dark-editor .ProseMirror span[style*="color: #FFFFFF"],
+.dark-editor .ProseMirror span[style*="color: white"],
+.dark-editor .ProseMirror span[style*="color: rgb(229, 231, 235)"],
+.dark-editor .ProseMirror span[style*="color: #e5e7eb"],
+.dark-editor .ProseMirror span[style*="color: rgb(243, 244, 246)"],
+.dark-editor .ProseMirror span[style*="color: #f3f4f6"],
+.dark-editor .ProseMirror span[style*="color: rgb(249, 250, 251)"],
+.dark-editor .ProseMirror span[style*="color: #f9fafb"] {
+  text-shadow: none;
+  background-color: transparent;
+  padding: 0;
+}
+
 /* Rich text content display styles */
 .rich-text-content h1 {
   font-size: 1.5em;
