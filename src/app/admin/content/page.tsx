@@ -24,6 +24,17 @@ interface StatItem {
     label: string;
 }
 
+interface HeroVideoConfig {
+    videoUrl: string;
+    enabled: boolean;
+    playbackSpeed: number;
+    objectFit: 'cover' | 'contain' | 'fill' | 'none';
+    overlayColor: string;
+    overlayOpacity: number;
+    muted: boolean;
+    loop: boolean;
+}
+
 interface SiteContent {
     _id?: string;
     contentId?: string;
@@ -32,6 +43,7 @@ interface SiteContent {
     heroDescription: string;
     heroImage: string;
     heroButtons: HeroButton[];
+    heroVideoConfig: HeroVideoConfig;
     stats: StatItem[];
     projectsTitle: string;
     projectsSubtitle: string;
@@ -71,12 +83,24 @@ const defaultStats: StatItem[] = [
     { id: 'stat_4', value: '99.8%', label: 'On-Time Delivery' },
 ];
 
+const defaultVideoConfig: HeroVideoConfig = {
+    videoUrl: '',
+    enabled: false,
+    playbackSpeed: 1,
+    objectFit: 'cover',
+    overlayColor: '#000000',
+    overlayOpacity: 30,
+    muted: true,
+    loop: true,
+};
+
 const defaultContent: SiteContent = {
     heroTitle: 'Premium Precast Concrete Solutions for Infrastructure',
     heroSubtitle: 'Engineering excellence meets manufacturing precision. From BESS foundations to custom grade beams, we deliver infrastructure components that power renewable energy and modern utilities.',
     heroDescription: 'Serving solar farms, battery storage facilities, and utility systems across North America.',
     heroImage: '',
     heroButtons: defaultButtons,
+    heroVideoConfig: defaultVideoConfig,
     stats: defaultStats,
     projectsTitle: 'Featured Projects',
     projectsSubtitle: 'Recent infrastructure solutions delivering impact across North America',
@@ -413,6 +437,198 @@ export default function SiteContentPage() {
                                             className="hidden"
                                         />
                                     </label>
+                                )}
+                            </div>
+
+                            {/* Hero Video Background */}
+                            <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                                <div className="flex items-center justify-between mb-4">
+                                    <label className="block text-sm font-medium text-gray-700">
+                                        🎬 Background Video
+                                    </label>
+                                    <label className="relative inline-flex items-center cursor-pointer">
+                                        <input
+                                            type="checkbox"
+                                            checked={formData.heroVideoConfig?.enabled || false}
+                                            onChange={(e) => setFormData(prev => ({
+                                                ...prev,
+                                                heroVideoConfig: { ...prev.heroVideoConfig, enabled: e.target.checked }
+                                            }))}
+                                            className="sr-only peer"
+                                        />
+                                        <div className="w-9 h-5 bg-gray-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-yellow-500 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-yellow-600"></div>
+                                        <span className="ms-2 text-sm font-medium text-gray-600">
+                                            {formData.heroVideoConfig?.enabled ? 'Enabled' : 'Disabled'}
+                                        </span>
+                                    </label>
+                                </div>
+
+                                {formData.heroVideoConfig?.enabled && (
+                                    <div className="space-y-4">
+                                        {/* Video URL */}
+                                        <div>
+                                            <label className="block text-xs font-medium text-gray-600 mb-1">Video URL (MP4)</label>
+                                            <input
+                                                type="text"
+                                                value={formData.heroVideoConfig?.videoUrl || ''}
+                                                onChange={(e) => setFormData(prev => ({
+                                                    ...prev,
+                                                    heroVideoConfig: { ...prev.heroVideoConfig, videoUrl: e.target.value }
+                                                }))}
+                                                placeholder="https://example.com/video.mp4"
+                                                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 text-gray-900 bg-white"
+                                            />
+                                            <p className="text-xs text-gray-500 mt-1">Enter a direct link to an MP4 video file</p>
+                                        </div>
+
+                                        <div className="grid grid-cols-2 gap-4">
+                                            {/* Playback Speed */}
+                                            <div>
+                                                <label className="block text-xs font-medium text-gray-600 mb-1">
+                                                    Playback Speed: {formData.heroVideoConfig?.playbackSpeed || 1}x
+                                                </label>
+                                                <input
+                                                    type="range"
+                                                    min="0.25"
+                                                    max="2"
+                                                    step="0.25"
+                                                    value={formData.heroVideoConfig?.playbackSpeed || 1}
+                                                    onChange={(e) => setFormData(prev => ({
+                                                        ...prev,
+                                                        heroVideoConfig: { ...prev.heroVideoConfig, playbackSpeed: parseFloat(e.target.value) }
+                                                    }))}
+                                                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-yellow-600"
+                                                />
+                                                <div className="flex justify-between text-xs text-gray-400 mt-1">
+                                                    <span>0.25x</span>
+                                                    <span>1x</span>
+                                                    <span>2x</span>
+                                                </div>
+                                            </div>
+
+                                            {/* Object Fit */}
+                                            <div>
+                                                <label className="block text-xs font-medium text-gray-600 mb-1">Video Size</label>
+                                                <select
+                                                    value={formData.heroVideoConfig?.objectFit || 'cover'}
+                                                    onChange={(e) => setFormData(prev => ({
+                                                        ...prev,
+                                                        heroVideoConfig: { ...prev.heroVideoConfig, objectFit: e.target.value as 'cover' | 'contain' | 'fill' | 'none' }
+                                                    }))}
+                                                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 text-gray-900 bg-white"
+                                                >
+                                                    <option value="cover">Cover (fill area)</option>
+                                                    <option value="contain">Contain (fit inside)</option>
+                                                    <option value="fill">Stretch to fill</option>
+                                                    <option value="none">Original size</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div className="grid grid-cols-2 gap-4">
+                                            {/* Overlay Color */}
+                                            <div>
+                                                <label className="block text-xs font-medium text-gray-600 mb-1">Overlay Color</label>
+                                                <div className="flex gap-2">
+                                                    <input
+                                                        type="color"
+                                                        value={formData.heroVideoConfig?.overlayColor || '#000000'}
+                                                        onChange={(e) => setFormData(prev => ({
+                                                            ...prev,
+                                                            heroVideoConfig: { ...prev.heroVideoConfig, overlayColor: e.target.value }
+                                                        }))}
+                                                        className="w-10 h-10 p-0 border border-gray-300 rounded cursor-pointer"
+                                                    />
+                                                    <input
+                                                        type="text"
+                                                        value={formData.heroVideoConfig?.overlayColor || '#000000'}
+                                                        onChange={(e) => setFormData(prev => ({
+                                                            ...prev,
+                                                            heroVideoConfig: { ...prev.heroVideoConfig, overlayColor: e.target.value }
+                                                        }))}
+                                                        className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 text-gray-900 bg-white"
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            {/* Overlay Opacity */}
+                                            <div>
+                                                <label className="block text-xs font-medium text-gray-600 mb-1">
+                                                    Overlay Opacity: {formData.heroVideoConfig?.overlayOpacity || 30}%
+                                                </label>
+                                                <input
+                                                    type="range"
+                                                    min="0"
+                                                    max="100"
+                                                    step="5"
+                                                    value={formData.heroVideoConfig?.overlayOpacity || 30}
+                                                    onChange={(e) => setFormData(prev => ({
+                                                        ...prev,
+                                                        heroVideoConfig: { ...prev.heroVideoConfig, overlayOpacity: parseInt(e.target.value) }
+                                                    }))}
+                                                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-yellow-600"
+                                                />
+                                                <div className="flex justify-between text-xs text-gray-400 mt-1">
+                                                    <span>0%</span>
+                                                    <span>50%</span>
+                                                    <span>100%</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Additional Options */}
+                                        <div className="flex gap-6">
+                                            <label className="flex items-center gap-2 cursor-pointer">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={formData.heroVideoConfig?.muted !== false}
+                                                    onChange={(e) => setFormData(prev => ({
+                                                        ...prev,
+                                                        heroVideoConfig: { ...prev.heroVideoConfig, muted: e.target.checked }
+                                                    }))}
+                                                    className="w-4 h-4 text-yellow-600 bg-gray-100 border-gray-300 rounded focus:ring-yellow-500"
+                                                />
+                                                <span className="text-sm text-gray-700">Muted</span>
+                                            </label>
+                                            <label className="flex items-center gap-2 cursor-pointer">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={formData.heroVideoConfig?.loop !== false}
+                                                    onChange={(e) => setFormData(prev => ({
+                                                        ...prev,
+                                                        heroVideoConfig: { ...prev.heroVideoConfig, loop: e.target.checked }
+                                                    }))}
+                                                    className="w-4 h-4 text-yellow-600 bg-gray-100 border-gray-300 rounded focus:ring-yellow-500"
+                                                />
+                                                <span className="text-sm text-gray-700">Loop</span>
+                                            </label>
+                                        </div>
+
+                                        {/* Preview */}
+                                        {formData.heroVideoConfig?.videoUrl && (
+                                            <div>
+                                                <label className="block text-xs font-medium text-gray-600 mb-2">Preview</label>
+                                                <div className="relative aspect-video rounded-lg overflow-hidden bg-gray-900">
+                                                    <video
+                                                        src={formData.heroVideoConfig.videoUrl}
+                                                        autoPlay
+                                                        muted
+                                                        loop
+                                                        playsInline
+                                                        className="w-full h-full"
+                                                        style={{ objectFit: formData.heroVideoConfig.objectFit || 'cover' }}
+                                                    />
+                                                    <div
+                                                        className="absolute inset-0 pointer-events-none"
+                                                        style={{
+                                                            backgroundColor: formData.heroVideoConfig.overlayColor || '#000000',
+                                                            opacity: (formData.heroVideoConfig.overlayOpacity || 30) / 100
+                                                        }}
+                                                    />
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
                                 )}
                             </div>
                             

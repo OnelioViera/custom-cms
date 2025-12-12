@@ -14,6 +14,7 @@ import ScrollAnimation from '@/components/ScrollAnimation';
 import ContactForm from '@/components/ContactForm';
 import Footer from '@/components/Footer';
 import Navigation from '@/components/Navigation';
+import VideoBackground, { VideoBackgroundConfig, defaultVideoConfig } from '@/components/VideoBackground';
 
 export const dynamic = 'force-dynamic';
 
@@ -79,14 +80,22 @@ export default async function Home() {
 
   const stats = siteContent?.stats && siteContent.stats.length > 0 ? siteContent.stats : defaultStats;
   const heroButtons = siteContent?.heroButtons && siteContent.heroButtons.length > 0 ? siteContent.heroButtons : defaultButtons;
+  
+  // Video background configuration
+  const videoConfig: VideoBackgroundConfig = siteContent?.heroVideoConfig || defaultVideoConfig;
 
   return (
     <main suppressHydrationWarning>
       <Navigation currentPage="home" showTestimonials={true} />
 
       {/* Hero Section */}
-      <section className="pt-32 pb-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-gray-50 to-white overflow-hidden min-h-[600px]">
-        <div className="max-w-7xl mx-auto">
+      <section className={`relative pt-32 pb-16 px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[600px] ${
+        !videoConfig.enabled ? 'bg-gradient-to-b from-gray-50 to-white' : ''
+      }`}>
+        {/* Video Background */}
+        <VideoBackground config={videoConfig} />
+        
+        <div className="max-w-7xl mx-auto relative z-10">
           <div className="grid gap-12 items-center md:grid-cols-2">
             {/* Text Content */}
             <div className="animate-fadeIn">
