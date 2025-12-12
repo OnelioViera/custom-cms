@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Save, FileText, Type, AlignLeft, Upload, Image, X, Crop, Plus, Trash2, Link as LinkIcon, ExternalLink, MousePointer } from 'lucide-react';
 import ImageCropper from '@/components/ImageCropper';
+import RichTextEditor from '@/components/admin/RichTextEditor';
 import { getApiUrl, getPublicSiteId } from '@/lib/env';
 import { useToast } from '@/components/Toast';
 
@@ -346,12 +347,12 @@ export default function SiteContentPage() {
                                     <Type className="w-4 h-4 inline mr-1" />
                                     Hero Title
                                 </label>
-                                <input
-                                    type="text"
-                                    name="heroTitle"
+                                <p className="text-xs text-gray-500 mb-2">Use the color picker to change text colors for video backgrounds</p>
+                                <RichTextEditor
                                     value={formData.heroTitle}
-                                    onChange={handleInputChange}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 text-gray-900"
+                                    onChange={(value) => setFormData(prev => ({ ...prev, heroTitle: value }))}
+                                    placeholder="Enter hero title..."
+                                    minHeight="60px"
                                 />
                             </div>
                             
@@ -360,12 +361,11 @@ export default function SiteContentPage() {
                                     <AlignLeft className="w-4 h-4 inline mr-1" />
                                     Hero Subtitle
                                 </label>
-                                <textarea
-                                    name="heroSubtitle"
+                                <RichTextEditor
                                     value={formData.heroSubtitle}
-                                    onChange={handleInputChange}
-                                    rows={3}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 text-gray-900"
+                                    onChange={(value) => setFormData(prev => ({ ...prev, heroSubtitle: value }))}
+                                    placeholder="Enter hero subtitle..."
+                                    minHeight="100px"
                                 />
                             </div>
                             
@@ -373,12 +373,11 @@ export default function SiteContentPage() {
                                 <label className="block text-sm font-medium text-gray-700 mb-1">
                                     Hero Description
                                 </label>
-                                <input
-                                    type="text"
-                                    name="heroDescription"
+                                <RichTextEditor
                                     value={formData.heroDescription}
-                                    onChange={handleInputChange}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 text-gray-900"
+                                    onChange={(value) => setFormData(prev => ({ ...prev, heroDescription: value }))}
+                                    placeholder="Enter hero description..."
+                                    minHeight="60px"
                                 />
                             </div>
                             

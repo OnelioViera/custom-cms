@@ -99,15 +99,24 @@ export default async function Home() {
           <div className="grid gap-12 items-center md:grid-cols-2">
             {/* Text Content */}
             <div className="animate-fadeIn">
-              <h1 className="font-serif text-5xl font-bold mb-6 leading-tight text-gray-900">
-                {siteContent?.heroTitle || 'Premium Precast Concrete Solutions for Infrastructure'}
-              </h1>
-              <p className="text-lg text-gray-700 mb-4">
-                {siteContent?.heroSubtitle || 'Engineering excellence meets manufacturing precision. From BESS foundations to custom grade beams, we deliver infrastructure components that power renewable energy and modern utilities.'}
-              </p>
-              <p className="text-gray-700 mb-8">
-                {siteContent?.heroDescription || 'Serving solar farms, battery storage facilities, and utility systems across North America.'}
-              </p>
+              <div 
+                className="font-serif text-5xl font-bold mb-6 leading-tight text-gray-900 rich-text-content [&_p]:m-0"
+                dangerouslySetInnerHTML={{ 
+                  __html: siteContent?.heroTitle || 'Premium Precast Concrete Solutions for Infrastructure' 
+                }}
+              />
+              <div 
+                className="text-lg text-gray-700 mb-4 rich-text-content [&_p]:m-0"
+                dangerouslySetInnerHTML={{ 
+                  __html: siteContent?.heroSubtitle || 'Engineering excellence meets manufacturing precision. From BESS foundations to custom grade beams, we deliver infrastructure components that power renewable energy and modern utilities.' 
+                }}
+              />
+              <div 
+                className="text-gray-700 mb-8 rich-text-content [&_p]:m-0"
+                dangerouslySetInnerHTML={{ 
+                  __html: siteContent?.heroDescription || 'Serving solar farms, battery storage facilities, and utility systems across North America.' 
+                }}
+              />
               <div className="flex flex-wrap gap-4">
                 {heroButtons.map((button: HeroButton) => {
                   const isExternal = button.isExternal;
