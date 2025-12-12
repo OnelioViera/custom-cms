@@ -49,11 +49,8 @@ export default function SiteContentPreview({ data }: SiteContentPreviewProps) {
                                         muted
                                         loop={data.heroVideoConfig.loop !== false}
                                         playsInline
-                                        className="absolute inset-0 w-full h-full object-cover"
-                                        style={{ 
-                                            objectFit: data.heroVideoConfig.objectFit || 'cover',
-                                            playbackRate: data.heroVideoConfig.playbackSpeed || 1
-                                        }}
+                                        className="absolute inset-0 w-full h-full"
+                                        style={{ objectFit: data.heroVideoConfig.objectFit || 'cover' }}
                                         ref={(el) => {
                                             if (el) {
                                                 el.playbackRate = data.heroVideoConfig?.playbackSpeed || 1;
