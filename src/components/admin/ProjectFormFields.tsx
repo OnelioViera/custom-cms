@@ -45,6 +45,8 @@ const ProjectFormFields = forwardRef<ProjectFormFieldsRef, ProjectFormFieldsProp
         const [showCropper, setShowCropper] = useState(false);
         const [tempImage, setTempImage] = useState<string | null>(null);
 
+        const [isInitialized, setIsInitialized] = useState(false);
+
         // Update form data when initialData changes
         useEffect(() => {
             if (initialData) {
@@ -61,6 +63,7 @@ const ProjectFormFields = forwardRef<ProjectFormFieldsRef, ProjectFormFieldsProp
                     projectImage: initialData.data?.projectImage || '',
                 });
                 setImagePreview(initialData.data?.projectImage || null);
+                setIsInitialized(true);
             }
         }, [initialData]);
 
@@ -84,11 +87,10 @@ const ProjectFormFields = forwardRef<ProjectFormFieldsRef, ProjectFormFieldsProp
 
         const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
             const { name, value } = e.target;
-            setFormData((prev) => {
-                const newData = { ...prev, [name]: value };
-                onFormChange?.(newData);
-                return newData;
-            });
+            const newData = { ...formData, [name]: value };
+            setFormData(newData);
+            // Call onFormChange after state update is scheduled
+            setTimeout(() => onFormChange?.(newData), 0);
         };
 
         const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -106,14 +108,13 @@ const ProjectFormFields = forwardRef<ProjectFormFieldsRef, ProjectFormFieldsProp
         };
 
         const handleCropComplete = (croppedImage: string) => {
-            setFormData((prev) => {
-                const newData = { ...prev, projectImage: croppedImage };
-                onFormChange?.(newData);
-                return newData;
-            });
+            const newData = { ...formData, projectImage: croppedImage };
+            setFormData(newData);
             setImagePreview(croppedImage);
             setShowCropper(false);
             setTempImage(null);
+            // Call onFormChange after state update is scheduled
+            setTimeout(() => onFormChange?.(newData), 0);
         };
 
         const handleCropCancel = () => {
@@ -129,12 +130,11 @@ const ProjectFormFields = forwardRef<ProjectFormFieldsRef, ProjectFormFieldsProp
         };
 
         const removeImage = () => {
-            setFormData((prev) => {
-                const newData = { ...prev, projectImage: '' };
-                onFormChange?.(newData);
-                return newData;
-            });
+            const newData = { ...formData, projectImage: '' };
+            setFormData(newData);
             setImagePreview(null);
+            // Call onFormChange after state update is scheduled
+            setTimeout(() => onFormChange?.(newData), 0);
         };
 
         return (
