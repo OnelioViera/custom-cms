@@ -77,46 +77,70 @@ export default function EditProjectPage({ params }: PageProps) {
                 }
 
                 const data = await response.json();
-                setProject(data.data);
+                const projectData = data.data;
                 
-                // Initialize preview data
+                // If there's draft data, use that for editing; otherwise use published data
+                const hasDraft = projectData.hasDraft && projectData.draftData;
+                const editTitle = hasDraft ? projectData.draftTitle : projectData.title;
+                const editData = hasDraft ? projectData.draftData : projectData.data;
+                
+                // Create a modified project object for the form
+                const projectForForm = {
+                    ...projectData,
+                    title: editTitle || projectData.title,
+                    data: editData || projectData.data,
+                };
+                
+                setProject(projectForForm);
+                
+                // Initialize preview data with draft or published data
                 setPreviewData({
-                    title: data.data.title || '',
-                    client: data.data.data?.client || '',
-                    location: data.data.data?.location || '',
-                    projectSize: data.data.data?.projectSize || '',
-                    capacity: data.data.data?.capacity || '',
-                    shortDescription: data.data.data?.shortDescription || '',
-                    description: data.data.data?.description || '',
-                    challenges: data.data.data?.challenges || '',
-                    results: data.data.data?.results || '',
-                    projectImage: data.data.data?.projectImage || '',
+                    title: editTitle || projectData.title || '',
+                    client: editData?.client || projectData.data?.client || '',
+                    location: editData?.location || projectData.data?.location || '',
+                    projectSize: editData?.projectSize || projectData.data?.projectSize || '',
+                    capacity: editData?.capacity || projectData.data?.capacity || '',
+                    shortDescription: editData?.shortDescription || projectData.data?.shortDescription || '',
+                    description: editData?.description || projectData.data?.description || '',
+                    challenges: editData?.challenges || projectData.data?.challenges || '',
+                    results: editData?.results || projectData.data?.results || '',
+                    projectImage: editData?.projectImage || projectData.data?.projectImage || '',
                 });
                 
                 // Build activity from project data
                 const activityItems: ActivityItem[] = [];
                 
-                if (data.data.createdAt) {
+                if (projectData.createdAt) {
                     activityItems.push({
                         id: 'created',
                         action: 'Project created',
-                        timestamp: new Date(data.data.createdAt),
+                        timestamp: new Date(projectData.createdAt),
                     });
                 }
                 
-                if (data.data.updatedAt && data.data.updatedAt !== data.data.createdAt) {
+                if (projectData.updatedAt && projectData.updatedAt !== projectData.createdAt) {
                     activityItems.push({
                         id: 'updated',
                         action: 'Last modified',
-                        timestamp: new Date(data.data.updatedAt),
+                        timestamp: new Date(projectData.updatedAt),
                     });
                 }
                 
-                if (data.data.publishedAt) {
+                if (projectData.publishedAt) {
                     activityItems.push({
                         id: 'published',
                         action: 'Published',
-                        timestamp: new Date(data.data.publishedAt),
+                        timestamp: new Date(projectData.publishedAt),
+                    });
+                }
+                
+                // Add draft indicator to activity if there's unpublished draft
+                if (hasDraft) {
+                    activityItems.unshift({
+                        id: 'draft_pending',
+                        action: 'Unpublished changes',
+                        timestamp: new Date(projectData.updatedAt),
+                        details: 'Draft changes waiting to be published',
                     });
                 }
                 
@@ -162,16 +186,28 @@ export default function EditProjectPage({ params }: PageProps) {
             }
 
             const updatedProject = await response.json();
-            setProject(updatedProject.data);
+            // Update project with hasDraft flag for UI
+            setProject({
+                ...updatedProject.data,
+                hasDraft: updatedProject.data.hasDraft || updatedProject.data.status === 'published',
+                title: formData.title,
+                data: formData.data,
+            });
             setHasUnsavedChanges(false);
             
-            // Add activity
+            // Add activity - show unpublished changes if published
+            const isPublished = updatedProject.data.status === 'published';
             const newActivity: ActivityItem = {
                 id: `draft_${Date.now()}`,
-                action: 'Saved as draft',
+                action: isPublished ? 'Unpublished changes' : 'Saved as draft',
                 timestamp: new Date(),
+                details: isPublished ? 'Draft saved. Publish to make changes live.' : undefined,
             };
-            setActivity(prev => [newActivity, ...prev]);
+            setActivity(prev => {
+                // Remove any existing "Unpublished changes" entry and add the new one
+                const filtered = prev.filter(a => a.action !== 'Unpublished changes');
+                return [newActivity, ...filtered];
+            });
             
             toast.success('Draft saved successfully!');
         } catch (err) {
@@ -204,16 +240,23 @@ export default function EditProjectPage({ params }: PageProps) {
             }
 
             const updatedProject = await response.json();
-            setProject(updatedProject.data);
+            // Clear hasDraft flag after publishing
+            setProject({
+                ...updatedProject.data,
+                hasDraft: false,
+            });
             setHasUnsavedChanges(false);
             
-            // Add activity
+            // Add activity and remove "Unpublished changes" entry
             const newActivity: ActivityItem = {
                 id: `published_${Date.now()}`,
                 action: 'Published',
                 timestamp: new Date(),
             };
-            setActivity(prev => [newActivity, ...prev]);
+            setActivity(prev => {
+                const filtered = prev.filter(a => a.action !== 'Unpublished changes');
+                return [newActivity, ...filtered];
+            });
             
             toast.success('Project published successfully!');
         } catch (err) {
@@ -267,6 +310,7 @@ export default function EditProjectPage({ params }: PageProps) {
     };
 
     const getActivityIcon = (action: string) => {
+        if (action.includes('Unpublished changes')) return <AlertCircle className="w-4 h-4 text-blue-500" />;
         if (action.includes('created')) return <FileEdit className="w-4 h-4 text-blue-500" />;
         if (action.includes('Published')) return <CheckCircle className="w-4 h-4 text-green-500" />;
         if (action.includes('draft')) return <Save className="w-4 h-4 text-yellow-500" />;
@@ -316,7 +360,7 @@ export default function EditProjectPage({ params }: PageProps) {
                         <span className="text-sm font-medium">Back to Projects</span>
                     </Link>
                     <h2 className="text-base font-bold text-gray-900 truncate">{project?.title}</h2>
-                    <div className="flex items-center gap-2 mt-2">
+                    <div className="flex flex-wrap items-center gap-2 mt-2">
                         <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
                             project?.status === 'published' 
                                 ? 'bg-green-100 text-green-800' 
@@ -326,6 +370,12 @@ export default function EditProjectPage({ params }: PageProps) {
                         }`}>
                             {project?.status || 'draft'}
                         </span>
+                        {project?.hasDraft && (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                <FileEdit className="w-3 h-3" />
+                                Has draft
+                            </span>
+                        )}
                         {hasUnsavedChanges && (
                             <span className="inline-flex items-center gap-1 text-xs text-orange-600">
                                 <AlertCircle className="w-3 h-3" />

@@ -47,6 +47,10 @@ const contentSchema = new Schema(
     contentId: { type: String, required: true },
     title: { type: String, required: true },
     data: { type: Schema.Types.Mixed, required: true },
+    // Draft fields - stores pending changes for published content
+    draftTitle: { type: String },
+    draftData: { type: Schema.Types.Mixed },
+    hasDraft: { type: Boolean, default: false },
     status: {
       type: String,
       enum: ["draft", "published", "archived"],

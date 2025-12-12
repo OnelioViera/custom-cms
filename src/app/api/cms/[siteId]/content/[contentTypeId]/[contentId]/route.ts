@@ -92,14 +92,67 @@ export async function PUT(
             // Store old data for revision tracking
             const oldData = content.data;
 
-            // Update content
+            // Handle draft saving for published content
+            // If content is currently published and we're saving as draft,
+            // store changes in draftData/draftTitle instead of main fields
+            if (content.status === 'published' && status === 'draft') {
+                // Save to draft fields, keep published version intact
+                if (title !== undefined) content.draftTitle = title;
+                if (data !== undefined) content.draftData = data;
+                content.hasDraft = true;
+                // Keep status as published so it stays on the website
+                
+                await content.save();
+
+                // Create revision record for draft
+                await Revision.create({
+                    siteId,
+                    contentId,
+                    contentTypeId,
+                    data: data || content.draftData,
+                    changedFields: ['draft'],
+                    changedBy: 'editor',
+                });
+
+                return sendSuccess(content, 'Draft saved successfully. Published version unchanged.');
+            }
+
+            // If publishing, apply draft changes to main content
+            if (status === 'published') {
+                // If there's draft data, use it; otherwise use the provided data
+                if (content.hasDraft && content.draftData) {
+                    content.title = content.draftTitle || title || content.title;
+                    content.data = content.draftData;
+                } else {
+                    if (title !== undefined) content.title = title;
+                    if (data !== undefined) content.data = data;
+                }
+                
+                // Clear draft fields
+                content.draftTitle = undefined;
+                content.draftData = undefined;
+                content.hasDraft = false;
+                content.status = 'published';
+                content.publishedAt = new Date();
+
+                await content.save();
+
+                // Trigger webhooks
+                await triggerWebhooks(siteId, 'content.published', {
+                    contentTypeId,
+                    contentId,
+                    title: content.title,
+                    data: content.data,
+                });
+
+                return sendSuccess(content, 'Content published successfully');
+            }
+
+            // For non-published content (new drafts), update normally
             if (title !== undefined) content.title = title;
             if (data !== undefined) content.data = data;
             if (status !== undefined) {
                 content.status = status;
-                if (status === 'published') {
-                    content.publishedAt = new Date();
-                }
             }
 
             await content.save();
@@ -118,15 +171,8 @@ export async function PUT(
                 changedBy: 'editor',
             });
 
-            // Trigger webhooks
-            if (status === 'published') {
-                await triggerWebhooks(siteId, 'content.published', {
-                    contentTypeId,
-                    contentId,
-                    title: content.title,
-                    data: content.data,
-                });
-            } else if (status === 'archived') {
+            // Trigger webhooks for archived content
+            if (status === 'archived') {
                 await triggerWebhooks(siteId, 'content.archived', {
                     contentTypeId,
                     contentId,
