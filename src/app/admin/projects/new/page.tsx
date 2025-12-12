@@ -224,14 +224,12 @@ export default function NewProjectPage() {
                 </header>
 
                 {/* Form Content */}
-                <div className="p-6">
-                    <div className="max-w-2xl">
-                        <div className="bg-white rounded-lg border border-gray-200 p-6">
-                            <ProjectFormFields
-                                ref={formRef}
-                                onFormChange={handleFormChange}
-                            />
-                        </div>
+                <div className="p-6 pr-0">
+                    <div className="bg-white rounded-lg border border-gray-200 p-6 mr-6">
+                        <ProjectFormFields
+                            ref={formRef}
+                            onFormChange={handleFormChange}
+                        />
                     </div>
                 </div>
             </div>
