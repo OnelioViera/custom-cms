@@ -13,6 +13,7 @@ import ImageLightbox from '@/components/ImageLightbox';
 import ScrollAnimation from '@/components/ScrollAnimation';
 import ContactForm from '@/components/ContactForm';
 import Footer from '@/components/Footer';
+import Navigation from '@/components/Navigation';
 
 export const dynamic = 'force-dynamic';
 
@@ -80,39 +81,8 @@ export default async function Home() {
   const heroButtons = siteContent?.heroButtons && siteContent.heroButtons.length > 0 ? siteContent.heroButtons : defaultButtons;
 
   return (
-    <main suppressHydrationWarning>
-      {/* Navigation */}
-      <nav className="fixed w-full bg-white shadow-sm z-50 border-b border-gray-100" suppressHydrationWarning>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center">
-            <img 
-              src="/lindsay-precast-logo.png" 
-              alt="Lindsay Precast" 
-              className="h-12 w-auto"
-            />
-          </Link>
-          <div className="hidden md:flex gap-8">
-            <Link href="/projects" className="text-gray-600 hover:text-gray-900 transition font-medium">
-              Projects
-            </Link>
-            <a href="#capabilities" className="text-gray-600 hover:text-gray-900 transition font-medium">
-              Capabilities
-            </a>
-            <a href="#testimonials" className="text-gray-600 hover:text-gray-900 transition font-medium">
-              Testimonials
-            </a>
-            <a href="#contact" className="text-gray-600 hover:text-gray-900 transition font-medium">
-              Contact
-            </a>
-          </div>
-          <a
-            href="#contact"
-            className="px-6 py-2 rounded-lg text-white text-sm font-medium bg-yellow-600 hover:bg-yellow-700 transition"
-          >
-            Get Quote
-          </a>
-        </div>
-      </nav>
+    <main>
+      <Navigation currentPage="home" showTestimonials={true} />
 
       {/* Hero Section */}
       <section className="pt-32 pb-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-gray-50 to-white overflow-hidden min-h-[600px]">

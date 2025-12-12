@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Sun, MapPin, Ruler } from 'lucide-react';
 import ImageLightbox from '@/components/ImageLightbox';
 import Footer from '@/components/Footer';
+import Navigation from '@/components/Navigation';
 
 export const dynamic = 'force-dynamic';
 
@@ -26,33 +27,8 @@ export default async function ProjectsPage() {
     ]);
 
     return (
-        <main suppressHydrationWarning>
-            {/* Navigation */}
-            <nav className="fixed w-full bg-white shadow-sm z-50 border-b border-gray-100" suppressHydrationWarning>
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-                    <Link href="/" className="flex items-center">
-                        <img 
-                            src="/lindsay-precast-logo.png" 
-                            alt="Lindsay Precast" 
-                            className="h-12 w-auto"
-                        />
-                    </Link>
-                    <div className="hidden md:flex gap-8">
-                        <Link href="/projects" className="text-gray-900 font-medium hover:text-yellow-600 transition">
-                            Projects
-                        </Link>
-                        <Link href="/#capabilities" className="text-gray-700 font-medium hover:text-gray-900 transition">
-                            Capabilities
-                        </Link>
-                        <Link href="/#contact" className="text-gray-700 font-medium hover:text-gray-900 transition">
-                            Contact
-                        </Link>
-                    </div>
-                    <Link href="/#contact" className="px-6 py-2 rounded-lg text-white text-sm font-medium bg-yellow-600 hover:bg-yellow-700">
-                        Get Quote
-                    </Link>
-                </div>
-            </nav>
+        <main>
+            <Navigation currentPage="projects" />
 
             {/* Header */}
             <div className="pt-32 pb-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-gray-50 to-white">
