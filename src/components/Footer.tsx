@@ -1,9 +1,14 @@
+'use client';
+
 import Link from 'next/link';
 import { Phone, Mail, MapPin, Lock } from 'lucide-react';
 
 export default function Footer() {
+  // Use static year to avoid hydration mismatch
+  const year = new Date().getFullYear();
+  
   return (
-    <footer className="bg-gray-900 text-white py-12 px-4 sm:px-6 lg:px-8">
+    <footer className="bg-gray-900 text-white py-12 px-4 sm:px-6 lg:px-8" suppressHydrationWarning>
       <div className="max-w-7xl mx-auto">
         <div className="grid md:grid-cols-4 gap-8 mb-8">
           {/* Logo & Description */}
@@ -53,8 +58,8 @@ export default function Footer() {
         </div>
         
         <div className="border-t border-gray-800 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-gray-500 text-sm">
-            &copy; {new Date().getFullYear()} Lindsay Precast. All rights reserved.
+          <p className="text-gray-500 text-sm" suppressHydrationWarning>
+            &copy; {year} Lindsay Precast. All rights reserved.
           </p>
           <a
             href="/admin/login"
