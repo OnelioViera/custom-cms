@@ -196,7 +196,7 @@ export default function NewProjectPage() {
             </aside>
 
             {/* Main Content Area */}
-            <div className={`flex-1 ml-64 ${showPreview ? 'mr-96' : ''} transition-all duration-300`}>
+            <div className={`flex-1 ml-64 ${showPreview ? 'mr-[500px]' : ''} transition-all duration-300`}>
                 {/* Header */}
                 <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
                     <div className="px-6 py-4 flex items-center justify-between">
@@ -238,7 +238,7 @@ export default function NewProjectPage() {
 
             {/* Right Preview Panel - Fixed */}
             {showPreview && (
-                <aside className="w-96 bg-gray-50 border-l border-gray-200 fixed right-0 top-0 h-full z-20 flex flex-col">
+                <aside className="w-[500px] bg-gray-50 border-l border-gray-200 fixed right-0 top-0 h-full z-20 flex flex-col">
                     <ProjectPreview data={previewData} />
                 </aside>
             )}
