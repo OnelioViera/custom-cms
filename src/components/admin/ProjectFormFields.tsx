@@ -1,9 +1,15 @@
 'use client';
 
 import { useState, forwardRef, useImperativeHandle, useEffect } from 'react';
-import { Upload, Crop, X, Plus, GripVertical } from 'lucide-react';
+import { Upload, Crop, X, Plus, GripVertical, Settings2 } from 'lucide-react';
 import ImageCropper from '@/components/ImageCropper';
 import RichTextEditor from '@/components/admin/RichTextEditor';
+import IconSelector, { IconName } from '@/components/admin/IconSelector';
+
+export interface InfoFieldConfig {
+    label: string;
+    icon: IconName;
+}
 
 export interface FormDataType {
     title: string;
@@ -17,6 +23,11 @@ export interface FormDataType {
     results: string;
     projectImage: string;
     galleryImages: string[];
+    // Custom field configurations
+    clientConfig: InfoFieldConfig;
+    locationConfig: InfoFieldConfig;
+    projectSizeConfig: InfoFieldConfig;
+    capacityConfig: InfoFieldConfig;
 }
 
 interface ProjectFormFieldsProps {
@@ -27,6 +38,14 @@ interface ProjectFormFieldsProps {
 export interface ProjectFormFieldsRef {
     getFormData: () => any;
 }
+
+// Default configurations for info fields
+const DEFAULT_CONFIGS = {
+    clientConfig: { label: 'Client', icon: 'Building2' as IconName },
+    locationConfig: { label: 'Location', icon: 'MapPin' as IconName },
+    projectSizeConfig: { label: 'Project Size', icon: 'Ruler' as IconName },
+    capacityConfig: { label: 'Capacity', icon: 'Zap' as IconName },
+};
 
 const ProjectFormFields = forwardRef<ProjectFormFieldsRef, ProjectFormFieldsProps>(
     ({ initialData, onFormChange }, ref) => {
@@ -42,6 +61,10 @@ const ProjectFormFields = forwardRef<ProjectFormFieldsRef, ProjectFormFieldsProp
             results: initialData?.data?.results || '',
             projectImage: initialData?.data?.projectImage || '',
             galleryImages: initialData?.data?.galleryImages || [],
+            clientConfig: initialData?.data?.clientConfig || DEFAULT_CONFIGS.clientConfig,
+            locationConfig: initialData?.data?.locationConfig || DEFAULT_CONFIGS.locationConfig,
+            projectSizeConfig: initialData?.data?.projectSizeConfig || DEFAULT_CONFIGS.projectSizeConfig,
+            capacityConfig: initialData?.data?.capacityConfig || DEFAULT_CONFIGS.capacityConfig,
         });
 
         const [imagePreview, setImagePreview] = useState<string | null>(initialData?.data?.projectImage || null);
@@ -49,6 +72,7 @@ const ProjectFormFields = forwardRef<ProjectFormFieldsRef, ProjectFormFieldsProp
         const [tempImage, setTempImage] = useState<string | null>(null);
         const [showGalleryCropper, setShowGalleryCropper] = useState(false);
         const [tempGalleryImage, setTempGalleryImage] = useState<string | null>(null);
+        const [showFieldSettings, setShowFieldSettings] = useState<string | null>(null);
 
         const [isInitialized, setIsInitialized] = useState(false);
 
@@ -67,6 +91,10 @@ const ProjectFormFields = forwardRef<ProjectFormFieldsRef, ProjectFormFieldsProp
                     results: initialData.data?.results || '',
                     projectImage: initialData.data?.projectImage || '',
                     galleryImages: initialData.data?.galleryImages || [],
+                    clientConfig: initialData.data?.clientConfig || DEFAULT_CONFIGS.clientConfig,
+                    locationConfig: initialData.data?.locationConfig || DEFAULT_CONFIGS.locationConfig,
+                    projectSizeConfig: initialData.data?.projectSizeConfig || DEFAULT_CONFIGS.projectSizeConfig,
+                    capacityConfig: initialData.data?.capacityConfig || DEFAULT_CONFIGS.capacityConfig,
                 });
                 setImagePreview(initialData.data?.projectImage || null);
                 setIsInitialized(true);
@@ -88,9 +116,21 @@ const ProjectFormFields = forwardRef<ProjectFormFieldsRef, ProjectFormFieldsProp
                     results: formData.results,
                     projectImage: formData.projectImage,
                     galleryImages: formData.galleryImages,
+                    clientConfig: formData.clientConfig,
+                    locationConfig: formData.locationConfig,
+                    projectSizeConfig: formData.projectSizeConfig,
+                    capacityConfig: formData.capacityConfig,
                 },
             }),
         }));
+
+        // Handler for updating field config
+        const handleConfigChange = (field: 'clientConfig' | 'locationConfig' | 'projectSizeConfig' | 'capacityConfig', key: 'label' | 'icon', value: string) => {
+            const newConfig = { ...formData[field], [key]: value };
+            const newData = { ...formData, [field]: newConfig };
+            setFormData(newData);
+            setTimeout(() => onFormChange?.(newData), 0);
+        };
 
         const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
             const { name, value } = e.target;
@@ -202,57 +242,178 @@ const ProjectFormFields = forwardRef<ProjectFormFieldsRef, ProjectFormFieldsProp
                 </div>
 
                 {/* Client */}
-                <div>
-                    <label className="block text-sm font-medium text-gray-900 mb-1">Client *</label>
+                <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                    <div className="flex items-center justify-between mb-2">
+                        <label className="block text-sm font-medium text-gray-900">
+                            {formData.clientConfig.label} *
+                        </label>
+                        <button
+                            type="button"
+                            onClick={() => setShowFieldSettings(showFieldSettings === 'client' ? null : 'client')}
+                            className={`p-1 rounded transition-colors ${showFieldSettings === 'client' ? 'bg-yellow-100 text-yellow-700' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'}`}
+                            title="Customize field label and icon"
+                        >
+                            <Settings2 className="w-4 h-4" />
+                        </button>
+                    </div>
+                    {showFieldSettings === 'client' && (
+                        <div className="mb-3 p-3 bg-white rounded-lg border border-gray-200 space-y-3">
+                            <div>
+                                <label className="block text-xs font-medium text-gray-600 mb-1">Display Label</label>
+                                <input
+                                    type="text"
+                                    value={formData.clientConfig.label}
+                                    onChange={(e) => handleConfigChange('clientConfig', 'label', e.target.value)}
+                                    className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-yellow-600 text-gray-900"
+                                />
+                            </div>
+                            <IconSelector
+                                value={formData.clientConfig.icon}
+                                onChange={(icon) => handleConfigChange('clientConfig', 'icon', icon)}
+                                label="Icon"
+                            />
+                        </div>
+                    )}
                     <input
                         type="text"
                         name="client"
                         value={formData.client}
                         onChange={handleInputChange}
                         required
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 text-gray-900 placeholder-gray-400"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 text-gray-900 placeholder-gray-400 bg-white"
                     />
                 </div>
 
                 {/* Two Column Layout */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {/* Location */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-900 mb-1">Location</label>
+                    <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                        <div className="flex items-center justify-between mb-2">
+                            <label className="block text-sm font-medium text-gray-900">
+                                {formData.locationConfig.label}
+                            </label>
+                            <button
+                                type="button"
+                                onClick={() => setShowFieldSettings(showFieldSettings === 'location' ? null : 'location')}
+                                className={`p-1 rounded transition-colors ${showFieldSettings === 'location' ? 'bg-yellow-100 text-yellow-700' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'}`}
+                                title="Customize field label and icon"
+                            >
+                                <Settings2 className="w-4 h-4" />
+                            </button>
+                        </div>
+                        {showFieldSettings === 'location' && (
+                            <div className="mb-3 p-3 bg-white rounded-lg border border-gray-200 space-y-3">
+                                <div>
+                                    <label className="block text-xs font-medium text-gray-600 mb-1">Display Label</label>
+                                    <input
+                                        type="text"
+                                        value={formData.locationConfig.label}
+                                        onChange={(e) => handleConfigChange('locationConfig', 'label', e.target.value)}
+                                        className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-yellow-600 text-gray-900"
+                                    />
+                                </div>
+                                <IconSelector
+                                    value={formData.locationConfig.icon}
+                                    onChange={(icon) => handleConfigChange('locationConfig', 'icon', icon)}
+                                    label="Icon"
+                                />
+                            </div>
+                        )}
                         <input
                             type="text"
                             name="location"
                             value={formData.location}
                             onChange={handleInputChange}
                             placeholder="e.g., Oklahoma, USA"
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 text-gray-900 placeholder-gray-400"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 text-gray-900 placeholder-gray-400 bg-white"
                         />
                     </div>
 
                     {/* Project Size */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-900 mb-1">Project Size</label>
+                    <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                        <div className="flex items-center justify-between mb-2">
+                            <label className="block text-sm font-medium text-gray-900">
+                                {formData.projectSizeConfig.label}
+                            </label>
+                            <button
+                                type="button"
+                                onClick={() => setShowFieldSettings(showFieldSettings === 'projectSize' ? null : 'projectSize')}
+                                className={`p-1 rounded transition-colors ${showFieldSettings === 'projectSize' ? 'bg-yellow-100 text-yellow-700' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'}`}
+                                title="Customize field label and icon"
+                            >
+                                <Settings2 className="w-4 h-4" />
+                            </button>
+                        </div>
+                        {showFieldSettings === 'projectSize' && (
+                            <div className="mb-3 p-3 bg-white rounded-lg border border-gray-200 space-y-3">
+                                <div>
+                                    <label className="block text-xs font-medium text-gray-600 mb-1">Display Label</label>
+                                    <input
+                                        type="text"
+                                        value={formData.projectSizeConfig.label}
+                                        onChange={(e) => handleConfigChange('projectSizeConfig', 'label', e.target.value)}
+                                        className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-yellow-600 text-gray-900"
+                                    />
+                                </div>
+                                <IconSelector
+                                    value={formData.projectSizeConfig.icon}
+                                    onChange={(icon) => handleConfigChange('projectSizeConfig', 'icon', icon)}
+                                    label="Icon"
+                                />
+                            </div>
+                        )}
+                        <label className="block text-sm font-medium text-gray-900 mb-1 sr-only">Project Size</label>
                         <input
                             type="text"
                             name="projectSize"
                             value={formData.projectSize}
                             onChange={handleInputChange}
                             placeholder="e.g., Large (5-10MW)"
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 text-gray-900 placeholder-gray-400"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 text-gray-900 placeholder-gray-400 bg-white"
                         />
                     </div>
                 </div>
 
                 {/* Capacity */}
-                <div>
-                    <label className="block text-sm font-medium text-gray-900 mb-1">Capacity</label>
+                <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                    <div className="flex items-center justify-between mb-2">
+                        <label className="block text-sm font-medium text-gray-900">
+                            {formData.capacityConfig.label}
+                        </label>
+                        <button
+                            type="button"
+                            onClick={() => setShowFieldSettings(showFieldSettings === 'capacity' ? null : 'capacity')}
+                            className={`p-1 rounded transition-colors ${showFieldSettings === 'capacity' ? 'bg-yellow-100 text-yellow-700' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'}`}
+                            title="Customize field label and icon"
+                        >
+                            <Settings2 className="w-4 h-4" />
+                        </button>
+                    </div>
+                    {showFieldSettings === 'capacity' && (
+                        <div className="mb-3 p-3 bg-white rounded-lg border border-gray-200 space-y-3">
+                            <div>
+                                <label className="block text-xs font-medium text-gray-600 mb-1">Display Label</label>
+                                <input
+                                    type="text"
+                                    value={formData.capacityConfig.label}
+                                    onChange={(e) => handleConfigChange('capacityConfig', 'label', e.target.value)}
+                                    className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-yellow-600 text-gray-900"
+                                />
+                            </div>
+                            <IconSelector
+                                value={formData.capacityConfig.icon}
+                                onChange={(icon) => handleConfigChange('capacityConfig', 'icon', icon)}
+                                label="Icon"
+                            />
+                        </div>
+                    )}
                     <input
                         type="text"
                         name="capacity"
                         value={formData.capacity}
                         onChange={handleInputChange}
                         placeholder="e.g., 69 beams @ 45 tons each"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 text-gray-900 placeholder-gray-400"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 text-gray-900 placeholder-gray-400 bg-white"
                     />
                 </div>
 

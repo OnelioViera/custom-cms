@@ -5,8 +5,14 @@ import ImageLightbox from '@/components/ImageLightbox';
 import ImageGallery from '@/components/ImageGallery';
 import Footer from '@/components/Footer';
 import Navigation from '@/components/Navigation';
+import { getIconComponent } from '@/components/admin/IconSelector';
 
 export const dynamic = 'force-dynamic';
+
+interface InfoFieldConfig {
+    label: string;
+    icon: string;
+}
 
 interface Project {
     _id: string;
@@ -28,6 +34,10 @@ interface Project {
         testimonial?: string;
         testimonialAuthor?: string;
         galleryImages?: string[];
+        clientConfig?: InfoFieldConfig;
+        locationConfig?: InfoFieldConfig;
+        projectSizeConfig?: InfoFieldConfig;
+        capacityConfig?: InfoFieldConfig;
     };
     status: string;
     createdAt: string;
@@ -107,50 +117,62 @@ export default async function ProjectDetailPage({ params }: PageProps) {
                             />
 
                             <div className="space-y-4 mb-8">
-                                {project.data.client && (
-                                    <div className="flex items-start gap-3">
-                                        <div className="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                                            <Building2 className="w-5 h-5 text-slate-600" />
+                                {project.data.client && (() => {
+                                    const ClientIcon = getIconComponent(project.data.clientConfig?.icon || 'Building2');
+                                    return (
+                                        <div className="flex items-start gap-3">
+                                            <div className="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                                <ClientIcon className="w-5 h-5 text-slate-600" />
+                                            </div>
+                                            <div>
+                                                <p className="text-sm text-gray-600">{project.data.clientConfig?.label || 'Client'}</p>
+                                                <p className="font-semibold text-gray-900">{project.data.client}</p>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <p className="text-sm text-gray-600">Client</p>
-                                            <p className="font-semibold text-gray-900">{project.data.client}</p>
+                                    );
+                                })()}
+                                {project.data.location && (() => {
+                                    const LocationIcon = getIconComponent(project.data.locationConfig?.icon || 'MapPin');
+                                    return (
+                                        <div className="flex items-start gap-3">
+                                            <div className="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                                <LocationIcon className="w-5 h-5 text-slate-600" />
+                                            </div>
+                                            <div>
+                                                <p className="text-sm text-gray-600">{project.data.locationConfig?.label || 'Location'}</p>
+                                                <p className="font-semibold text-gray-900">{project.data.location}</p>
+                                            </div>
                                         </div>
-                                    </div>
-                                )}
-                                {project.data.location && (
-                                    <div className="flex items-start gap-3">
-                                        <div className="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                                            <MapPin className="w-5 h-5 text-slate-600" />
+                                    );
+                                })()}
+                                {project.data.projectSize && (() => {
+                                    const SizeIcon = getIconComponent(project.data.projectSizeConfig?.icon || 'Ruler');
+                                    return (
+                                        <div className="flex items-start gap-3">
+                                            <div className="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                                <SizeIcon className="w-5 h-5 text-slate-600" />
+                                            </div>
+                                            <div>
+                                                <p className="text-sm text-gray-600">{project.data.projectSizeConfig?.label || 'Project Size'}</p>
+                                                <p className="font-semibold text-gray-900">{project.data.projectSize}</p>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <p className="text-sm text-gray-600">Location</p>
-                                            <p className="font-semibold text-gray-900">{project.data.location}</p>
+                                    );
+                                })()}
+                                {project.data.capacity && (() => {
+                                    const CapacityIcon = getIconComponent(project.data.capacityConfig?.icon || 'Zap');
+                                    return (
+                                        <div className="flex items-start gap-3">
+                                            <div className="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                                <CapacityIcon className="w-5 h-5 text-slate-600" />
+                                            </div>
+                                            <div>
+                                                <p className="text-sm text-gray-600">{project.data.capacityConfig?.label || 'Capacity'}</p>
+                                                <p className="font-semibold text-gray-900">{project.data.capacity}</p>
+                                            </div>
                                         </div>
-                                    </div>
-                                )}
-                                {project.data.projectSize && (
-                                    <div className="flex items-start gap-3">
-                                        <div className="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                                            <Ruler className="w-5 h-5 text-slate-600" />
-                                        </div>
-                                        <div>
-                                            <p className="text-sm text-gray-600">Project Size</p>
-                                            <p className="font-semibold text-gray-900">{project.data.projectSize}</p>
-                                        </div>
-                                    </div>
-                                )}
-                                {project.data.capacity && (
-                                    <div className="flex items-start gap-3">
-                                        <div className="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                                            <Zap className="w-5 h-5 text-slate-600" />
-                                        </div>
-                                        <div>
-                                            <p className="text-sm text-gray-600">Capacity</p>
-                                            <p className="font-semibold text-gray-900">{project.data.capacity}</p>
-                                        </div>
-                                    </div>
-                                )}
+                                    );
+                                })()}
                             </div>
 
                             <a

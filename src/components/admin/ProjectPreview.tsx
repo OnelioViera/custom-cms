@@ -1,6 +1,12 @@
 'use client';
 
 import { Building2, MapPin, Ruler, Zap, Monitor, Images } from 'lucide-react';
+import { getIconComponent, IconName } from '@/components/admin/IconSelector';
+
+interface InfoFieldConfig {
+    label: string;
+    icon: IconName;
+}
 
 interface ProjectPreviewProps {
     data: {
@@ -15,6 +21,10 @@ interface ProjectPreviewProps {
         results: string;
         projectImage: string;
         galleryImages?: string[];
+        clientConfig?: InfoFieldConfig;
+        locationConfig?: InfoFieldConfig;
+        projectSizeConfig?: InfoFieldConfig;
+        capacityConfig?: InfoFieldConfig;
     };
 }
 
@@ -79,50 +89,62 @@ export default function ProjectPreview({ data }: ProjectPreviewProps) {
 
                                     {/* Info Items */}
                                     <div className="space-y-3">
-                                        {data.client && (
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                                                    <Building2 className="w-4 h-4 text-slate-600" />
+                                        {data.client && (() => {
+                                            const ClientIcon = getIconComponent(data.clientConfig?.icon || 'Building2');
+                                            return (
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                                        <ClientIcon className="w-4 h-4 text-slate-600" />
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-xs text-gray-500">{data.clientConfig?.label || 'Client'}</p>
+                                                        <p className="text-sm font-medium text-gray-900">{data.client}</p>
+                                                    </div>
                                                 </div>
-                                                <div>
-                                                    <p className="text-xs text-gray-500">Client</p>
-                                                    <p className="text-sm font-medium text-gray-900">{data.client}</p>
+                                            );
+                                        })()}
+                                        {data.location && (() => {
+                                            const LocationIcon = getIconComponent(data.locationConfig?.icon || 'MapPin');
+                                            return (
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                                        <LocationIcon className="w-4 h-4 text-slate-600" />
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-xs text-gray-500">{data.locationConfig?.label || 'Location'}</p>
+                                                        <p className="text-sm font-medium text-gray-900">{data.location}</p>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        )}
-                                        {data.location && (
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                                                    <MapPin className="w-4 h-4 text-slate-600" />
+                                            );
+                                        })()}
+                                        {data.projectSize && (() => {
+                                            const SizeIcon = getIconComponent(data.projectSizeConfig?.icon || 'Ruler');
+                                            return (
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                                        <SizeIcon className="w-4 h-4 text-slate-600" />
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-xs text-gray-500">{data.projectSizeConfig?.label || 'Size'}</p>
+                                                        <p className="text-sm font-medium text-gray-900">{data.projectSize}</p>
+                                                    </div>
                                                 </div>
-                                                <div>
-                                                    <p className="text-xs text-gray-500">Location</p>
-                                                    <p className="text-sm font-medium text-gray-900">{data.location}</p>
+                                            );
+                                        })()}
+                                        {data.capacity && (() => {
+                                            const CapacityIcon = getIconComponent(data.capacityConfig?.icon || 'Zap');
+                                            return (
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                                        <CapacityIcon className="w-4 h-4 text-slate-600" />
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-xs text-gray-500">{data.capacityConfig?.label || 'Capacity'}</p>
+                                                        <p className="text-sm font-medium text-gray-900">{data.capacity}</p>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        )}
-                                        {data.projectSize && (
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                                                    <Ruler className="w-4 h-4 text-slate-600" />
-                                                </div>
-                                                <div>
-                                                    <p className="text-xs text-gray-500">Size</p>
-                                                    <p className="text-sm font-medium text-gray-900">{data.projectSize}</p>
-                                                </div>
-                                            </div>
-                                        )}
-                                        {data.capacity && (
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                                                    <Zap className="w-4 h-4 text-slate-600" />
-                                                </div>
-                                                <div>
-                                                    <p className="text-xs text-gray-500">Capacity</p>
-                                                    <p className="text-sm font-medium text-gray-900">{data.capacity}</p>
-                                                </div>
-                                            </div>
-                                        )}
+                                            );
+                                        })()}
                                     </div>
                                 </div>
 

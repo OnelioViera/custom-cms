@@ -40,6 +40,10 @@ export default function NewProjectPage() {
         results: '',
         projectImage: '',
         galleryImages: [],
+        clientConfig: { label: 'Client', icon: 'Building2' },
+        locationConfig: { label: 'Location', icon: 'MapPin' },
+        projectSizeConfig: { label: 'Project Size', icon: 'Ruler' },
+        capacityConfig: { label: 'Capacity', icon: 'Zap' },
     });
 
     const handleFormChange = (data: FormDataType) => {

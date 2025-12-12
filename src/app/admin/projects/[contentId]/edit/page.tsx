@@ -62,6 +62,10 @@ export default function EditProjectPage({ params }: PageProps) {
         results: '',
         projectImage: '',
         galleryImages: [],
+        clientConfig: { label: 'Client', icon: 'Building2' },
+        locationConfig: { label: 'Location', icon: 'MapPin' },
+        projectSizeConfig: { label: 'Project Size', icon: 'Ruler' },
+        capacityConfig: { label: 'Capacity', icon: 'Zap' },
     });
 
     useEffect(() => {
@@ -107,6 +111,10 @@ export default function EditProjectPage({ params }: PageProps) {
                     results: editData?.results || projectData.data?.results || '',
                     projectImage: editData?.projectImage || projectData.data?.projectImage || '',
                     galleryImages: editData?.galleryImages || projectData.data?.galleryImages || [],
+                    clientConfig: editData?.clientConfig || projectData.data?.clientConfig || { label: 'Client', icon: 'Building2' },
+                    locationConfig: editData?.locationConfig || projectData.data?.locationConfig || { label: 'Location', icon: 'MapPin' },
+                    projectSizeConfig: editData?.projectSizeConfig || projectData.data?.projectSizeConfig || { label: 'Project Size', icon: 'Ruler' },
+                    capacityConfig: editData?.capacityConfig || projectData.data?.capacityConfig || { label: 'Capacity', icon: 'Zap' },
                 });
                 
                 // Build activity from project data
