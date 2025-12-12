@@ -205,8 +205,8 @@ export default function RichTextEditor({
                     <button
                         type="button"
                         onClick={() => setShowColorPicker(!showColorPicker)}
-                        title="Text Color"
-                        className={`p-1.5 rounded transition-colors flex items-center gap-1 ${
+                        title={`Text Color: ${getCurrentColor() || 'Default'}`}
+                        className={`p-1.5 rounded transition-colors flex items-center gap-1.5 ${
                             showColorPicker || getCurrentColor()
                                 ? 'bg-yellow-100 text-yellow-700' 
                                 : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
@@ -214,8 +214,13 @@ export default function RichTextEditor({
                     >
                         <Palette className="w-4 h-4" />
                         <div 
-                            className="w-3 h-3 rounded-sm border border-gray-300"
-                            style={{ backgroundColor: getCurrentColor() || '#374151' }}
+                            className="w-4 h-4 rounded border-2 border-gray-400 shadow-sm"
+                            style={{ 
+                                backgroundColor: getCurrentColor() || '#374151',
+                                borderColor: getCurrentColor() === '#ffffff' || getCurrentColor() === '#e5e7eb' || getCurrentColor() === '#f3f4f6' 
+                                    ? '#9ca3af' 
+                                    : 'transparent'
+                            }}
                         />
                     </button>
 

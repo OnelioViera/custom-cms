@@ -196,9 +196,87 @@ section[id] {
   height: 0;
 }
 
-/* Dark mode editor styles for previewing light text */
+/* Override all text colors in editor to always show as black for readability */
+/* The color picker indicator shows the actual selected color */
+/* A colored underline shows which text has a custom color */
+.ProseMirror span[style*="color"] {
+  color: #111827 !important;
+  text-decoration: underline;
+  text-decoration-thickness: 3px;
+  text-underline-offset: 2px;
+}
+
+/* Use the actual color for the underline so users can see what color it will be */
+.ProseMirror span[style*="color: rgb(255, 255, 255)"],
+.ProseMirror span[style*="color: #ffffff"],
+.ProseMirror span[style*="color: #FFFFFF"] {
+  text-decoration-color: #ffffff;
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.ProseMirror span[style*="color: rgb(229, 231, 235)"],
+.ProseMirror span[style*="color: #e5e7eb"] {
+  text-decoration-color: #e5e7eb;
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.ProseMirror span[style*="color: rgb(0, 0, 0)"],
+.ProseMirror span[style*="color: #000000"] {
+  text-decoration-color: #000000;
+}
+
+.ProseMirror span[style*="color: rgb(55, 65, 81)"],
+.ProseMirror span[style*="color: #374151"] {
+  text-decoration-color: #374151;
+}
+
+.ProseMirror span[style*="color: rgb(107, 114, 128)"],
+.ProseMirror span[style*="color: #6b7280"] {
+  text-decoration-color: #6b7280;
+}
+
+.ProseMirror span[style*="color: rgb(220, 38, 38)"],
+.ProseMirror span[style*="color: #dc2626"] {
+  text-decoration-color: #dc2626;
+}
+
+.ProseMirror span[style*="color: rgb(234, 88, 12)"],
+.ProseMirror span[style*="color: #ea580c"] {
+  text-decoration-color: #ea580c;
+}
+
+.ProseMirror span[style*="color: rgb(202, 138, 4)"],
+.ProseMirror span[style*="color: #ca8a04"] {
+  text-decoration-color: #ca8a04;
+}
+
+.ProseMirror span[style*="color: rgb(22, 163, 74)"],
+.ProseMirror span[style*="color: #16a34a"] {
+  text-decoration-color: #16a34a;
+}
+
+.ProseMirror span[style*="color: rgb(37, 99, 235)"],
+.ProseMirror span[style*="color: #2563eb"] {
+  text-decoration-color: #2563eb;
+}
+
+.ProseMirror span[style*="color: rgb(147, 51, 234)"],
+.ProseMirror span[style*="color: #9333ea"] {
+  text-decoration-color: #9333ea;
+}
+
+.ProseMirror span[style*="color: rgb(219, 39, 119)"],
+.ProseMirror span[style*="color: #db2777"] {
+  text-decoration-color: #db2777;
+}
+
+/* Dark mode editor - show text as light gray */
 .dark-editor .ProseMirror {
   color: #e5e7eb;
+}
+
+.dark-editor .ProseMirror span[style*="color"] {
+  color: #e5e7eb !important;
 }
 
 .dark-editor .ProseMirror h1,
@@ -218,44 +296,6 @@ section[id] {
 
 .dark-editor .ProseMirror a {
   color: #fbbf24;
-}
-
-/* Make white/light text visible in light mode editor with text shadow */
-.ProseMirror span[style*="color: rgb(255, 255, 255)"],
-.ProseMirror span[style*="color: #ffffff"],
-.ProseMirror span[style*="color: #FFFFFF"],
-.ProseMirror span[style*="color: white"],
-.ProseMirror span[style*="color: rgb(229, 231, 235)"],
-.ProseMirror span[style*="color: #e5e7eb"],
-.ProseMirror span[style*="color: rgb(243, 244, 246)"],
-.ProseMirror span[style*="color: #f3f4f6"],
-.ProseMirror span[style*="color: rgb(249, 250, 251)"],
-.ProseMirror span[style*="color: #f9fafb"] {
-  text-shadow: 
-    -1px -1px 0 #374151,
-    1px -1px 0 #374151,
-    -1px 1px 0 #374151,
-    1px 1px 0 #374151,
-    0 0 3px rgba(0, 0, 0, 0.3);
-  background-color: rgba(55, 65, 81, 0.1);
-  padding: 0 2px;
-  border-radius: 2px;
-}
-
-/* Remove the text shadow in dark mode since it's not needed */
-.dark-editor .ProseMirror span[style*="color: rgb(255, 255, 255)"],
-.dark-editor .ProseMirror span[style*="color: #ffffff"],
-.dark-editor .ProseMirror span[style*="color: #FFFFFF"],
-.dark-editor .ProseMirror span[style*="color: white"],
-.dark-editor .ProseMirror span[style*="color: rgb(229, 231, 235)"],
-.dark-editor .ProseMirror span[style*="color: #e5e7eb"],
-.dark-editor .ProseMirror span[style*="color: rgb(243, 244, 246)"],
-.dark-editor .ProseMirror span[style*="color: #f3f4f6"],
-.dark-editor .ProseMirror span[style*="color: rgb(249, 250, 251)"],
-.dark-editor .ProseMirror span[style*="color: #f9fafb"] {
-  text-shadow: none;
-  background-color: transparent;
-  padding: 0;
 }
 
 /* Rich text content display styles */
