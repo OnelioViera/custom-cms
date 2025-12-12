@@ -24,9 +24,17 @@ export default function ScrollAnimation({
     once = true,
 }: ScrollAnimationProps) {
     const ref = useRef<HTMLDivElement>(null);
+    const [isMounted, setIsMounted] = useState(false);
     const [isVisible, setIsVisible] = useState(false);
 
+    // Wait for mount before applying animation styles to avoid hydration mismatch
     useEffect(() => {
+        setIsMounted(true);
+    }, []);
+
+    useEffect(() => {
+        if (!isMounted) return;
+
         const observer = new IntersectionObserver(
             ([entry]) => {
                 if (entry.isIntersecting) {
@@ -46,7 +54,7 @@ export default function ScrollAnimation({
         }
 
         return () => observer.disconnect();
-    }, [threshold, once]);
+    }, [threshold, once, isMounted]);
 
     const getInitialStyles = (): React.CSSProperties => {
         const base: React.CSSProperties = {
@@ -79,11 +87,21 @@ export default function ScrollAnimation({
         filter: 'blur(0)',
     });
 
+    // On server and initial client render, render without animation styles
+    // After mount, apply animation styles
+    const getStyles = (): React.CSSProperties | undefined => {
+        if (!isMounted) {
+            return undefined; // No styles during SSR to match hydration
+        }
+        return isVisible ? { ...getInitialStyles(), ...getVisibleStyles() } : getInitialStyles();
+    };
+
     return (
         <div
             ref={ref}
             className={className}
-            style={isVisible ? { ...getInitialStyles(), ...getVisibleStyles() } : getInitialStyles()}
+            style={getStyles()}
+            suppressHydrationWarning
         >
             {children}
         </div>
