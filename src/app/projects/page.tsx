@@ -2,6 +2,7 @@ import { getContentServer, getSiteContentServer } from '@/lib/cms-server';
 import Link from 'next/link';
 import { Sun, MapPin, Ruler } from 'lucide-react';
 import ImageLightbox from '@/components/ImageLightbox';
+import Footer from '@/components/Footer';
 
 export const dynamic = 'force-dynamic';
 
@@ -159,21 +160,7 @@ export default async function ProjectsPage() {
                 </div>
             </div>
 
-            {/* Footer */}
-            <footer className="bg-gray-900 text-white py-12 px-4 sm:px-6 lg:px-8">
-                <div className="max-w-7xl mx-auto">
-                    <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-                        <Link href="/">
-                            <img 
-                                src="/lindsay-precast-logo.png" 
-                                alt="Lindsay Precast" 
-                                className="h-12 w-auto brightness-0 invert"
-                            />
-                        </Link>
-                        <p className="text-gray-400 text-sm">&copy; {new Date().getFullYear()} Lindsay Precast. All rights reserved.</p>
-                    </div>
-                </div>
-            </footer>
+            <Footer />
         </main>
     );
 }

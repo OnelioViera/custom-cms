@@ -1,7 +1,8 @@
 import { getContentByIdServer, getContentServer } from '@/lib/cms-server';
 import Link from 'next/link';
-import { Building2, MapPin, Ruler, Zap, Sun, Phone, Mail, CheckCircle } from 'lucide-react';
+import { Building2, MapPin, Ruler, Zap, Sun, CheckCircle } from 'lucide-react';
 import ImageLightbox from '@/components/ImageLightbox';
+import Footer from '@/components/Footer';
 
 export const dynamic = 'force-dynamic';
 
@@ -75,12 +76,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
                     </div>
                 </div>
 
-                {/* Footer */}
-                <footer className="bg-gray-900 text-white py-12 px-4 sm:px-6 lg:px-8 mt-16">
-                    <div className="max-w-7xl mx-auto text-center text-gray-400 text-sm">
-                        <p>&copy; 2025 Lindsay Precast. All rights reserved.</p>
-                    </div>
-                </footer>
+                <Footer />
             </main>
         );
     }
@@ -334,53 +330,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
                 </section>
             )}
 
-            {/* Footer */}
-            <footer className="bg-gray-900 text-white py-12 px-4 sm:px-6 lg:px-8">
-                <div className="max-w-7xl mx-auto grid md:grid-cols-3 gap-8">
-                    <div>
-                        <Link href="/" className="inline-block mb-4">
-                            <img 
-                                src="/lindsay-precast-logo.png" 
-                                alt="Lindsay Precast" 
-                                className="h-14 w-auto brightness-0 invert"
-                            />
-                        </Link>
-                        <p className="text-gray-400 text-sm">
-                            Leading precast concrete solutions for renewable energy and infrastructure projects.
-                        </p>
-                    </div>
-                    <div>
-                        <h3 className="font-bold mb-4 text-white">Quick Links</h3>
-                        <div className="space-y-2 text-sm">
-                            <Link href="/" className="block text-gray-400 hover:text-white transition">
-                                Home
-                            </Link>
-                            <Link href="/projects" className="block text-gray-400 hover:text-white transition">
-                                Projects
-                            </Link>
-                            <a href="/#contact" className="block text-gray-400 hover:text-white transition">
-                                Contact
-                            </a>
-                        </div>
-                    </div>
-                    <div>
-                        <h3 className="font-bold mb-4 text-white">Contact</h3>
-                        <div className="space-y-3 text-sm text-gray-400">
-                            <p className="flex items-center gap-2">
-                                <Mail className="w-4 h-4" />
-                                info@lindsayprecast.com
-                            </p>
-                            <p className="flex items-center gap-2">
-                                <Phone className="w-4 h-4" />
-                                1-800-LINDSAY
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                <div className="max-w-7xl mx-auto mt-8 pt-8 border-t border-gray-800 text-center text-gray-400 text-sm">
-                    <p>&copy; {new Date().getFullYear()} Lindsay Precast. All rights reserved.</p>
-                </div>
-            </footer>
+            <Footer />
         </main>
     );
 }
