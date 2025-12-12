@@ -1,5 +1,7 @@
-import { getContent } from '@/lib/cms-client';
+import { getContentServer, getSiteContentServer } from '@/lib/cms-server';
 import Link from 'next/link';
+import { Sun, MapPin, Ruler } from 'lucide-react';
+import ImageLightbox from '@/components/ImageLightbox';
 
 export const dynamic = 'force-dynamic';
 
@@ -17,18 +19,22 @@ interface Project {
 }
 
 export default async function ProjectsPage() {
-    const projects = (await getContent('projects')) as Project[];
+    const [projects, siteContent] = await Promise.all([
+        getContentServer('projects') as Promise<Project[]>,
+        getSiteContentServer(),
+    ]);
 
     return (
         <main>
             {/* Navigation */}
             <nav className="fixed w-full bg-white shadow-sm z-50 border-b border-gray-100">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-                    <Link href="/" className="flex items-center gap-2">
-                        <div className="w-10 h-10 bg-yellow-600 rounded-lg flex items-center justify-center">
-                            <span className="text-white">📦</span>
-                        </div>
-                        <span className="font-serif text-xl font-bold text-gray-900">Lindsay Precast</span>
+                    <Link href="/" className="flex items-center">
+                        <img 
+                            src="/lindsay-precast-logo.png" 
+                            alt="Lindsay Precast" 
+                            className="h-12 w-auto"
+                        />
                     </Link>
                     <div className="hidden md:flex gap-8">
                         <Link href="/projects" className="text-gray-900 font-medium hover:text-yellow-600 transition">
@@ -48,15 +54,13 @@ export default async function ProjectsPage() {
             </nav>
 
             {/* Header */}
-            {/* eslint-disable-next-line */}
-            <div className="pt-32 pb-16 px-4 sm:px-6 lg:px-8 bg-linear-to-b from-gray-50 to-white">
+            <div className="pt-32 pb-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-gray-50 to-white">
                 <div className="max-w-7xl mx-auto text-center">
-                    <h1 className="font-serif text-5xl font-bold mb-4 text-gray-900">Our Projects</h1>
-                    <p className="text-lg text-gray-700 mb-2">
-                        Precision-engineered precast solutions delivered across North America
-                    </p>
-                    <p className="text-gray-700">
-                        From renewable energy infrastructure to utility systems, explore our portfolio
+                    <h1 className="font-serif text-5xl font-bold mb-4 text-gray-900">
+                        {siteContent?.projectsTitle || 'Our Projects'}
+                    </h1>
+                    <p className="text-lg text-gray-700">
+                        {siteContent?.projectsSubtitle || 'Precision-engineered precast solutions delivered across North America'}
                     </p>
                 </div>
             </div>
@@ -65,21 +69,28 @@ export default async function ProjectsPage() {
             <div className="py-16 px-4 sm:px-6 lg:px-8">
                 <div className="max-w-7xl mx-auto">
                     {projects.length > 0 ? (
-                        <div className="grid md:grid-cols-3 gap-8">
-                            {projects.map((project) => (
+                        <div className={`flex flex-wrap justify-center gap-8 ${
+                            projects.length === 1 ? 'max-w-xl mx-auto' : 
+                            projects.length === 2 ? 'max-w-4xl mx-auto' : ''
+                        }`}>
+                            {projects.map((project, index, arr) => (
                                 <div
                                     key={project._id}
-                                    className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-all"
+                                    className={`bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-all ${
+                                        arr.length === 1 ? 'w-full' : 
+                                        arr.length === 2 ? 'w-full md:w-[calc(50%-1rem)]' : 
+                                        'w-full md:w-[calc(50%-1rem)] lg:w-[calc(33.333%-1.34rem)]'
+                                    }`}
                                 >
-                                    <div className="bg-linear-to-br from-gray-100 to-gray-200 h-48 flex items-center justify-center">
+                                    <div className="bg-gradient-to-br from-slate-100 to-slate-200 h-48 flex items-center justify-center overflow-hidden">
                                         {project.data.projectImage ? (
-                                            <img
+                                            <ImageLightbox
                                                 src={project.data.projectImage}
                                                 alt={project.title}
-                                                className="w-full h-full object-cover"
+                                                className="w-full h-full"
                                             />
                                         ) : (
-                                            <span className="text-6xl">📦</span>
+                                            <Sun className="w-16 h-16 text-slate-400" strokeWidth={1.5} />
                                         )}
                                     </div>
                                     <div className="p-6">
@@ -94,10 +105,16 @@ export default async function ProjectsPage() {
                                         )}
                                         <div className="flex justify-between text-sm text-gray-500 mb-4">
                                             {project.data.location && (
-                                                <span>📍 {project.data.location}</span>
+                                                <span className="flex items-center gap-1">
+                                                    <MapPin className="w-4 h-4" />
+                                                    {project.data.location}
+                                                </span>
                                             )}
                                             {project.data.projectSize && (
-                                                <span>📐 {project.data.projectSize}</span>
+                                                <span className="flex items-center gap-1">
+                                                    <Ruler className="w-4 h-4" />
+                                                    {project.data.projectSize}
+                                                </span>
                                             )}
                                         </div>
                                         <Link
@@ -127,9 +144,11 @@ export default async function ProjectsPage() {
             {/* CTA Section */}
             <div className="py-16 px-4 sm:px-6 lg:px-8 bg-yellow-50">
                 <div className="max-w-7xl mx-auto text-center">
-                    <h2 className="font-serif text-3xl font-bold mb-4 text-gray-900">Ready for Your Project?</h2>
+                    <h2 className="font-serif text-3xl font-bold mb-4 text-gray-900">
+                        {siteContent?.ctaTitle || 'Ready for Your Project?'}
+                    </h2>
                     <p className="text-gray-700 mb-8">
-                        Let's discuss how Lindsay Precast can deliver precision-engineered solutions
+                        {siteContent?.ctaSubtitle || "Let's discuss how Lindsay Precast can deliver precision-engineered solutions"}
                     </p>
                     <Link
                         href="/#contact"
@@ -142,8 +161,17 @@ export default async function ProjectsPage() {
 
             {/* Footer */}
             <footer className="bg-gray-900 text-white py-12 px-4 sm:px-6 lg:px-8">
-                <div className="max-w-7xl mx-auto text-center text-gray-400 text-sm">
-                    <p>&copy; 2025 Lindsay Precast. All rights reserved.</p>
+                <div className="max-w-7xl mx-auto">
+                    <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+                        <Link href="/">
+                            <img 
+                                src="/lindsay-precast-logo.png" 
+                                alt="Lindsay Precast" 
+                                className="h-12 w-auto brightness-0 invert"
+                            />
+                        </Link>
+                        <p className="text-gray-400 text-sm">&copy; {new Date().getFullYear()} Lindsay Precast. All rights reserved.</p>
+                    </div>
                 </div>
             </footer>
         </main>

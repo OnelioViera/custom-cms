@@ -4,9 +4,26 @@ export const dynamic = 'force-dynamic';
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import Modal from '@/components/admin/Modal';
-import ProjectForm from '@/components/admin/ProjectForm';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { 
+    LayoutDashboard, 
+    FolderKanban, 
+    FileText, 
+    Star, 
+    Settings, 
+    ChevronLeft, 
+    ChevronRight,
+    HardHat,
+    CheckCircle,
+    Bell,
+    LogOut,
+    Plus,
+    Pencil,
+    Trash2,
+    ExternalLink,
+    Type
+} from 'lucide-react';
+import { useToast } from '@/components/Toast';
 
 interface User {
     email: string;
@@ -30,21 +47,44 @@ interface FormSubmission {
     createdAt: string;
 }
 
-const API_URL = '/api';
-const SITE_ID = 'lindsayprecast';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || '/api';
+const SITE_ID = process.env.NEXT_PUBLIC_SITE_ID || 'lindsayprecast';
 
 export default function AdminDashboard() {
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const toast = useToast();
     const [activeTab, setActiveTab] = useState('overview');
     const [projects, setProjects] = useState<Project[]>([]);
     const [submissions, setSubmissions] = useState<FormSubmission[]>([]);
     const [loading, setLoading] = useState(true);
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const [user, setUser] = useState<User | null>(null);
-    const [showProjectModal, setShowProjectModal] = useState(false);
-    const [projectFormLoading, setProjectFormLoading] = useState(false);
-    const [refreshKey, setRefreshKey] = useState(0);
-    const [editingProject, setEditingProject] = useState<any>(null);
+
+    // Handle URL params for tab and success messages
+    useEffect(() => {
+        const tab = searchParams.get('tab');
+        const success = searchParams.get('success');
+        
+        if (tab) {
+            setActiveTab(tab);
+        }
+        
+        if (success) {
+            const messages: Record<string, string> = {
+                created: 'Project created successfully!',
+                updated: 'Project updated successfully!',
+                deleted: 'Project deleted successfully!',
+            };
+            const message = messages[success];
+            if (message) {
+                toast.success(message);
+            }
+            
+            // Clear the URL params
+            router.replace('/admin/dashboard' + (tab ? `?tab=${tab}` : ''));
+        }
+    }, [searchParams, router, toast]);
 
     // Check authentication on mount
     useEffect(() => {
@@ -54,7 +94,6 @@ export default function AdminDashboard() {
             return;
         }
 
-        // For now, set a dummy user. In production, you'd decode the JWT
         setUser({
             email: localStorage.getItem('userEmail') || 'admin@lindsayprecast.com',
             role: 'admin',
@@ -65,7 +104,7 @@ export default function AdminDashboard() {
         const loadData = async () => {
             try {
                 const [projectsRes, submissionsRes] = await Promise.all([
-                    fetch(`${API_URL}/cms/${SITE_ID}/content/projects`),
+                    fetch(`${API_URL}/cms/${SITE_ID}/content/projects?status=all`),
                     fetch(`${API_URL}/cms/${SITE_ID}/form-submissions`),
                 ]);
 
@@ -95,77 +134,6 @@ export default function AdminDashboard() {
         newSubmissions: submissions.filter((s) => s.status === 'new').length,
     };
 
-    const handleCreateProject = async (formData: any) => {
-        setProjectFormLoading(true);
-        try {
-            const response = await fetch(`${API_URL}/cms/${SITE_ID}/content/projects`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData),
-            });
-
-            if (!response.ok) {
-                const error = await response.json();
-                alert(`Error: ${error.error}`);
-                setProjectFormLoading(false);
-                return;
-            }
-
-            alert('✅ Project created successfully!');
-            setShowProjectModal(false);
-            setRefreshKey((prev) => prev + 1);
-
-            // Reload projects
-            const projectsRes = await fetch(`${API_URL}/cms/${SITE_ID}/content/projects`);
-            if (projectsRes.ok) {
-                const data = await projectsRes.json();
-                setProjects(data.data?.content || []);
-            }
-        } catch (error) {
-            alert(`Error: ${error instanceof Error ? error.message : 'Failed to create project'}`);
-        } finally {
-            setProjectFormLoading(false);
-        }
-    };
-
-    const handleUpdateProject = async (formData: any) => {
-        if (!editingProject) return;
-
-        setProjectFormLoading(true);
-        try {
-            const response = await fetch(
-                `${API_URL}/cms/${SITE_ID}/content/projects/${editingProject.contentId}`,
-                {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(formData),
-                }
-            );
-
-            if (!response.ok) {
-                const error = await response.json();
-                alert(`Error: ${error.error}`);
-                setProjectFormLoading(false);
-                return;
-            }
-
-            alert('✅ Project updated successfully!');
-            setShowProjectModal(false);
-            setEditingProject(null);
-
-            // Reload projects
-            const projectsRes = await fetch(`${API_URL}/cms/${SITE_ID}/content/projects?status=all`);
-            if (projectsRes.ok) {
-                const data = await projectsRes.json();
-                setProjects(data.data?.content || []);
-            }
-        } catch (error) {
-            alert(`Error: ${error instanceof Error ? error.message : 'Failed to update project'}`);
-        } finally {
-            setProjectFormLoading(false);
-        }
-    };
-
     const handleDeleteProject = async (contentId: string) => {
         if (!confirm('Are you sure you want to delete this project?')) {
             return;
@@ -181,12 +149,12 @@ export default function AdminDashboard() {
             );
 
             if (!response.ok) {
-                const error = await response.json();
-                alert(`Error: ${error.error}`);
+                const errorData = await response.json();
+                toast.error(errorData.error || 'Failed to delete project');
                 return;
             }
 
-            alert('✅ Project deleted successfully!');
+            toast.success('Project deleted successfully!');
 
             // Reload projects
             const projectsRes = await fetch(`${API_URL}/cms/${SITE_ID}/content/projects?status=all`);
@@ -195,7 +163,7 @@ export default function AdminDashboard() {
                 setProjects(data.data?.content || []);
             }
         } catch (error) {
-            alert(`Error: ${error instanceof Error ? error.message : 'Failed to delete project'}`);
+            toast.error(error instanceof Error ? error.message : 'Failed to delete project');
         }
     };
 
@@ -204,24 +172,25 @@ export default function AdminDashboard() {
             {/* Sidebar */}
             <aside
                 className={`${sidebarOpen ? 'w-64' : 'w-20'
-                    } bg-gray-900 text-white transition-all duration-300 flex flex-col`}
+                    } bg-gray-900 text-white transition-all duration-300 flex flex-col fixed h-full z-20`}
             >
-                <div className="p-6 border-b border-gray-800">
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-yellow-600 rounded-lg flex items-center justify-center text-xl">
-                            📦
-                        </div>
-                        {sidebarOpen && <span className="font-serif text-lg font-bold">Lindsay</span>}
+                <div className="p-4 border-b border-gray-800">
+                    <div className="flex items-center justify-center">
+                        <img 
+                            src="/lindsay-precast-logo.png" 
+                            alt="Lindsay Precast" 
+                            className={`${sidebarOpen ? 'h-12' : 'h-8'} w-auto brightness-0 invert transition-all`}
+                        />
                     </div>
                 </div>
 
                 <nav className="flex-1 p-4 space-y-2">
                     {[
-                        { id: 'overview', label: 'Overview', icon: '📊' },
-                        { id: 'projects', label: 'Projects', icon: '🏗️' },
-                        { id: 'submissions', label: 'Form Submissions', icon: '📋' },
-                        { id: 'testimonials', label: 'Testimonials', icon: '⭐' },
-                        { id: 'settings', label: 'Settings', icon: '⚙️' },
+                        { id: 'overview', label: 'Overview', Icon: LayoutDashboard },
+                        { id: 'projects', label: 'Projects', Icon: FolderKanban },
+                        { id: 'submissions', label: 'Form Submissions', Icon: FileText },
+                        { id: 'testimonials', label: 'Testimonials', Icon: Star },
+                        { id: 'settings', label: 'Settings', Icon: Settings },
                     ].map((item) => (
                         <button
                             key={item.id}
@@ -231,23 +200,32 @@ export default function AdminDashboard() {
                                 : 'text-gray-400 hover:bg-gray-800 hover:text-white'
                                 }`}
                         >
-                            <span className="text-xl">{item.icon}</span>
+                            <item.Icon className="w-5 h-5 flex-shrink-0" />
                             {sidebarOpen && <span className="font-medium">{item.label}</span>}
                         </button>
                     ))}
+                    
+                    {/* Page Content Link */}
+                    <Link
+                        href="/admin/content"
+                        className="w-full flex items-center gap-3 px-4 py-3 rounded-lg transition text-gray-400 hover:bg-gray-800 hover:text-white"
+                    >
+                        <Type className="w-5 h-5 flex-shrink-0" />
+                        {sidebarOpen && <span className="font-medium">Page Content</span>}
+                    </Link>
                 </nav>
 
                 <div className="p-4 border-t border-gray-800">
                     <button
                         onClick={() => setSidebarOpen(!sidebarOpen)}
-                        className="w-full px-4 py-2 text-sm bg-gray-800 hover:bg-gray-700 rounded-lg transition text-gray-400"
+                        className="w-full px-4 py-2 text-sm bg-gray-800 hover:bg-gray-700 rounded-lg transition text-gray-400 flex items-center justify-center"
                     >
-                        {sidebarOpen ? '←' : '→'}
+                        {sidebarOpen ? <ChevronLeft className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
                     </button>
                 </div>
 
                 <div className="p-4 border-t border-gray-800">
-                    {user && (
+                    {user && sidebarOpen && (
                         <div className="text-xs text-gray-400 mb-3 px-2">
                             <p className="truncate">{user.email}</p>
                             <p className="text-gray-500">{user.role}</p>
@@ -258,18 +236,22 @@ export default function AdminDashboard() {
                             localStorage.removeItem('authToken');
                             localStorage.removeItem('userId');
                             localStorage.removeItem('userEmail');
+                            document.cookie = 'authToken=; path=/; max-age=0';
                             router.push('/admin/login');
                         }}
-                        className="w-full px-4 py-2 text-sm bg-red-600 hover:bg-red-700 rounded-lg transition text-white font-medium"
+                        className="w-full px-4 py-2 text-sm bg-red-600 hover:bg-red-700 rounded-lg transition text-white font-medium flex items-center justify-center gap-2"
                     >
-                        Sign Out
+                        <LogOut className="w-4 h-4" />
+                        {sidebarOpen && 'Sign Out'}
                     </button>
                 </div>
             </aside>
 
             {/* Main Content */}
-            <main className="flex-1 overflow-auto">
+            <main className={`flex-1 overflow-auto ${sidebarOpen ? 'ml-64' : 'ml-20'} transition-all duration-300`}>
                 <div className="p-8">
+                    {/* Success Message */}
+
                     {/* Header */}
                     <div className="mb-8">
                         <h1 className="text-4xl font-bold text-gray-900 mb-2">
@@ -290,25 +272,25 @@ export default function AdminDashboard() {
                                     {
                                         label: 'Total Projects',
                                         value: stats.totalProjects,
-                                        icon: '🏗️',
+                                        Icon: HardHat,
                                         color: 'bg-blue-100 text-blue-600',
                                     },
                                     {
                                         label: 'Published',
                                         value: stats.publishedProjects,
-                                        icon: '✅',
+                                        Icon: CheckCircle,
                                         color: 'bg-green-100 text-green-600',
                                     },
                                     {
                                         label: 'Form Submissions',
                                         value: stats.totalSubmissions,
-                                        icon: '📋',
+                                        Icon: FileText,
                                         color: 'bg-purple-100 text-purple-600',
                                     },
                                     {
                                         label: 'New Inquiries',
                                         value: stats.newSubmissions,
-                                        icon: '🔔',
+                                        Icon: Bell,
                                         color: 'bg-yellow-100 text-yellow-600',
                                     },
                                 ].map((stat, i) => (
@@ -318,8 +300,8 @@ export default function AdminDashboard() {
                                                 <p className="text-gray-600 text-sm font-medium">{stat.label}</p>
                                                 <p className="text-3xl font-bold text-gray-900 mt-2">{stat.value}</p>
                                             </div>
-                                            <div className={`w-12 h-12 rounded-lg flex items-center justify-center text-xl ${stat.color}`}>
-                                                {stat.icon}
+                                            <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${stat.color}`}>
+                                                <stat.Icon className="w-6 h-6" />
                                             </div>
                                         </div>
                                     </div>
@@ -329,7 +311,16 @@ export default function AdminDashboard() {
                             <div className="grid md:grid-cols-2 gap-6">
                                 {/* Recent Projects */}
                                 <div className="bg-white rounded-lg border border-gray-200 p-6">
-                                    <h2 className="text-xl font-bold text-gray-900 mb-4">Recent Projects</h2>
+                                    <div className="flex items-center justify-between mb-4">
+                                        <h2 className="text-xl font-bold text-gray-900">Recent Projects</h2>
+                                        <Link 
+                                            href="/admin/projects/new"
+                                            className="text-sm text-yellow-600 hover:text-yellow-700 font-medium flex items-center gap-1"
+                                        >
+                                            <Plus className="w-4 h-4" />
+                                            Add New
+                                        </Link>
+                                    </div>
                                     {projects.length > 0 ? (
                                         <div className="space-y-3">
                                             {projects.slice(0, 5).map((project) => (
@@ -399,12 +390,13 @@ export default function AdminDashboard() {
                         <div>
                             <div className="flex justify-between items-center mb-6">
                                 <h2 className="text-2xl font-bold text-gray-900">All Projects</h2>
-                                <button
-                                    onClick={() => setShowProjectModal(true)}
-                                    className="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 font-medium"
+                                <Link
+                                    href="/admin/projects/new"
+                                    className="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 font-medium flex items-center gap-2"
                                 >
-                                    + New Project
-                                </button>
+                                    <Plus className="w-5 h-5" />
+                                    New Project
+                                </Link>
                             </div>
 
                             {loading ? (
@@ -420,23 +412,24 @@ export default function AdminDashboard() {
                                                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Client</th>
                                                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Status</th>
                                                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Date</th>
-                                                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Actions</th>
+                                                <th className="px-6 py-3 text-right text-sm font-semibold text-gray-900">Actions</th>
                                             </tr>
                                         </thead>
                                         <tbody className="divide-y divide-gray-200">
                                             {projects.map((project) => (
                                                 <tr key={project._id} className="hover:bg-gray-50">
-                                                    <td className="px-6 py-4 text-sm font-medium text-gray-900">{project.title}</td>
+                                                    <td className="px-6 py-4">
+                                                        <p className="text-sm font-medium text-gray-900">{project.title}</p>
+                                                    </td>
                                                     <td className="px-6 py-4 text-sm text-gray-600">{project.data?.client || '-'}</td>
                                                     <td className="px-6 py-4 text-sm">
                                                         <span
-                                                            className={`inline-flex px-3 py-1 rounded-full text-xs font-semibold ${
-                                                                project.status === 'published'
+                                                            className={`inline-flex px-3 py-1 rounded-full text-xs font-semibold ${project.status === 'published'
                                                                     ? 'bg-green-100 text-green-800'
                                                                     : project.status === 'draft'
-                                                                    ? 'bg-yellow-100 text-yellow-800'
-                                                                    : 'bg-gray-100 text-gray-800'
-                                                            }`}
+                                                                        ? 'bg-yellow-100 text-yellow-800'
+                                                                        : 'bg-gray-100 text-gray-800'
+                                                                }`}
                                                         >
                                                             {project.status}
                                                         </span>
@@ -444,22 +437,31 @@ export default function AdminDashboard() {
                                                     <td className="px-6 py-4 text-sm text-gray-600">
                                                         {new Date(project.createdAt).toLocaleDateString()}
                                                     </td>
-                                                    <td className="px-6 py-4 text-sm flex gap-2">
-                                                        <button
-                                                            onClick={() => {
-                                                                setEditingProject(project);
-                                                                setShowProjectModal(true);
-                                                            }}
-                                                            className="text-yellow-600 hover:text-yellow-700 font-medium"
-                                                        >
-                                                            Edit
-                                                        </button>
-                                                        <button
-                                                            onClick={() => handleDeleteProject(project.contentId)}
-                                                            className="text-red-600 hover:text-red-700 font-medium"
-                                                        >
-                                                            Delete
-                                                        </button>
+                                                    <td className="px-6 py-4">
+                                                        <div className="flex items-center justify-end gap-2">
+                                                            <Link
+                                                                href={`/projects/${project.contentId}`}
+                                                                target="_blank"
+                                                                className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition"
+                                                                title="View on site"
+                                                            >
+                                                                <ExternalLink className="w-4 h-4" />
+                                                            </Link>
+                                                            <Link
+                                                                href={`/admin/projects/${project.contentId}/edit`}
+                                                                className="p-2 text-yellow-600 hover:text-yellow-700 hover:bg-yellow-50 rounded-lg transition"
+                                                                title="Edit"
+                                                            >
+                                                                <Pencil className="w-4 h-4" />
+                                                            </Link>
+                                                            <button
+                                                                onClick={() => handleDeleteProject(project.contentId)}
+                                                                className="p-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition"
+                                                                title="Delete"
+                                                            >
+                                                                <Trash2 className="w-4 h-4" />
+                                                            </button>
+                                                        </div>
                                                     </td>
                                                 </tr>
                                             ))}
@@ -468,13 +470,15 @@ export default function AdminDashboard() {
                                 </div>
                             ) : (
                                 <div className="bg-white rounded-lg border border-gray-200 p-12 text-center">
+                                    <FolderKanban className="w-12 h-12 text-gray-300 mx-auto mb-4" />
                                     <p className="text-gray-600 mb-4">No projects yet. Create your first project!</p>
-                                    <button
-                                        onClick={() => setShowProjectModal(true)}
-                                        className="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 font-medium"
+                                    <Link
+                                        href="/admin/projects/new"
+                                        className="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 font-medium inline-flex items-center gap-2"
                                     >
+                                        <Plus className="w-5 h-5" />
                                         Create Project
-                                    </button>
+                                    </Link>
                                 </div>
                             )}
                         </div>
@@ -566,6 +570,7 @@ export default function AdminDashboard() {
                                 </div>
                             ) : (
                                 <div className="bg-white rounded-lg border border-gray-200 p-12 text-center">
+                                    <FileText className="w-12 h-12 text-gray-300 mx-auto mb-4" />
                                     <p className="text-gray-600">No form submissions yet</p>
                                 </div>
                             )}
@@ -577,11 +582,13 @@ export default function AdminDashboard() {
                         <div>
                             <div className="flex justify-between items-center mb-6">
                                 <h2 className="text-2xl font-bold text-gray-900">Testimonials</h2>
-                                <button className="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 font-medium">
-                                    + New Testimonial
+                                <button className="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 font-medium flex items-center gap-2">
+                                    <Plus className="w-5 h-5" />
+                                    New Testimonial
                                 </button>
                             </div>
                             <div className="bg-white rounded-lg border border-gray-200 p-12 text-center">
+                                <Star className="w-12 h-12 text-gray-300 mx-auto mb-4" />
                                 <p className="text-gray-600">Testimonials management coming soon</p>
                             </div>
                         </div>
@@ -625,23 +632,6 @@ export default function AdminDashboard() {
                         </div>
                     )}
                 </div>
-
-                {/* Project Modal */}
-                <Modal
-                    isOpen={showProjectModal}
-                    title={editingProject ? 'Edit Project' : 'Create New Project'}
-                    onClose={() => {
-                        setShowProjectModal(false);
-                        setEditingProject(null);
-                    }}
-                    isLoading={projectFormLoading}
-                >
-                    <ProjectForm
-                        onSubmit={editingProject ? handleUpdateProject : handleCreateProject}
-                        isLoading={projectFormLoading}
-                        initialData={editingProject}
-                    />
-                </Modal>
             </main>
         </div>
     );

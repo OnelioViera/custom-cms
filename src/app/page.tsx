@@ -1,107 +1,94 @@
-"use client"
+import Link from 'next/link';
+import { getContentServer, getSiteContentServer } from '@/lib/cms-server';
+import { 
+  Building2, 
+  Sun, 
+  Phone, 
+  Mail, 
+  MapPin, 
+  Clock,
+  Star
+} from 'lucide-react';
+import ImageLightbox from '@/components/ImageLightbox';
+import ScrollAnimation from '@/components/ScrollAnimation';
+import ContactForm from '@/components/ContactForm';
 
-export const dynamic = "force-dynamic"
-
-import { useEffect, useState } from "react"
-import Link from "next/link"
-import { getContent, submitContactForm } from "@/lib/cms-client"
+export const dynamic = 'force-dynamic';
 
 interface Project {
-  _id: string
-  contentId: string
-  title: string
+  _id: string;
+  contentId: string;
+  title: string;
   data: {
-    client: string
-    projectImage?: string
-    shortDescription?: string
-    projectSize?: string
-  }
+    client: string;
+    location?: string;
+    projectImage?: string;
+    shortDescription?: string;
+    projectSize?: string;
+  };
 }
 
 interface Testimonial {
-  _id: string
-  contentId: string
-  title: string
+  _id: string;
+  contentId: string;
+  title: string;
   data: {
-    quote: string
-    authorName: string
-    authorTitle: string
-  }
+    quote: string;
+    authorName: string;
+    authorTitle: string;
+  };
 }
 
-export default function Page() {
-  const [projects, setProjects] = useState<Project[]>([])
-  const [testimonials, setTestimonials] = useState<Testimonial[]>([])
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    projectType: "Solar Installation",
-    projectSize: "Medium (1-5MW)",
-    description: "",
-  })
-  const [loading, setLoading] = useState(true)
-  const [submitting, setSubmitting] = useState(false)
-  const [message, setMessage] = useState("")
+interface HeroButton {
+  id: string;
+  text: string;
+  link: string;
+  isExternal: boolean;
+  bgColor: string;
+  textColor: string;
+  style: 'filled' | 'outline';
+}
 
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        const [projectsData, testimonialsData] = await Promise.all([getContent("projects"), getContent("testimonials")])
-        setProjects(projectsData)
-        setTestimonials(testimonialsData)
-      } catch (error) {
-        console.error("Error loading data:", error)
-      } finally {
-        setLoading(false)
-      }
-    }
+interface StatItem {
+  id: string;
+  value: string;
+  label: string;
+}
 
-    loadData()
-  }, [])
+export default async function Home() {
+  // Fetch all data server-side
+  const [projects, testimonials, siteContent] = await Promise.all([
+    getContentServer('projects'),
+    getContentServer('testimonials'),
+    getSiteContentServer(),
+  ]);
 
-  const handleInputChange = (e: any) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
+  const defaultStats: StatItem[] = [
+    { id: 'stat_1', value: '500+', label: 'Projects Completed' },
+    { id: 'stat_2', value: '50K+', label: 'Cubic Yards Produced' },
+    { id: 'stat_3', value: '25+', label: 'Years Experience' },
+    { id: 'stat_4', value: '99.8%', label: 'On-Time Delivery' },
+  ];
 
-  const handleSubmit = async (e: any) => {
-    e.preventDefault()
-    setSubmitting(true)
-    setMessage("")
+  const defaultButtons: HeroButton[] = [
+    { id: 'btn_1', text: 'Start a Project', link: '#contact', isExternal: false, bgColor: '#ca8a04', textColor: '#ffffff', style: 'filled' },
+    { id: 'btn_2', text: 'View Projects', link: '/projects', isExternal: false, bgColor: '#111827', textColor: '#111827', style: 'outline' },
+  ];
 
-    const result = await submitContactForm(formData)
-
-    if (result.success) {
-      setMessage("✅ Thank you! We received your inquiry and will contact you soon.")
-      setFormData({
-        firstName: "",
-        lastName: "",
-        email: "",
-        phone: "",
-        projectType: "Solar Installation",
-        projectSize: "Medium (1-5MW)",
-        description: "",
-      })
-      setTimeout(() => setMessage(""), 5000)
-    } else {
-      setMessage(`❌ ${result.error}`)
-    }
-
-    setSubmitting(false)
-  }
+  const stats = siteContent?.stats && siteContent.stats.length > 0 ? siteContent.stats : defaultStats;
+  const heroButtons = siteContent?.heroButtons && siteContent.heroButtons.length > 0 ? siteContent.heroButtons : defaultButtons;
 
   return (
     <main>
       {/* Navigation */}
       <nav className="fixed w-full bg-white shadow-sm z-50 border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-yellow-600 rounded-lg flex items-center justify-center">
-              <span className="text-white text-lg">📦</span>
-            </div>
-            <span className="font-serif text-xl font-bold text-gray-900">Lindsay Precast</span>
+          <Link href="/" className="flex items-center">
+            <img 
+              src="/lindsay-precast-logo.png" 
+              alt="Lindsay Precast" 
+              className="h-12 w-auto"
+            />
           </Link>
           <div className="hidden md:flex gap-8">
             <Link href="/projects" className="text-gray-600 hover:text-gray-900 transition font-medium">
@@ -127,41 +114,87 @@ export default function Page() {
       </nav>
 
       {/* Hero Section */}
-      <section className="pt-32 pb-16 px-4 sm:px-6 lg:px-8 bg-linear-to-b from-gray-50 to-white">
+      <section className="pt-32 pb-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-gray-50 to-white overflow-hidden min-h-[600px]">
         <div className="max-w-7xl mx-auto">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div>
+          <div className="grid gap-12 items-center md:grid-cols-2">
+            {/* Text Content */}
+            <div className="animate-fadeIn">
               <h1 className="font-serif text-5xl font-bold mb-6 leading-tight text-gray-900">
-                Premium Precast Concrete Solutions for Infrastructure
+                {siteContent?.heroTitle || 'Premium Precast Concrete Solutions for Infrastructure'}
               </h1>
               <p className="text-lg text-gray-700 mb-4">
-                Engineering excellence meets manufacturing precision. From BESS foundations to custom grade beams, we
-                deliver infrastructure components that power renewable energy and modern utilities.
+                {siteContent?.heroSubtitle || 'Engineering excellence meets manufacturing precision. From BESS foundations to custom grade beams, we deliver infrastructure components that power renewable energy and modern utilities.'}
               </p>
               <p className="text-gray-700 mb-8">
-                Serving solar farms, battery storage facilities, and utility systems across North America.
+                {siteContent?.heroDescription || 'Serving solar farms, battery storage facilities, and utility systems across North America.'}
               </p>
-              <div className="flex gap-4">
-                <a
-                  href="#contact"
-                  className="px-6 py-3 rounded-lg text-white font-medium bg-yellow-600 hover:bg-yellow-700 transition"
-                >
-                  Start a Project
-                </a>
-                <Link
-                  href="/projects"
-                  className="px-6 py-3 border-2 border-gray-900 text-gray-900 rounded-lg font-medium hover:bg-gray-50 transition"
-                >
-                  View Projects
-                </Link>
+              <div className="flex flex-wrap gap-4">
+                {heroButtons.map((button) => {
+                  const isExternal = button.isExternal;
+                  const ButtonTag = isExternal ? 'a' : Link;
+                  const extraProps = isExternal 
+                    ? { target: '_blank', rel: 'noopener noreferrer' }
+                    : {};
+                  
+                  return (
+                    <ButtonTag
+                      key={button.id}
+                      href={button.link}
+                      {...extraProps}
+                      className={`px-6 py-3 rounded-lg font-medium transition hover:opacity-90 ${
+                        button.style === 'outline' ? 'border-2' : ''
+                      }`}
+                      style={button.style === 'filled' 
+                        ? { backgroundColor: button.bgColor, color: button.textColor }
+                        : { borderColor: button.bgColor, color: button.textColor }
+                      }
+                    >
+                      {button.text}
+                    </ButtonTag>
+                  );
+                })}
               </div>
             </div>
-            <div className="bg-linear-to-br from-gray-100 to-gray-200 rounded-lg h-96 flex items-center justify-center border-2 border-gray-200">
-              <div className="text-center">
-                <span className="text-6xl">🏗️</span>
-                <p className="text-gray-600 mt-4 font-medium">COWBOY II BESS Grade Beam</p>
-              </div>
+            
+            {/* Image */}
+            <div className="rounded-lg h-96 overflow-hidden shadow-lg animate-fadeIn animation-delay-150">
+              {siteContent?.heroImage ? (
+                <ImageLightbox
+                  src={siteContent.heroImage}
+                  alt="Hero"
+                  className="w-full h-full"
+                />
+              ) : (
+                <div className="w-full h-full bg-gradient-to-br from-yellow-100 to-yellow-200 flex items-center justify-center">
+                  <div className="text-center text-yellow-700">
+                    <Building2 className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                    <p className="text-sm opacity-75">Add a hero image in the CMS</p>
+                  </div>
+                </div>
+              )}
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Stats Bar */}
+      <section className="bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            {stats.map((stat: StatItem, index: number) => (
+              <div 
+                key={stat.id} 
+                className={`text-center animate-fadeInUp ${
+                  index === 0 ? 'animation-delay-200' :
+                  index === 1 ? 'animation-delay-250' :
+                  index === 2 ? 'animation-delay-300' :
+                  'animation-delay-350'
+                }`}
+              >
+                <h3 className="text-3xl md:text-4xl font-bold text-orange-500 mb-2">{stat.value}</h3>
+                <p className="text-sm md:text-base text-gray-400">{stat.label}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -169,49 +202,57 @@ export default function Page() {
       {/* Featured Projects */}
       <section id="projects" className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-50">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="font-serif text-4xl font-bold mb-4 text-gray-900">Featured Projects</h2>
-            <p className="text-lg text-gray-700">
-              Recent infrastructure solutions delivering impact across North America
-            </p>
-          </div>
-
-          {loading ? (
-            <div className="text-center py-12">
-              <p className="text-gray-600">Loading projects...</p>
+          <ScrollAnimation animation="fade-up">
+            <div className="text-center mb-12">
+              <h2 className="font-serif text-4xl font-bold mb-4 text-gray-900">
+                {siteContent?.projectsTitle || 'Featured Projects'}
+              </h2>
+              <p className="text-lg text-gray-700">
+                {siteContent?.projectsSubtitle || 'Recent infrastructure solutions delivering impact across North America'}
+              </p>
             </div>
-          ) : projects.length > 0 ? (
-            <div className="grid md:grid-cols-3 gap-8">
-              {projects.slice(0, 3).map((project) => (
-                <div
-                  key={project._id}
-                  className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-all"
+          </ScrollAnimation>
+
+          {projects.length > 0 ? (
+            <div className={`grid gap-8 ${
+              projects.slice(0, 3).length === 1 ? 'grid-cols-1 max-w-md mx-auto' : 
+              projects.slice(0, 3).length === 2 ? 'grid-cols-1 md:grid-cols-2 max-w-4xl mx-auto' : 
+              'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
+            }`}>
+              {projects.slice(0, 3).map((project: Project, index: number) => (
+                <ScrollAnimation 
+                  key={project._id} 
+                  animation="fade-up" 
+                  delay={index * 150}
+                  className="h-full"
                 >
-                  <div className="bg-linear-to-br from-blue-100 to-blue-200 h-48 flex items-center justify-center">
-                    {project.data.projectImage ? (
-                      <img
-                        src={project.data.projectImage || "/placeholder.svg"}
-                        alt={project.title}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <span className="text-5xl">☀️</span>
-                    )}
+                  <div className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-all h-full flex flex-col">
+                    <div className="bg-gradient-to-br from-blue-100 to-blue-200 h-48 flex items-center justify-center overflow-hidden flex-shrink-0">
+                      {project.data.projectImage ? (
+                        <ImageLightbox
+                          src={project.data.projectImage}
+                          alt={project.title}
+                          className="w-full h-full"
+                        />
+                      ) : (
+                        <Sun className="w-16 h-16 text-blue-400" strokeWidth={1.5} />
+                      )}
+                    </div>
+                    <div className="p-6 flex flex-col flex-grow">
+                      <h3 className="font-semibold text-lg text-gray-900 mb-2">{project.title}</h3>
+                      <p className="text-sm text-gray-700 mb-2 font-medium">{project.data.client}</p>
+                      <p className="text-sm text-gray-500 mb-4">{project.data.location || 'No location'}</p>
+                      <div className="mt-auto">
+                        <Link
+                          href={`/projects/${project.contentId}`}
+                          className="w-full py-2 border-2 border-gray-900 text-gray-900 rounded-lg font-medium hover:bg-gray-50 transition text-center block"
+                        >
+                          View Details
+                        </Link>
+                      </div>
+                    </div>
                   </div>
-                  <div className="p-6">
-                    <h3 className="font-semibold text-lg text-gray-900 mb-2">{project.title}</h3>
-                    <p className="text-sm text-gray-700 mb-4 font-medium">{project.data.client}</p>
-                    {project.data.shortDescription && (
-                      <p className="text-sm text-gray-600 mb-4">{project.data.shortDescription}</p>
-                    )}
-                    <Link
-                      href={`/projects/${project.contentId}`}
-                      className="w-full py-2 border-2 border-gray-900 text-gray-900 rounded-lg font-medium hover:bg-gray-50 transition text-center block"
-                    >
-                      View Details
-                    </Link>
-                  </div>
-                </div>
+                </ScrollAnimation>
               ))}
             </div>
           ) : (
@@ -234,31 +275,40 @@ export default function Page() {
       {/* Testimonials */}
       <section id="testimonials" className="py-16 px-4 sm:px-6 lg:px-8 bg-white">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="font-serif text-4xl font-bold mb-4 text-gray-900">Client Testimonials</h2>
-            <p className="text-lg text-gray-700">Trusted by leading companies</p>
-          </div>
+          <ScrollAnimation animation="fade-up">
+            <div className="text-center mb-12">
+              <h2 className="font-serif text-4xl font-bold mb-4 text-gray-900">
+                {siteContent?.testimonialsTitle || 'Client Testimonials'}
+              </h2>
+              <p className="text-lg text-gray-700">
+                {siteContent?.testimonialsSubtitle || 'Trusted by leading companies'}
+              </p>
+            </div>
+          </ScrollAnimation>
 
           {testimonials.length > 0 ? (
             <div className="grid md:grid-cols-3 gap-8">
-              {testimonials.map((testimonial) => (
-                <div
-                  key={testimonial._id}
-                  className="bg-white rounded-lg border border-gray-200 p-8 hover:shadow-lg transition"
-                >
-                  <div className="flex gap-1 mb-4">
-                    {[...Array(5)].map((_, i) => (
-                      <span key={i} className="text-yellow-600 text-lg">
-                        ★
-                      </span>
-                    ))}
+              {testimonials.map((testimonial: Testimonial, index: number) => (
+                <ScrollAnimation key={testimonial._id} animation="fade-up" delay={index * 150}>
+                  <div className="bg-white rounded-lg border border-gray-200 p-8 hover:shadow-lg transition h-full">
+                    <div className="flex gap-1 mb-4">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} className="w-5 h-5 text-yellow-500 fill-yellow-500" />
+                      ))}
+                    </div>
+                    <p className="text-gray-700 mb-6 italic">
+                      &quot;{testimonial.data.quote}&quot;
+                    </p>
+                    <div>
+                      <p className="font-semibold text-gray-900">
+                        {testimonial.data.authorName}
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        {testimonial.data.authorTitle}
+                      </p>
+                    </div>
                   </div>
-                  <p className="text-gray-700 mb-6 italic">&quot;{testimonial.data.quote}&quot;</p>
-                  <div>
-                    <p className="font-semibold text-gray-900">{testimonial.data.authorName}</p>
-                    <p className="text-sm text-gray-600">{testimonial.data.authorTitle}</p>
-                  </div>
-                </div>
+                </ScrollAnimation>
               ))}
             </div>
           ) : (
@@ -273,132 +323,118 @@ export default function Page() {
       <section id="contact" className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-50">
         <div className="max-w-7xl mx-auto">
           <div className="grid md:grid-cols-2 gap-12">
-            <div>
-              <h2 className="font-serif text-4xl font-bold mb-6 text-gray-900">Get in Touch</h2>
-              <p className="text-lg text-gray-700 mb-8">
-                Have a project in mind? Let&apos;s discuss how we can deliver precision-engineered solutions.
-              </p>
+            <ScrollAnimation animation="fade-right">
+              <div>
+                <h2 className="font-serif text-4xl font-bold mb-6 text-gray-900">
+                  {siteContent?.contactTitle || 'Get in Touch'}
+                </h2>
+                <p className="text-lg text-gray-700 mb-8">
+                  {siteContent?.contactSubtitle || "Have a project in mind? Let's discuss how we can deliver precision-engineered solutions."}
+                </p>
 
-              <div className="space-y-6">
-                <div>
-                  <p className="font-semibold text-gray-900 mb-2">📞 Phone</p>
-                  <p className="text-gray-700">1-800-LINDSAY</p>
-                </div>
-                <div>
-                  <p className="font-semibold text-gray-900 mb-2">📧 Email</p>
-                  <p className="text-gray-700">info@lindsayprecast.com</p>
-                </div>
-                <div>
-                  <p className="font-semibold text-gray-900 mb-2">📍 Address</p>
-                  <p className="text-gray-700">123 Industrial Blvd, Georgia, USA</p>
-                </div>
-                <div>
-                  <p className="font-semibold text-gray-900 mb-2">🕐 Hours</p>
-                  <p className="text-gray-700">Mon - Fri: 7:00 AM - 5:00 PM</p>
+                <div className="space-y-6">
+                  <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <Phone className="w-5 h-5 text-yellow-700" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-gray-900 mb-1">Phone</p>
+                      <p className="text-gray-700">1-800-LINDSAY</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <Mail className="w-5 h-5 text-yellow-700" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-gray-900 mb-1">Email</p>
+                      <p className="text-gray-700">info@lindsayprecast.com</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <MapPin className="w-5 h-5 text-yellow-700" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-gray-900 mb-1">Address</p>
+                      <p className="text-gray-700">123 Industrial Blvd, Georgia, USA</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <Clock className="w-5 h-5 text-yellow-700" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-gray-900 mb-1">Hours</p>
+                      <p className="text-gray-700">Mon - Fri: 7:00 AM - 5:00 PM</p>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
+            </ScrollAnimation>
 
-            <div className="bg-white rounded-lg border border-gray-200 p-8">
-              <h3 className="font-semibold text-lg text-gray-900 mb-6">Send us a Message</h3>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <input
-                    type="text"
-                    name="firstName"
-                    placeholder="First Name"
-                    value={formData.firstName}
-                    onChange={handleInputChange}
-                    required
-                    className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 text-gray-900 placeholder-gray-400"
-                  />
-                  <input
-                    type="text"
-                    name="lastName"
-                    placeholder="Last Name"
-                    value={formData.lastName}
-                    onChange={handleInputChange}
-                    required
-                    className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 text-gray-900 placeholder-gray-400"
-                  />
-                </div>
-                <input
-                  type="email"
-                  name="email"
-                  placeholder="Email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 text-gray-900 placeholder-gray-400"
-                />
-                <input
-                  type="tel"
-                  name="phone"
-                  placeholder="Phone (optional)"
-                  value={formData.phone}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 text-gray-900 placeholder-gray-400"
-                />
-                <select
-                  name="projectType"
-                  value={formData.projectType}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 text-gray-900"
-                >
-                  <option>Solar Installation</option>
-                  <option>BESS Foundation</option>
-                  <option>Storm Drain</option>
-                  <option>Custom Project</option>
-                </select>
-                <select
-                  name="projectSize"
-                  value={formData.projectSize}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 text-gray-900"
-                >
-                  <option>Small (&lt; 1MW)</option>
-                  <option>Medium (1-5MW)</option>
-                  <option>Large (5-10MW)</option>
-                  <option>Utility Scale (&gt; 10MW)</option>
-                </select>
-                <textarea
-                  name="description"
-                  placeholder="Project Description"
-                  value={formData.description}
-                  onChange={handleInputChange}
-                  rows={4}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-600 text-gray-900 placeholder-gray-400"
-                ></textarea>
-
-                {message && (
-                  <div
-                    className={`p-3 rounded-lg text-sm font-medium ${
-                      message.includes("✅") ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
-                    }`}
-                  >
-                    {message}
-                  </div>
-                )}
-
-                <button
-                  type="submit"
-                  disabled={submitting}
-                  className="w-full py-3 rounded-lg text-white font-medium bg-yellow-600 hover:bg-yellow-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
-                >
-                  {submitting ? "Sending..." : "Send Message"}
-                </button>
-              </form>
-            </div>
+            <ScrollAnimation animation="fade-left" delay={200}>
+              <ContactForm />
+            </ScrollAnimation>
           </div>
         </div>
       </section>
 
       {/* Footer */}
       <footer className="bg-gray-900 text-white py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto text-center text-gray-400 text-sm">
-          <p>&copy; 2025 Lindsay Precast. All rights reserved.</p>
+        <div className="max-w-7xl mx-auto">
+          <div className="grid md:grid-cols-4 gap-8 mb-8">
+            {/* Logo & Description */}
+            <div className="md:col-span-2">
+              <Link href="/">
+                <img 
+                  src="/lindsay-precast-logo.png" 
+                  alt="Lindsay Precast" 
+                  className="h-16 w-auto mb-4 brightness-0 invert"
+                />
+              </Link>
+              <p className="text-gray-400 max-w-md">
+                Premium precast concrete solutions for renewable energy infrastructure. 
+                Engineering excellence meets manufacturing precision.
+              </p>
+            </div>
+            
+            {/* Quick Links */}
+            <div>
+              <h4 className="font-semibold text-white mb-4">Quick Links</h4>
+              <ul className="space-y-2 text-gray-400">
+                <li><Link href="/projects" className="hover:text-white transition">Projects</Link></li>
+                <li><a href="#capabilities" className="hover:text-white transition">Capabilities</a></li>
+                <li><a href="#testimonials" className="hover:text-white transition">Testimonials</a></li>
+                <li><a href="#contact" className="hover:text-white transition">Contact</a></li>
+              </ul>
+            </div>
+            
+            {/* Contact Info */}
+            <div>
+              <h4 className="font-semibold text-white mb-4">Contact</h4>
+              <ul className="space-y-3 text-gray-400">
+                <li className="flex items-center gap-2">
+                  <Phone className="w-4 h-4" />
+                  <span>1-800-LINDSAY</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <Mail className="w-4 h-4" />
+                  <span>info@lindsayprecast.com</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <MapPin className="w-4 h-4" />
+                  <span>Georgia, USA</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+          
+          <div className="border-t border-gray-800 pt-8 text-center text-gray-500 text-sm">
+            <p>&copy; {new Date().getFullYear()} Lindsay Precast. All rights reserved.</p>
+          </div>
         </div>
       </footer>
     </main>
-  )
+  );
 }

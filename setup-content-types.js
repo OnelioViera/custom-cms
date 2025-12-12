@@ -1,5 +1,5 @@
-const API_URL = 'http://localhost:3000/api';
-const SITE_ID = 'lindsayprecast';
+const API_URL = process.env.API_URL || 'http://localhost:3000/api';
+const SITE_ID = process.env.SITE_ID || 'lindsayprecast';
 
 const projectsContentType = {
     contentTypeId: 'projects',

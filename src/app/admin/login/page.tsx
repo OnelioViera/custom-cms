@@ -58,17 +58,19 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen bg-linear-to-br from-gray-50 to-gray-100 flex items-center justify-center px-4">
+        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center px-4">
             <div className="w-full max-w-md">
                 {/* Logo */}
                 <div className="text-center mb-8">
-                    <Link href="/" className="inline-flex items-center gap-2 mb-6">
-                        <div className="w-12 h-12 bg-yellow-600 rounded-lg flex items-center justify-center text-2xl">
-                            📦
-                        </div>
+                    <Link href="/" className="inline-block mb-6">
+                        <img 
+                            src="/lindsay-precast-logo.png" 
+                            alt="Lindsay Precast" 
+                            className="h-20 w-auto mx-auto"
+                        />
                     </Link>
                     <h1 className="text-3xl font-bold text-gray-900">Admin Login</h1>
-                    <p className="text-gray-600 mt-2">Lindsay Precast CMS</p>
+                    <p className="text-gray-600 mt-2">Content Management System</p>
                 </div>
 
                 {/* Login Form */}

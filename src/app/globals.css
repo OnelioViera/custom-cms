@@ -24,3 +24,105 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Fix scroll position for anchor links with fixed navbar */
+[id] {
+  scroll-margin-top: 140px;
+}
+
+section[id] {
+  scroll-margin-top: 140px;
+}
+
+/* Toast animations */
+@keyframes slide-in {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-in {
+  animation: slide-in 0.3s ease-out;
+}
+
+/* Image Cropper Styles */
+.ReactCrop {
+  max-height: 100%;
+}
+
+.ReactCrop__crop-selection {
+  border: 2px dashed #eab308 !important;
+  box-shadow: 0 0 0 9999em rgba(0, 0, 0, 0.5);
+}
+
+.ReactCrop__drag-handle {
+  width: 12px !important;
+  height: 12px !important;
+  background-color: #eab308 !important;
+  border: 2px solid white !important;
+  border-radius: 2px !important;
+}
+
+.ReactCrop__drag-handle::after {
+  display: none !important;
+}
+
+.ReactCrop__drag-bar {
+  background-color: transparent !important;
+}
+
+.ReactCrop__drag-bar.ord-n,
+.ReactCrop__drag-bar.ord-s {
+  height: 8px !important;
+  margin-top: -4px !important;
+}
+
+.ReactCrop__drag-bar.ord-e,
+.ReactCrop__drag-bar.ord-w {
+  width: 8px !important;
+  margin-left: -4px !important;
+}
+
+/* Page load animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  opacity: 0;
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+.animate-fadeInUp {
+  opacity: 0;
+  animation: fadeInUp 0.4s ease-out forwards;
+}
+
+.animation-delay-100 { animation-delay: 100ms; }
+.animation-delay-150 { animation-delay: 150ms; }
+.animation-delay-200 { animation-delay: 200ms; }
+.animation-delay-250 { animation-delay: 250ms; }
+.animation-delay-300 { animation-delay: 300ms; }
+.animation-delay-350 { animation-delay: 350ms; }
+.animation-delay-400 { animation-delay: 400ms; }

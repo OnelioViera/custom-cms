@@ -1,5 +1,7 @@
-import { getContentById, getContent } from '@/lib/cms-client';
+import { getContentByIdServer, getContentServer } from '@/lib/cms-server';
 import Link from 'next/link';
+import { Building2, MapPin, Ruler, Zap, Sun, Phone, Mail, CheckCircle } from 'lucide-react';
+import ImageLightbox from '@/components/ImageLightbox';
 
 export const dynamic = 'force-dynamic';
 
@@ -35,10 +37,10 @@ export default async function ProjectDetailPage({ params }: PageProps) {
     const { contentId } = await params;
 
     // Fetch the specific project
-    const project = (await getContentById('projects', contentId)) as Project | null;
+    const project = (await getContentByIdServer('projects', contentId)) as Project | null;
 
-    // Fetch all projects for sidebar
-    const allProjects = (await getContent('projects')) as Project[];
+    // Fetch all projects for related projects section
+    const allProjects = (await getContentServer('projects')) as Project[];
 
     if (!project) {
         return (
@@ -46,11 +48,12 @@ export default async function ProjectDetailPage({ params }: PageProps) {
                 {/* Navigation */}
                 <nav className="fixed w-full bg-white shadow-sm z-50 border-b border-gray-100">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-                        <Link href="/" className="flex items-center gap-2">
-                            <div className="w-10 h-10 bg-yellow-600 rounded-lg flex items-center justify-center">
-                                <span className="text-white">📦</span>
-                            </div>
-                            <span className="font-serif text-xl font-bold text-gray-900">Lindsay Precast</span>
+                        <Link href="/" className="flex items-center">
+                            <img 
+                                src="/lindsay-precast-logo.png" 
+                                alt="Lindsay Precast" 
+                                className="h-12 w-auto"
+                            />
                         </Link>
                         <Link href="/projects" className="text-gray-600 hover:text-gray-900 font-medium">
                             ← Back to Projects
@@ -59,7 +62,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
                 </nav>
 
                 {/* 404 Section */}
-                <div className="pt-32 pb-16 px-4 sm:px-6 lg:px-8 bg-linear-to-b from-gray-50 to-white">
+                <div className="pt-32 pb-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-gray-50 to-white">
                     <div className="max-w-7xl mx-auto text-center">
                         <h1 className="font-serif text-4xl font-bold text-gray-900 mb-4">Project Not Found</h1>
                         <p className="text-gray-600 mb-8">The project you're looking for doesn't exist.</p>
@@ -91,11 +94,12 @@ export default async function ProjectDetailPage({ params }: PageProps) {
             {/* Navigation */}
             <nav className="fixed w-full bg-white shadow-sm z-50 border-b border-gray-100">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-                    <Link href="/" className="flex items-center gap-2">
-                        <div className="w-10 h-10 bg-yellow-600 rounded-lg flex items-center justify-center">
-                            <span className="text-white">📦</span>
-                        </div>
-                        <span className="font-serif text-xl font-bold text-gray-900">Lindsay Precast</span>
+                    <Link href="/" className="flex items-center">
+                        <img 
+                            src="/lindsay-precast-logo.png" 
+                            alt="Lindsay Precast" 
+                            className="h-12 w-auto"
+                        />
                     </Link>
                     <div className="hidden md:flex gap-8">
                         <Link href="/projects" className="text-gray-600 hover:text-gray-900 transition font-medium">
@@ -145,7 +149,9 @@ export default async function ProjectDetailPage({ params }: PageProps) {
                             <div className="space-y-4 mb-8">
                                 {project.data.client && (
                                     <div className="flex items-start gap-3">
-                                        <span className="text-2xl">🏢</span>
+                                        <div className="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                            <Building2 className="w-5 h-5 text-slate-600" />
+                                        </div>
                                         <div>
                                             <p className="text-sm text-gray-600">Client</p>
                                             <p className="font-semibold text-gray-900">{project.data.client}</p>
@@ -154,7 +160,9 @@ export default async function ProjectDetailPage({ params }: PageProps) {
                                 )}
                                 {project.data.location && (
                                     <div className="flex items-start gap-3">
-                                        <span className="text-2xl">📍</span>
+                                        <div className="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                            <MapPin className="w-5 h-5 text-slate-600" />
+                                        </div>
                                         <div>
                                             <p className="text-sm text-gray-600">Location</p>
                                             <p className="font-semibold text-gray-900">{project.data.location}</p>
@@ -163,7 +171,9 @@ export default async function ProjectDetailPage({ params }: PageProps) {
                                 )}
                                 {project.data.projectSize && (
                                     <div className="flex items-start gap-3">
-                                        <span className="text-2xl">📐</span>
+                                        <div className="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                            <Ruler className="w-5 h-5 text-slate-600" />
+                                        </div>
                                         <div>
                                             <p className="text-sm text-gray-600">Project Size</p>
                                             <p className="font-semibold text-gray-900">{project.data.projectSize}</p>
@@ -172,7 +182,9 @@ export default async function ProjectDetailPage({ params }: PageProps) {
                                 )}
                                 {project.data.capacity && (
                                     <div className="flex items-start gap-3">
-                                        <span className="text-2xl">⚡</span>
+                                        <div className="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                            <Zap className="w-5 h-5 text-slate-600" />
+                                        </div>
                                         <div>
                                             <p className="text-sm text-gray-600">Capacity</p>
                                             <p className="font-semibold text-gray-900">{project.data.capacity}</p>
@@ -189,15 +201,15 @@ export default async function ProjectDetailPage({ params }: PageProps) {
                             </a>
                         </div>
 
-                        <div className="bg-linear-to-br from-gray-100 to-gray-200 rounded-lg h-96 flex items-center justify-center border-2 border-gray-200 overflow-hidden">
+                        <div className="bg-gradient-to-br from-slate-100 to-slate-200 rounded-lg h-96 flex items-center justify-center border-2 border-slate-200 overflow-hidden">
                             {project.data.projectImage ? (
-                                <img
+                                <ImageLightbox
                                     src={project.data.projectImage}
                                     alt={project.title}
-                                    className="w-full h-full object-cover"
+                                    className="w-full h-full"
                                 />
                             ) : (
-                                <span className="text-6xl">🏗️</span>
+                                <Building2 className="w-24 h-24 text-slate-400" strokeWidth={1} />
                             )}
                         </div>
                     </div>
@@ -222,7 +234,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
                             <div className="grid md:grid-cols-2 gap-4">
                                 {project.data.services.map((service, index) => (
                                     <div key={index} className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
-                                        <span className="text-yellow-600 text-xl">✓</span>
+                                        <CheckCircle className="w-5 h-5 text-yellow-600 flex-shrink-0" />
                                         <span className="text-gray-900 font-medium">{service}</span>
                                     </div>
                                 ))}
@@ -279,22 +291,29 @@ export default async function ProjectDetailPage({ params }: PageProps) {
                 <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-50">
                     <div className="max-w-7xl mx-auto">
                         <h2 className="font-serif text-3xl font-bold text-gray-900 mb-8">Related Projects</h2>
-                        <div className="grid md:grid-cols-3 gap-8">
-                            {relatedProjects.map((relatedProject) => (
+                        <div className={`flex flex-wrap justify-center gap-8 ${
+                            relatedProjects.length === 1 ? 'max-w-xl mx-auto' : 
+                            relatedProjects.length === 2 ? 'max-w-4xl mx-auto' : ''
+                        }`}>
+                            {relatedProjects.map((relatedProject, index, arr) => (
                                 <Link
                                     key={relatedProject._id}
                                     href={`/projects/${relatedProject.contentId}`}
-                                    className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-all group"
+                                    className={`bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-all group ${
+                                        arr.length === 1 ? 'w-full' : 
+                                        arr.length === 2 ? 'w-full md:w-[calc(50%-1rem)]' : 
+                                        'w-full md:w-[calc(50%-1rem)] lg:w-[calc(33.333%-1.34rem)]'
+                                    }`}
                                 >
-                                    <div className="bg-linear-to-br from-blue-100 to-blue-200 h-48 flex items-center justify-center">
+                                    <div className="bg-gradient-to-br from-slate-100 to-slate-200 h-48 flex items-center justify-center overflow-hidden">
                                         {relatedProject.data.projectImage ? (
-                                            <img
+                                            <ImageLightbox
                                                 src={relatedProject.data.projectImage}
                                                 alt={relatedProject.title}
-                                                className="w-full h-full object-cover"
+                                                className="w-full h-full"
                                             />
                                         ) : (
-                                            <span className="text-4xl">🏗️</span>
+                                            <Sun className="w-12 h-12 text-slate-400" strokeWidth={1.5} />
                                         )}
                                     </div>
                                     <div className="p-6">
@@ -319,14 +338,15 @@ export default async function ProjectDetailPage({ params }: PageProps) {
             <footer className="bg-gray-900 text-white py-12 px-4 sm:px-6 lg:px-8">
                 <div className="max-w-7xl mx-auto grid md:grid-cols-3 gap-8">
                     <div>
-                        <div className="flex items-center gap-2 mb-4">
-                            <div className="w-10 h-10 bg-yellow-600 rounded-lg flex items-center justify-center">
-                                <span className="text-white">📦</span>
-                            </div>
-                            <span className="font-serif text-xl font-bold">Lindsay Precast</span>
-                        </div>
+                        <Link href="/" className="inline-block mb-4">
+                            <img 
+                                src="/lindsay-precast-logo.png" 
+                                alt="Lindsay Precast" 
+                                className="h-14 w-auto brightness-0 invert"
+                            />
+                        </Link>
                         <p className="text-gray-400 text-sm">
-                            Leading precast concrete solutions for commercial and residential projects.
+                            Leading precast concrete solutions for renewable energy and infrastructure projects.
                         </p>
                     </div>
                     <div>
@@ -345,14 +365,20 @@ export default async function ProjectDetailPage({ params }: PageProps) {
                     </div>
                     <div>
                         <h3 className="font-bold mb-4 text-white">Contact</h3>
-                        <div className="space-y-2 text-sm text-gray-400">
-                            <p>📧 info@lindsayprecast.com</p>
-                            <p>📞 1-800-LINDSAY</p>
+                        <div className="space-y-3 text-sm text-gray-400">
+                            <p className="flex items-center gap-2">
+                                <Mail className="w-4 h-4" />
+                                info@lindsayprecast.com
+                            </p>
+                            <p className="flex items-center gap-2">
+                                <Phone className="w-4 h-4" />
+                                1-800-LINDSAY
+                            </p>
                         </div>
                     </div>
                 </div>
                 <div className="max-w-7xl mx-auto mt-8 pt-8 border-t border-gray-800 text-center text-gray-400 text-sm">
-                    <p>&copy; 2025 Lindsay Precast. All rights reserved.</p>
+                    <p>&copy; {new Date().getFullYear()} Lindsay Precast. All rights reserved.</p>
                 </div>
             </footer>
         </main>
