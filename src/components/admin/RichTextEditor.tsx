@@ -176,9 +176,9 @@ export default function RichTextEditor({
     );
 
     return (
-        <div className="border border-gray-300 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-yellow-600 focus-within:border-transparent">
+        <div className="border border-gray-300 rounded-lg focus-within:ring-2 focus-within:ring-yellow-600 focus-within:border-transparent">
             {/* Toolbar */}
-            <div className="flex flex-wrap items-center gap-0.5 p-2 border-b border-gray-200 bg-gray-50">
+            <div className="flex flex-wrap items-center gap-0.5 p-2 border-b border-gray-200 bg-gray-50 rounded-t-lg relative z-20">
                 <ToolbarButton
                     onClick={() => editor.chain().focus().toggleBold().run()}
                     isActive={editor.isActive('bold')}
@@ -215,7 +215,7 @@ export default function RichTextEditor({
                     </button>
 
                     {showColorPicker && (
-                        <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg p-2 z-50 min-w-[180px]">
+                        <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg p-2 z-[100] min-w-[180px]">
                             <div className="flex items-center justify-between mb-2 pb-2 border-b border-gray-100">
                                 <span className="text-xs font-medium text-gray-700">Text Color</span>
                                 <button
@@ -347,7 +347,7 @@ export default function RichTextEditor({
 
             {/* Editor Content */}
             <div 
-                className="px-3 py-2 bg-white"
+                className="px-3 py-2 bg-white rounded-b-lg"
                 style={{ minHeight }}
             >
                 <EditorContent editor={editor} />
