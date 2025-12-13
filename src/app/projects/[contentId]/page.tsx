@@ -6,8 +6,7 @@ import ImageGallery from '@/components/ImageGallery';
 import Footer from '@/components/Footer';
 import Navigation from '@/components/Navigation';
 import ProjectInfoItem from '@/components/ProjectInfoItem';
-
-export const dynamic = 'force-dynamic';
+export const revalidate = 60; // Cache for 60 seconds
 
 interface InfoFieldConfig {
     label: string;
