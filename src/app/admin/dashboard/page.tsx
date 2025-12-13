@@ -194,7 +194,6 @@ function AdminDashboardContent() {
                         { id: 'overview', label: 'Overview', Icon: LayoutDashboard },
                         { id: 'projects', label: 'Projects', Icon: FolderKanban },
                         { id: 'submissions', label: 'Form Submissions', Icon: FileText },
-                        { id: 'testimonials', label: 'Testimonials', Icon: Star },
                         { id: 'settings', label: 'Settings', Icon: Settings },
                     ].map((item) => (
                         <button
@@ -209,6 +208,15 @@ function AdminDashboardContent() {
                             {sidebarOpen && <span className="font-medium">{item.label}</span>}
                         </button>
                     ))}
+                    
+                    {/* Testimonials Link */}
+                    <Link
+                        href="/admin/testimonials"
+                        className="w-full flex items-center gap-3 px-4 py-3 rounded-lg transition text-gray-400 hover:bg-gray-800 hover:text-white"
+                    >
+                        <Star className="w-5 h-5 flex-shrink-0" />
+                        {sidebarOpen && <span className="font-medium">Testimonials</span>}
+                    </Link>
                     
                     {/* Media Library Link */}
                     <Link
@@ -272,7 +280,6 @@ function AdminDashboardContent() {
                             {activeTab === 'overview' && 'Dashboard'}
                             {activeTab === 'projects' && 'Manage Projects'}
                             {activeTab === 'submissions' && 'Form Submissions'}
-                            {activeTab === 'testimonials' && 'Testimonials'}
                             {activeTab === 'settings' && 'Settings'}
                         </h1>
                         <p className="text-gray-600">Manage your CMS content and track inquiries</p>
@@ -588,23 +595,6 @@ function AdminDashboardContent() {
                                     <p className="text-gray-600">No form submissions yet</p>
                                 </div>
                             )}
-                        </div>
-                    )}
-
-                    {/* Testimonials Tab */}
-                    {activeTab === 'testimonials' && (
-                        <div>
-                            <div className="flex justify-between items-center mb-6">
-                                <h2 className="text-2xl font-bold text-gray-900">Testimonials</h2>
-                                <button className="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 font-medium flex items-center gap-2">
-                                    <Plus className="w-5 h-5" />
-                                    New Testimonial
-                                </button>
-                            </div>
-                            <div className="bg-white rounded-lg border border-gray-200 p-12 text-center">
-                                <Star className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                                <p className="text-gray-600">Testimonials management coming soon</p>
-                            </div>
                         </div>
                     )}
 
