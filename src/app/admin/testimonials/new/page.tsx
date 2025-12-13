@@ -204,51 +204,54 @@ export default function NewTestimonialPage() {
                 </div>
             </aside>
 
-            {/* Main Content */}
-            <main className={`flex-1 ml-64 transition-all duration-300 ${showPreview ? 'mr-[450px]' : ''}`}>
-                <div className="p-6">
-                    {/* Header */}
-                    <div className="flex items-center justify-between mb-6">
-                        <div>
-                            <h1 className="text-2xl font-bold text-gray-900">Create Testimonial</h1>
-                            <p className="text-gray-600">Add a new customer testimonial to showcase on your website</p>
+            {/* Main Content Area - Form and Preview side by side */}
+            <div className="flex-1 ml-64 flex">
+                {/* Form Section */}
+                <main className={`${showPreview ? 'w-1/2' : 'flex-1'} transition-all duration-300 overflow-y-auto h-screen`}>
+                    <div className="p-6">
+                        {/* Header */}
+                        <div className="flex items-center justify-between mb-6">
+                            <div>
+                                <h1 className="text-2xl font-bold text-gray-900">Create Testimonial</h1>
+                                <p className="text-gray-600">Add a new customer testimonial to showcase on your website</p>
+                            </div>
+                            <button
+                                onClick={() => setShowPreview(!showPreview)}
+                                className="flex items-center gap-2 px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition text-sm"
+                            >
+                                {showPreview ? (
+                                    <>
+                                        <PanelRightClose className="w-4 h-4" />
+                                        Hide Preview
+                                    </>
+                                ) : (
+                                    <>
+                                        <PanelRightOpen className="w-4 h-4" />
+                                        Show Preview
+                                    </>
+                                )}
+                            </button>
                         </div>
-                        <button
-                            onClick={() => setShowPreview(!showPreview)}
-                            className="flex items-center gap-2 px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition text-sm"
-                        >
-                            {showPreview ? (
-                                <>
-                                    <PanelRightClose className="w-4 h-4" />
-                                    Hide Preview
-                                </>
-                            ) : (
-                                <>
-                                    <PanelRightOpen className="w-4 h-4" />
-                                    Show Preview
-                                </>
-                            )}
-                        </button>
-                    </div>
 
-                    {/* Form Card */}
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                        <div className="p-6">
-                            <TestimonialFormFields
-                                ref={formRef}
-                                onFormChange={handleFormChange}
-                            />
+                        {/* Form Card */}
+                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                            <div className="p-6">
+                                <TestimonialFormFields
+                                    ref={formRef}
+                                    onFormChange={handleFormChange}
+                                />
+                            </div>
                         </div>
                     </div>
-                </div>
-            </main>
+                </main>
 
-            {/* Right Preview Panel */}
-            {showPreview && (
-                <aside className="w-[450px] bg-white border-l border-gray-200 fixed right-0 top-0 h-full overflow-hidden">
-                    <TestimonialPreview data={previewData} />
-                </aside>
-            )}
+                {/* Right Preview Panel - Equal width */}
+                {showPreview && (
+                    <aside className="w-1/2 bg-white border-l border-gray-200 h-screen overflow-hidden">
+                        <TestimonialPreview data={previewData} />
+                    </aside>
+                )}
+            </div>
         </div>
     );
 }
