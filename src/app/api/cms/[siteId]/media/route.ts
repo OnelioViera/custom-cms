@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Media } from '@/lib/cms-models';
 import { sendSuccess, sendError, withDB } from '@/lib/cms-utils';
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'crypto';
 
 // ============================================================================
 // GET - List all media for a site
@@ -119,7 +119,7 @@ export async function POST(
             }
 
             // Generate unique mediaId
-            const mediaId = `media_${uuidv4()}`;
+            const mediaId = `media_${randomUUID()}`;
 
             // Create media entry
             const media = await Media.create({
