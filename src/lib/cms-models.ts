@@ -142,6 +142,41 @@ const revisionSchema = new Schema(
 
 revisionSchema.index({ siteId: 1, contentId: 1 })
 
+// Media Schema - for storing uploaded videos and images
+const mediaSchema = new Schema(
+  {
+    siteId: { type: String, required: true, index: true },
+    mediaId: { type: String, required: true, unique: true },
+    name: { type: String, required: true },
+    originalName: { type: String, required: true },
+    type: {
+      type: String,
+      enum: ["video", "image"],
+      required: true,
+      index: true,
+    },
+    mimeType: { type: String, required: true },
+    size: { type: Number, required: true }, // in bytes
+    url: { type: String, required: true }, // base64 or external URL
+    thumbnailUrl: { type: String }, // thumbnail for videos
+    metadata: {
+      width: Number,
+      height: Number,
+      duration: Number, // for videos, in seconds
+      aspectRatio: String,
+    },
+    folder: { type: String, default: "root", index: true },
+    tags: [{ type: String }],
+    alt: { type: String }, // alt text for accessibility
+    description: { type: String },
+  },
+  { timestamps: true },
+)
+
+mediaSchema.index({ siteId: 1, type: 1 })
+mediaSchema.index({ siteId: 1, folder: 1 })
+mediaSchema.index({ siteId: 1, tags: 1 })
+
 // Create or get models
 const Website = mongoose.models.Website || mongoose.model("Website", websiteSchema)
 const ContentType = mongoose.models.ContentType || mongoose.model("ContentType", contentTypeSchema)
@@ -151,5 +186,6 @@ const User = mongoose.models.User || mongoose.model("User", userSchema)
 const Webhook = mongoose.models.Webhook || mongoose.model("Webhook", webhookSchema)
 const WebhookLog = mongoose.models.WebhookLog || mongoose.model("WebhookLog", webhookLogSchema)
 const Revision = mongoose.models.Revision || mongoose.model("Revision", revisionSchema)
+const Media = mongoose.models.Media || mongoose.model("Media", mediaSchema)
 
-export { Website, ContentType, Content, FormSubmission, User, Webhook, WebhookLog, Revision }
+export { Website, ContentType, Content, FormSubmission, User, Webhook, WebhookLog, Revision, Media }

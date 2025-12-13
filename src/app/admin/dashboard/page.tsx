@@ -21,7 +21,8 @@ import {
     Pencil,
     Trash2,
     ExternalLink,
-    Type
+    Type,
+    Film
 } from 'lucide-react';
 import { useToast } from '@/components/Toast';
 
@@ -208,6 +209,15 @@ function AdminDashboardContent() {
                             {sidebarOpen && <span className="font-medium">{item.label}</span>}
                         </button>
                     ))}
+                    
+                    {/* Media Library Link */}
+                    <Link
+                        href="/admin/media"
+                        className="w-full flex items-center gap-3 px-4 py-3 rounded-lg transition text-gray-400 hover:bg-gray-800 hover:text-white"
+                    >
+                        <Film className="w-5 h-5 flex-shrink-0" />
+                        {sidebarOpen && <span className="font-medium">Media Library</span>}
+                    </Link>
                     
                     {/* Page Content Link */}
                     <Link

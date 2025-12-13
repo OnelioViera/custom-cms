@@ -1,9 +1,10 @@
 'use client';
 
 import { useState, forwardRef, useImperativeHandle, useEffect } from 'react';
-import { Upload, X, Crop, Plus, Trash2, ExternalLink, MousePointer, Image } from 'lucide-react';
+import { Upload, X, Crop, Plus, Trash2, ExternalLink, MousePointer, Image, Film } from 'lucide-react';
 import ImageCropper from '@/components/ImageCropper';
 import RichTextEditor from '@/components/admin/RichTextEditor';
+import MediaPicker from '@/components/admin/MediaPicker';
 import { useToast } from '@/components/Toast';
 
 export interface HeroButton {
@@ -107,6 +108,7 @@ const SiteContentFormFields = forwardRef<SiteContentFormFieldsRef, SiteContentFo
         const [formData, setFormData] = useState<SiteContentFormData>(initialData || defaultSiteContent);
         const [showCropper, setShowCropper] = useState(false);
         const [tempImage, setTempImage] = useState<string | null>(null);
+        const [showMediaPicker, setShowMediaPicker] = useState(false);
 
         useEffect(() => {
             if (initialData) {
@@ -325,12 +327,34 @@ const SiteContentFormFields = forwardRef<SiteContentFormFieldsRef, SiteContentFo
                                         </div>
                                     ) : (
                                         <div className="space-y-3">
+                                            {/* Select from Media Library */}
+                                            <button
+                                                type="button"
+                                                onClick={() => setShowMediaPicker(true)}
+                                                className="w-full px-4 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 font-medium flex items-center justify-center gap-2 transition"
+                                            >
+                                                <Film className="w-5 h-5" />
+                                                Select from Media Library
+                                            </button>
+                                            
+                                            <div className="flex items-center gap-3">
+                                                <div className="flex-1 h-px bg-gray-300" />
+                                                <span className="text-xs text-gray-500">or</span>
+                                                <div className="flex-1 h-px bg-gray-300" />
+                                            </div>
+
                                             <label className="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-yellow-500">
                                                 <Upload className="w-6 h-6 text-gray-400 mb-1" />
                                                 <span className="text-xs text-gray-600">Upload video (MP4, max 50MB)</span>
                                                 <input type="file" accept="video/mp4,video/webm" onChange={handleVideoUpload} className="hidden" />
                                             </label>
-                                            <div className="text-center text-xs text-gray-400">or enter URL</div>
+                                            
+                                            <div className="flex items-center gap-3">
+                                                <div className="flex-1 h-px bg-gray-300" />
+                                                <span className="text-xs text-gray-500">or enter URL</span>
+                                                <div className="flex-1 h-px bg-gray-300" />
+                                            </div>
+                                            
                                             <input
                                                 type="text"
                                                 placeholder="https://example.com/video.mp4"
@@ -666,6 +690,19 @@ const SiteContentFormFields = forwardRef<SiteContentFormFieldsRef, SiteContentFo
                         aspectRatio={16 / 9}
                     />
                 )}
+
+                {/* Media Picker Modal */}
+                <MediaPicker
+                    isOpen={showMediaPicker}
+                    onClose={() => setShowMediaPicker(false)}
+                    onSelect={(media) => {
+                        updateFormData({
+                            heroVideoConfig: { ...formData.heroVideoConfig, videoUrl: media.url }
+                        });
+                    }}
+                    filterType="video"
+                    title="Select Video from Media Library"
+                />
             </div>
         );
     }
