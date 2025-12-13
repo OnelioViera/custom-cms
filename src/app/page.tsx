@@ -39,6 +39,9 @@ interface Testimonial {
     quote: string;
     authorName: string;
     authorTitle: string;
+    authorImage?: string;
+    authorCompany?: string;
+    rating?: number;
   };
 }
 
@@ -282,22 +285,39 @@ export default async function Home() {
             <div className="grid md:grid-cols-3 gap-8">
               {testimonials.map((testimonial: Testimonial, index: number) => (
                 <ScrollAnimation key={testimonial._id} animation="fade-up" delay={index * 150}>
-                  <div className="bg-white rounded-lg border border-gray-200 p-8 hover:shadow-lg transition h-full">
+                  <div className="bg-white rounded-lg border border-gray-200 p-8 hover:shadow-lg transition h-full flex flex-col">
                     <div className="flex gap-1 mb-4">
                       {[...Array(5)].map((_, i) => (
-                        <Star key={i} className="w-5 h-5 text-yellow-500 fill-yellow-500" />
+                        <Star 
+                          key={i} 
+                          className={`w-5 h-5 ${
+                            i < (testimonial.data.rating || 5) 
+                              ? 'text-yellow-500 fill-yellow-500' 
+                              : 'text-gray-200'
+                          }`} 
+                        />
                       ))}
                     </div>
-                    <p className="text-gray-700 mb-6 italic">
+                    <p className="text-gray-700 mb-6 italic flex-1">
                       &quot;{stripHtmlTags(testimonial.data.quote)}&quot;
                     </p>
-                    <div>
-                      <p className="font-semibold text-gray-900">
-                        {testimonial.data.authorName}
-                      </p>
-                      <p className="text-sm text-gray-600">
-                        {testimonial.data.authorTitle}
-                      </p>
+                    <div className="flex items-center gap-3">
+                      {testimonial.data.authorImage && (
+                        <img
+                          src={testimonial.data.authorImage}
+                          alt={testimonial.data.authorName}
+                          className="w-12 h-12 rounded-full object-cover flex-shrink-0"
+                        />
+                      )}
+                      <div>
+                        <p className="font-semibold text-gray-900">
+                          {testimonial.data.authorName}
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          {testimonial.data.authorTitle}
+                          {testimonial.data.authorCompany && `, ${testimonial.data.authorCompany}`}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </ScrollAnimation>
