@@ -112,10 +112,7 @@ export default function ProjectsPage() {
                                 <thead className="bg-gray-50 border-b border-gray-200">
                                     <tr>
                                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Project
-                                        </th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Client
+                                            Title
                                         </th>
                                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                             Status
@@ -130,49 +127,44 @@ export default function ProjectsPage() {
                                 </thead>
                                 <tbody className="divide-y divide-gray-200">
                                     {projects.map((project) => (
-                                        <tr key={project.id} className="hover:bg-gray-50">
+                                        <tr key={project.contentId} className="hover:bg-gray-50">
                                             <td className="px-6 py-4">
-                                                <div className="text-sm font-medium text-gray-900">{project.title}</div>
-                                                <div className="text-sm text-gray-500">{project.data?.subtitle}</div>
-                                            </td>
-                                            <td className="px-6 py-4 text-sm text-gray-900">
-                                                {project.data?.client || '-'}
+                                                <div className="font-medium text-gray-900">{project.title}</div>
+                                                {project.data?.client && (
+                                                    <div className="text-sm text-gray-500">{project.data.client}</div>
+                                                )}
                                             </td>
                                             <td className="px-6 py-4">
-                                                <span
-                                                    className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${project.status === 'published'
+                                                <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${project.status === 'published'
                                                         ? 'bg-green-100 text-green-800'
-                                                        : 'bg-yellow-100 text-yellow-800'
-                                                        }`}
-                                                >
+                                                        : 'bg-gray-100 text-gray-800'
+                                                    }`}>
                                                     {project.status}
                                                 </span>
                                             </td>
                                             <td className="px-6 py-4 text-sm text-gray-500">
                                                 {new Date(project.createdAt).toLocaleDateString()}
                                             </td>
-                                            <td className="px-6 py-4 text-right text-sm font-medium">
+                                            <td className="px-6 py-4 text-right">
                                                 <div className="flex items-center justify-end gap-2">
-                                                    {project.status === 'published' && (
-                                                        <Link
-                                                            href={`/projects/${project.contentId}`}
-                                                            target="_blank"
-                                                            className="text-blue-600 hover:text-blue-900"
-                                                            title="View"
-                                                        >
-                                                            <Eye className="w-4 h-4" />
-                                                        </Link>
-                                                    )}
+                                                    <Link
+                                                        href={`/projects/${project.contentId}`}
+                                                        target="_blank"
+                                                        className="text-gray-600 hover:text-gray-900 p-2"
+                                                        title="View"
+                                                    >
+                                                        <Eye className="w-4 h-4" />
+                                                    </Link>
                                                     <Link
                                                         href={`/admin/projects/${project.contentId}/edit`}
-                                                        className="text-yellow-600 hover:text-yellow-900"
+                                                        className="text-blue-600 hover:text-blue-900 p-2"
                                                         title="Edit"
                                                     >
                                                         <Edit className="w-4 h-4" />
                                                     </Link>
                                                     <button
                                                         onClick={() => handleDelete(project.contentId)}
-                                                        className="text-red-600 hover:text-red-900"
+                                                        className="text-red-600 hover:text-red-900 p-2"
                                                         title="Delete"
                                                     >
                                                         <Trash2 className="w-4 h-4" />
