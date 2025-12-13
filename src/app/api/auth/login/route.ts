@@ -43,6 +43,11 @@ export async function POST(request: NextRequest) {
         }
 
         // Generate token
+        console.log('JWT_SECRET exists:', !!process.env.JWT_SECRET);
+        console.log('JWT_SECRET value:', process.env.JWT_SECRET);
+        console.log('userId:', user._id.toString());
+        console.log('siteId:', siteId);
+
         const token = generateToken(user._id.toString(), siteId);
 
         console.log('Login successful for:', email);
