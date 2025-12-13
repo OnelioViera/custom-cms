@@ -36,7 +36,6 @@ export async function POST(request: NextRequest) {
 
         // Verify password
         const passwordMatch = verifyPassword(password, user.password);
-
         console.log('Password match:', passwordMatch);
 
         if (!passwordMatch) {
