@@ -58,6 +58,12 @@ interface StatItem {
   label: string;
 }
 
+// Helper function to strip HTML tags from text
+function stripHtmlTags(html: string): string {
+  if (!html) return '';
+  return html.replace(/<[^>]*>/g, '').trim();
+}
+
 export default async function Home() {
   // Fetch all data server-side
   const [projects, testimonials, siteContent] = await Promise.all([
@@ -283,7 +289,7 @@ export default async function Home() {
                       ))}
                     </div>
                     <p className="text-gray-700 mb-6 italic">
-                      &quot;{testimonial.data.quote}&quot;
+                      &quot;{stripHtmlTags(testimonial.data.quote)}&quot;
                     </p>
                     <div>
                       <p className="font-semibold text-gray-900">
