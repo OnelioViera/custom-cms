@@ -56,11 +56,11 @@ interface PageProps {
 export default async function ProjectDetailPage({ params }: PageProps) {
     const { contentId } = await params;
 
-    // Fetch the specific project
-    const project = (await getContentByIdServer('projects', contentId)) as Project | null;
-
-    // Fetch all projects for related projects section
-    const allProjects = (await getContentServer('projects')) as Project[];
+    // Fetch data in parallel for faster loading
+    const [project, allProjects] = await Promise.all([
+        getContentByIdServer('projects', contentId).catch(() => null),
+        getContentServer('projects').catch(() => []),
+    ]) as [Project | null, Project[]];
 
     if (!project) {
         return (
