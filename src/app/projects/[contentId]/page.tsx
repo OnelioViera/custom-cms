@@ -53,6 +53,19 @@ interface PageProps {
     params: Promise<{ contentId: string }>;
 }
 
+// Generate static params for all projects at build time
+export async function generateStaticParams() {
+    try {
+        const projects = await getContentServer('projects') as Project[];
+        return projects.map((project) => ({
+            contentId: project.contentId,
+        }));
+    } catch (error) {
+        console.error('Error generating static params:', error);
+        return [];
+    }
+}
+
 export default async function ProjectDetailPage({ params }: PageProps) {
     const { contentId } = await params;
 
