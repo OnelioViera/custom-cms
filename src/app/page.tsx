@@ -19,6 +19,7 @@ import TeamCarousel, { TeamMember } from '@/components/TeamCarousel';
 
 // Enable static generation with revalidation
 export const revalidate = 60; // Revalidate every 60 seconds
+
 interface Project {
   _id: string;
   contentId: string;
@@ -107,313 +108,315 @@ export default async function Home() {
   const videoConfig: VideoBackgroundConfig = siteContent?.heroVideoConfig || defaultVideoConfig;
 
   return (
-    <main>
+    <>
       <Navigation currentPage="home" showTestimonials={true} />
 
-      {/* Hero Section */}
-      <section className={`relative pt-32 pb-16 px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[600px] ${!videoConfig.enabled ? 'bg-gradient-to-b from-gray-50 to-white' : ''
-        }`}>
-        {/* Video Background */}
-        <VideoBackground config={videoConfig} />
+      <main>
+        {/* Hero Section */}
+        <section className={`relative pt-32 pb-16 px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[600px] ${!videoConfig.enabled ? 'bg-gradient-to-b from-gray-50 to-white' : ''
+          }`}>
+          {/* Video Background */}
+          <VideoBackground config={videoConfig} />
 
-        <div className="max-w-7xl mx-auto relative z-10">
-          <div className="grid gap-12 items-center md:grid-cols-2">
-            {/* Text Content */}
-            <div className="animate-fadeIn">
-              <div
-                className="font-serif text-5xl font-bold mb-6 leading-tight text-gray-900 rich-text-content [&_p]:m-0"
-                dangerouslySetInnerHTML={{
-                  __html: siteContent?.heroTitle || 'Premium Precast Concrete Solutions for Infrastructure'
-                }}
-              />
-              <div
-                className="text-lg text-gray-700 mb-4 rich-text-content [&_p]:m-0"
-                dangerouslySetInnerHTML={{
-                  __html: siteContent?.heroSubtitle || 'Engineering excellence meets manufacturing precision. From BESS foundations to custom grade beams, we deliver infrastructure components that power renewable energy and modern utilities.'
-                }}
-              />
-              <div
-                className="text-gray-700 mb-8 rich-text-content [&_p]:m-0"
-                dangerouslySetInnerHTML={{
-                  __html: siteContent?.heroDescription || 'Serving solar farms, battery storage facilities, and utility systems across North America.'
-                }}
-              />
-              <div className="flex flex-wrap gap-4">
-                {heroButtons.map((button: HeroButton) => {
-                  const isExternal = button.isExternal;
-                  const ButtonTag = isExternal ? 'a' : Link;
-                  const extraProps = isExternal
-                    ? { target: '_blank', rel: 'noopener noreferrer' }
-                    : {};
-
-                  return (
-                    <ButtonTag
-                      key={button.id}
-                      href={button.link}
-                      {...extraProps}
-                      className={`px-6 py-3 rounded-lg font-medium transition hover:opacity-90 ${button.style === 'outline' ? 'border-2' : ''
-                        }`}
-                      style={button.style === 'filled'
-                        ? { backgroundColor: button.bgColor, color: button.textColor }
-                        : { borderColor: button.bgColor, color: button.textColor }
-                      }
-                    >
-                      {button.text}
-                    </ButtonTag>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Image */}
-            <div className="rounded-lg h-96 overflow-hidden shadow-lg animate-fadeIn animation-delay-150">
-              {siteContent?.heroImage ? (
-                <ImageLightbox
-                  src={siteContent.heroImage}
-                  alt="Hero"
-                  className="w-full h-full"
+          <div className="max-w-7xl mx-auto relative z-10">
+            <div className="grid gap-12 items-center md:grid-cols-2">
+              {/* Text Content */}
+              <div className="animate-fadeIn">
+                <div
+                  className="font-serif text-5xl font-bold mb-6 leading-tight text-gray-900 rich-text-content [&_p]:m-0"
+                  dangerouslySetInnerHTML={{
+                    __html: siteContent?.heroTitle || 'Premium Precast Concrete Solutions for Infrastructure'
+                  }}
                 />
-              ) : (
-                <div className="w-full h-full bg-gradient-to-br from-yellow-100 to-yellow-200 flex items-center justify-center">
-                  <div className="text-center text-yellow-700">
-                    <Building2 className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                    <p className="text-sm opacity-75">Add a hero image in the CMS</p>
-                  </div>
+                <div
+                  className="text-lg text-gray-700 mb-4 rich-text-content [&_p]:m-0"
+                  dangerouslySetInnerHTML={{
+                    __html: siteContent?.heroSubtitle || 'Engineering excellence meets manufacturing precision. From BESS foundations to custom grade beams, we deliver infrastructure components that power renewable energy and modern utilities.'
+                  }}
+                />
+                <div
+                  className="text-gray-700 mb-8 rich-text-content [&_p]:m-0"
+                  dangerouslySetInnerHTML={{
+                    __html: siteContent?.heroDescription || 'Serving solar farms, battery storage facilities, and utility systems across North America.'
+                  }}
+                />
+                <div className="flex flex-wrap gap-4">
+                  {heroButtons.map((button: HeroButton) => {
+                    const isExternal = button.isExternal;
+                    const ButtonTag = isExternal ? 'a' : Link;
+                    const extraProps = isExternal
+                      ? { target: '_blank', rel: 'noopener noreferrer' }
+                      : {};
+
+                    return (
+                      <ButtonTag
+                        key={button.id}
+                        href={button.link}
+                        {...extraProps}
+                        className={`px-6 py-3 rounded-lg font-medium transition hover:opacity-90 ${button.style === 'outline' ? 'border-2' : ''
+                          }`}
+                        style={button.style === 'filled'
+                          ? { backgroundColor: button.bgColor, color: button.textColor }
+                          : { borderColor: button.bgColor, color: button.textColor }
+                        }
+                      >
+                        {button.text}
+                      </ButtonTag>
+                    );
+                  })}
                 </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Stats Bar */}
-      <section className="bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {stats.map((stat: StatItem, index: number) => (
-              <div
-                key={stat.id}
-                className={`text-center animate-fadeInUp ${index === 0 ? 'animation-delay-200' :
-                  index === 1 ? 'animation-delay-250' :
-                    index === 2 ? 'animation-delay-300' :
-                      'animation-delay-350'
-                  }`}
-              >
-                <h3 className="text-3xl md:text-4xl font-bold text-orange-500 mb-2">{stat.value}</h3>
-                <p className="text-sm md:text-base text-gray-400">{stat.label}</p>
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
-      {/* Featured Projects */}
-      <section id="projects" className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-50 scroll-mt-40">
-        <div className="max-w-7xl mx-auto">
-          <ScrollAnimation animation="fade-up">
-            <div className="text-center mb-12">
-              <h2 className="font-serif text-4xl font-bold mb-4 text-gray-900">
-                {siteContent?.projectsTitle || 'Featured Projects'}
-              </h2>
-              <p className="text-lg text-gray-700">
-                {siteContent?.projectsSubtitle || 'Recent infrastructure solutions delivering impact across North America'}
-              </p>
-            </div>
-          </ScrollAnimation>
-
-          {projects.length > 0 ? (
-            <div className={`grid gap-8 ${projects.slice(0, 3).length === 1 ? 'grid-cols-1 max-w-md mx-auto' :
-              projects.slice(0, 3).length === 2 ? 'grid-cols-1 md:grid-cols-2 max-w-4xl mx-auto' :
-                'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
-              }`}>
-              {projects.slice(0, 3).map((project: Project, index: number) => (
-                <ScrollAnimation
-                  key={project._id}
-                  animation="fade-up"
-                  delay={index * 150}
-                  className="h-full"
-                >
-                  <div className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-all h-full flex flex-col">
-                    <div className="bg-gradient-to-br from-blue-100 to-blue-200 h-48 flex items-center justify-center overflow-hidden flex-shrink-0">
-                      {project.data.projectImage ? (
-                        <ImageLightbox
-                          src={project.data.projectImage}
-                          alt={project.title}
-                          className="w-full h-full"
-                        />
-                      ) : (
-                        <Sun className="w-16 h-16 text-blue-400" strokeWidth={1.5} />
-                      )}
-                    </div>
-                    <div className="p-6 flex flex-col flex-grow">
-                      <h3 className="font-semibold text-lg text-gray-900 mb-2">{project.title}</h3>
-                      <p className="text-sm text-gray-700 mb-2 font-medium">{project.data.client}</p>
-                      <p className="text-sm text-gray-500 mb-4">{project.data.location || 'No location'}</p>
-                      <div className="mt-auto">
-                        <Link
-                          href={`/projects/${project.contentId}`}
-                          className="w-full py-2 border-2 border-gray-900 text-gray-900 rounded-lg font-medium hover:bg-gray-50 transition text-center block"
-                        >
-                          View Details
-                        </Link>
-                      </div>
+              {/* Image */}
+              <div className="rounded-lg h-96 overflow-hidden shadow-lg animate-fadeIn animation-delay-150">
+                {siteContent?.heroImage ? (
+                  <ImageLightbox
+                    src={siteContent.heroImage}
+                    alt="Hero"
+                    className="w-full h-full"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-br from-yellow-100 to-yellow-200 flex items-center justify-center">
+                    <div className="text-center text-yellow-700">
+                      <Building2 className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                      <p className="text-sm opacity-75">Add a hero image in the CMS</p>
                     </div>
                   </div>
-                </ScrollAnimation>
+                )}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Stats Bar */}
+        <section className="bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+              {stats.map((stat: StatItem, index: number) => (
+                <div
+                  key={stat.id}
+                  className={`text-center animate-fadeInUp ${index === 0 ? 'animation-delay-200' :
+                    index === 1 ? 'animation-delay-250' :
+                      index === 2 ? 'animation-delay-300' :
+                        'animation-delay-350'
+                    }`}
+                >
+                  <h3 className="text-3xl md:text-4xl font-bold text-orange-500 mb-2">{stat.value}</h3>
+                  <p className="text-sm md:text-base text-gray-400">{stat.label}</p>
+                </div>
               ))}
             </div>
-          ) : (
-            <div className="text-center py-12">
-              <p className="text-gray-600">No projects available yet</p>
-            </div>
-          )}
-
-          <div className="text-center mt-12">
-            <Link
-              href="/projects"
-              className="px-6 py-3 border-2 border-gray-900 text-gray-900 rounded-lg font-medium hover:bg-gray-50 inline-block transition"
-            >
-              View All Projects
-            </Link>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Team Carousel - Project Team */}
-      {carouselTeamMembers.length > 0 && (
-        <TeamCarousel
-          title="Project Team"
-          subtitle="Meet the dedicated professionals who make our projects successful"
-          speed={40}
-          members={carouselTeamMembers}
-        />
-      )}
+        {/* Featured Projects */}
+        <section id="projects" className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-50 scroll-mt-40">
+          <div className="max-w-7xl mx-auto">
+            <ScrollAnimation animation="fade-up">
+              <div className="text-center mb-12">
+                <h2 className="font-serif text-4xl font-bold mb-4 text-gray-900">
+                  {siteContent?.projectsTitle || 'Featured Projects'}
+                </h2>
+                <p className="text-lg text-gray-700">
+                  {siteContent?.projectsSubtitle || 'Recent infrastructure solutions delivering impact across North America'}
+                </p>
+              </div>
+            </ScrollAnimation>
 
-      {/* Testimonials */}
-      <section id="testimonials" className="py-16 px-4 sm:px-6 lg:px-8 bg-white scroll-mt-40">
-        <div className="max-w-7xl mx-auto">
-          <ScrollAnimation animation="fade-up">
-            <div className="text-center mb-12">
-              <h2 className="font-serif text-4xl font-bold mb-4 text-gray-900">
-                {siteContent?.testimonialsTitle || 'Client Testimonials'}
-              </h2>
-              <p className="text-lg text-gray-700">
-                {siteContent?.testimonialsSubtitle || 'Trusted by leading companies'}
-              </p>
+            {projects.length > 0 ? (
+              <div className={`grid gap-8 ${projects.slice(0, 3).length === 1 ? 'grid-cols-1 max-w-md mx-auto' :
+                projects.slice(0, 3).length === 2 ? 'grid-cols-1 md:grid-cols-2 max-w-4xl mx-auto' :
+                  'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
+                }`}>
+                {projects.slice(0, 3).map((project: Project, index: number) => (
+                  <ScrollAnimation
+                    key={project._id}
+                    animation="fade-up"
+                    delay={index * 150}
+                    className="h-full"
+                  >
+                    <div className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-all h-full flex flex-col">
+                      <div className="bg-gradient-to-br from-blue-100 to-blue-200 h-48 flex items-center justify-center overflow-hidden flex-shrink-0">
+                        {project.data.projectImage ? (
+                          <ImageLightbox
+                            src={project.data.projectImage}
+                            alt={project.title}
+                            className="w-full h-full"
+                          />
+                        ) : (
+                          <Sun className="w-16 h-16 text-blue-400" strokeWidth={1.5} />
+                        )}
+                      </div>
+                      <div className="p-6 flex flex-col flex-grow">
+                        <h3 className="font-semibold text-lg text-gray-900 mb-2">{project.title}</h3>
+                        <p className="text-sm text-gray-700 mb-2 font-medium">{project.data.client}</p>
+                        <p className="text-sm text-gray-500 mb-4">{project.data.location || 'No location'}</p>
+                        <div className="mt-auto">
+                          <Link
+                            href={`/projects/${project.contentId}`}
+                            className="w-full py-2 border-2 border-gray-900 text-gray-900 rounded-lg font-medium hover:bg-gray-50 transition text-center block"
+                          >
+                            View Details
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
+                  </ScrollAnimation>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <p className="text-gray-600">No projects available yet</p>
+              </div>
+            )}
+
+            <div className="text-center mt-12">
+              <Link
+                href="/projects"
+                className="px-6 py-3 border-2 border-gray-900 text-gray-900 rounded-lg font-medium hover:bg-gray-50 inline-block transition"
+              >
+                View All Projects
+              </Link>
             </div>
-          </ScrollAnimation>
+          </div>
+        </section>
 
-          {testimonials.length > 0 ? (
-            <div className="grid md:grid-cols-3 gap-8">
-              {testimonials.map((testimonial: Testimonial, index: number) => (
-                <ScrollAnimation key={testimonial._id} animation="fade-up" delay={index * 150}>
-                  <div className="bg-white rounded-lg border border-gray-200 p-8 hover:shadow-lg transition h-full flex flex-col">
-                    <div className="flex gap-1 mb-4">
-                      {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
-                          className={`w-5 h-5 ${i < (testimonial.data.rating || 5)
+        {/* Team Carousel - Project Team */}
+        {carouselTeamMembers.length > 0 && (
+          <TeamCarousel
+            title="Project Team"
+            subtitle="Meet the dedicated professionals who make our projects successful"
+            speed={40}
+            members={carouselTeamMembers}
+          />
+        )}
+
+        {/* Testimonials */}
+        <section id="testimonials" className="py-16 px-4 sm:px-6 lg:px-8 bg-white scroll-mt-40">
+          <div className="max-w-7xl mx-auto">
+            <ScrollAnimation animation="fade-up">
+              <div className="text-center mb-12">
+                <h2 className="font-serif text-4xl font-bold mb-4 text-gray-900">
+                  {siteContent?.testimonialsTitle || 'Client Testimonials'}
+                </h2>
+                <p className="text-lg text-gray-700">
+                  {siteContent?.testimonialsSubtitle || 'Trusted by leading companies'}
+                </p>
+              </div>
+            </ScrollAnimation>
+
+            {testimonials.length > 0 ? (
+              <div className="grid md:grid-cols-3 gap-8">
+                {testimonials.map((testimonial: Testimonial, index: number) => (
+                  <ScrollAnimation key={testimonial._id} animation="fade-up" delay={index * 150}>
+                    <div className="bg-white rounded-lg border border-gray-200 p-8 hover:shadow-lg transition h-full flex flex-col">
+                      <div className="flex gap-1 mb-4">
+                        {[...Array(5)].map((_, i) => (
+                          <Star
+                            key={i}
+                            className={`w-5 h-5 ${i < (testimonial.data.rating || 5)
                               ? 'text-yellow-500 fill-yellow-500'
                               : 'text-gray-200'
-                            }`}
-                        />
-                      ))}
+                              }`}
+                          />
+                        ))}
+                      </div>
+                      <p className="text-gray-700 mb-6 italic flex-1">
+                        &quot;{stripHtmlTags(testimonial.data.quote)}&quot;
+                      </p>
+                      <div className="flex items-center gap-3">
+                        {testimonial.data.authorImage && (
+                          <img
+                            src={testimonial.data.authorImage}
+                            alt={testimonial.data.authorName}
+                            className="w-12 h-12 rounded-full object-cover flex-shrink-0"
+                          />
+                        )}
+                        <div>
+                          <p className="font-semibold text-gray-900">
+                            {testimonial.data.authorName}
+                          </p>
+                          <p className="text-sm text-gray-600">
+                            {testimonial.data.authorTitle}
+                            {testimonial.data.authorCompany && `, ${testimonial.data.authorCompany}`}
+                          </p>
+                        </div>
+                      </div>
                     </div>
-                    <p className="text-gray-700 mb-6 italic flex-1">
-                      &quot;{stripHtmlTags(testimonial.data.quote)}&quot;
-                    </p>
-                    <div className="flex items-center gap-3">
-                      {testimonial.data.authorImage && (
-                        <img
-                          src={testimonial.data.authorImage}
-                          alt={testimonial.data.authorName}
-                          className="w-12 h-12 rounded-full object-cover flex-shrink-0"
-                        />
-                      )}
+                  </ScrollAnimation>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <p className="text-gray-600">No testimonials available yet</p>
+              </div>
+            )}
+          </div>
+        </section>
+
+        {/* Contact Section */}
+        <section id="contact" className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-50 scroll-mt-40">
+          <div className="max-w-7xl mx-auto">
+            <div className="grid md:grid-cols-2 gap-12">
+              <ScrollAnimation animation="fade-right">
+                <div>
+                  <h2 className="font-serif text-4xl font-bold mb-6 text-gray-900">
+                    {siteContent?.contactTitle || 'Get in Touch'}
+                  </h2>
+                  <p className="text-lg text-gray-700 mb-8">
+                    {siteContent?.contactSubtitle || "Have a project in mind? Let's discuss how we can deliver precision-engineered solutions."}
+                  </p>
+
+                  <div className="space-y-6">
+                    <div className="flex items-start gap-4">
+                      <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <Phone className="w-5 h-5 text-yellow-700" />
+                      </div>
                       <div>
-                        <p className="font-semibold text-gray-900">
-                          {testimonial.data.authorName}
-                        </p>
-                        <p className="text-sm text-gray-600">
-                          {testimonial.data.authorTitle}
-                          {testimonial.data.authorCompany && `, ${testimonial.data.authorCompany}`}
-                        </p>
+                        <p className="font-semibold text-gray-900 mb-1">Phone</p>
+                        <p className="text-gray-700">1-800-LINDSAY</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-4">
+                      <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <Mail className="w-5 h-5 text-yellow-700" />
+                      </div>
+                      <div>
+                        <p className="font-semibold text-gray-900 mb-1">Email</p>
+                        <p className="text-gray-700">info@lindsayprecast.com</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-4">
+                      <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <MapPin className="w-5 h-5 text-yellow-700" />
+                      </div>
+                      <div>
+                        <p className="font-semibold text-gray-900 mb-1">Address</p>
+                        <p className="text-gray-700">123 Industrial Blvd, Georgia, USA</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-4">
+                      <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <Clock className="w-5 h-5 text-yellow-700" />
+                      </div>
+                      <div>
+                        <p className="font-semibold text-gray-900 mb-1">Hours</p>
+                        <p className="text-gray-700">Mon - Fri: 7:00 AM - 5:00 PM</p>
                       </div>
                     </div>
                   </div>
-                </ScrollAnimation>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-12">
-              <p className="text-gray-600">No testimonials available yet</p>
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* Contact Section */}
-      <section id="contact" className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-50 scroll-mt-40">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid md:grid-cols-2 gap-12">
-            <ScrollAnimation animation="fade-right">
-              <div>
-                <h2 className="font-serif text-4xl font-bold mb-6 text-gray-900">
-                  {siteContent?.contactTitle || 'Get in Touch'}
-                </h2>
-                <p className="text-lg text-gray-700 mb-8">
-                  {siteContent?.contactSubtitle || "Have a project in mind? Let's discuss how we can deliver precision-engineered solutions."}
-                </p>
-
-                <div className="space-y-6">
-                  <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <Phone className="w-5 h-5 text-yellow-700" />
-                    </div>
-                    <div>
-                      <p className="font-semibold text-gray-900 mb-1">Phone</p>
-                      <p className="text-gray-700">1-800-LINDSAY</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <Mail className="w-5 h-5 text-yellow-700" />
-                    </div>
-                    <div>
-                      <p className="font-semibold text-gray-900 mb-1">Email</p>
-                      <p className="text-gray-700">info@lindsayprecast.com</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <MapPin className="w-5 h-5 text-yellow-700" />
-                    </div>
-                    <div>
-                      <p className="font-semibold text-gray-900 mb-1">Address</p>
-                      <p className="text-gray-700">123 Industrial Blvd, Georgia, USA</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <Clock className="w-5 h-5 text-yellow-700" />
-                    </div>
-                    <div>
-                      <p className="font-semibold text-gray-900 mb-1">Hours</p>
-                      <p className="text-gray-700">Mon - Fri: 7:00 AM - 5:00 PM</p>
-                    </div>
-                  </div>
                 </div>
-              </div>
-            </ScrollAnimation>
+              </ScrollAnimation>
 
-            <ScrollAnimation animation="fade-left" delay={200}>
-              <ContactForm />
-            </ScrollAnimation>
+              <ScrollAnimation animation="fade-left" delay={200}>
+                <ContactForm />
+              </ScrollAnimation>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <Footer />
-    </main>
+        <Footer />
+      </main>
+    </>
   );
 }

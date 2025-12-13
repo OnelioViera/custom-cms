@@ -7,10 +7,47 @@ import { getSiteId } from './env';
 const SITE_ID = getSiteId();
 
 // ============================================================================
+// CACHING FOR DEVELOPMENT
+// ============================================================================
+
+interface CacheEntry {
+    data: any;
+    timestamp: number;
+}
+
+const isDev = process.env.NODE_ENV === 'development';
+const CACHE_TTL = 10000; // 10 seconds in development
+const cache = new Map<string, CacheEntry>();
+
+function getCached(key: string): any | null {
+    if (!isDev) return null;
+
+    const entry = cache.get(key);
+    if (!entry) return null;
+
+    const age = Date.now() - entry.timestamp;
+    if (age > CACHE_TTL) {
+        cache.delete(key);
+        return null;
+    }
+
+    return entry.data;
+}
+
+function setCache(key: string, data: any): void {
+    if (!isDev) return;
+    cache.set(key, { data, timestamp: Date.now() });
+}
+
+// ============================================================================
 // CONTENT OPERATIONS (Server-side)
 // ============================================================================
 
 export async function getContentServer(contentTypeId: string, status: string = 'published') {
+    const cacheKey = `content:${contentTypeId}:${status}`;
+    const cached = getCached(cacheKey);
+    if (cached) return cached;
+
     try {
         await connectDB();
 
@@ -23,6 +60,7 @@ export async function getContentServer(contentTypeId: string, status: string = '
             .sort({ createdAt: -1 })
             .lean();
 
+        setCache(cacheKey, content);
         return content;
     } catch (error) {
         console.error(`Error fetching ${contentTypeId}:`, error);
@@ -31,6 +69,10 @@ export async function getContentServer(contentTypeId: string, status: string = '
 }
 
 export async function getContentByIdServer(contentTypeId: string, contentId: string) {
+    const cacheKey = `content:${contentTypeId}:${contentId}`;
+    const cached = getCached(cacheKey);
+    if (cached) return cached;
+
     try {
         await connectDB();
 
@@ -40,6 +82,7 @@ export async function getContentByIdServer(contentTypeId: string, contentId: str
             contentId,
         }).lean();
 
+        setCache(cacheKey, content);
         return content;
     } catch (error) {
         console.error('Error fetching content:', error);
@@ -48,6 +91,10 @@ export async function getContentByIdServer(contentTypeId: string, contentId: str
 }
 
 export async function searchContentServer(contentTypeId: string, query: string, status: string = 'published') {
+    const cacheKey = `search:${contentTypeId}:${query}:${status}`;
+    const cached = getCached(cacheKey);
+    if (cached) return cached;
+
     try {
         await connectDB();
 
@@ -67,6 +114,7 @@ export async function searchContentServer(contentTypeId: string, query: string, 
             .sort({ createdAt: -1 })
             .lean();
 
+        setCache(cacheKey, content);
         return content;
     } catch (error) {
         console.error('Error searching content:', error);
@@ -79,6 +127,10 @@ export async function searchContentServer(contentTypeId: string, query: string, 
 // ============================================================================
 
 export async function getContentTypesServer() {
+    const cacheKey = 'contenttypes:all';
+    const cached = getCached(cacheKey);
+    if (cached) return cached;
+
     try {
         await connectDB();
 
@@ -86,6 +138,7 @@ export async function getContentTypesServer() {
             .sort({ createdAt: -1 })
             .lean();
 
+        setCache(cacheKey, contentTypes);
         return contentTypes;
     } catch (error) {
         console.error('Error fetching content types:', error);
@@ -94,6 +147,10 @@ export async function getContentTypesServer() {
 }
 
 export async function getContentTypeByIdServer(contentTypeId: string) {
+    const cacheKey = `contenttype:${contentTypeId}`;
+    const cached = getCached(cacheKey);
+    if (cached) return cached;
+
     try {
         await connectDB();
 
@@ -102,6 +159,7 @@ export async function getContentTypeByIdServer(contentTypeId: string) {
             contentTypeId,
         }).lean();
 
+        setCache(cacheKey, contentType);
         return contentType;
     } catch (error) {
         console.error('Error fetching content type:', error);
@@ -114,6 +172,10 @@ export async function getContentTypeByIdServer(contentTypeId: string) {
 // ============================================================================
 
 export async function getSiteContentServer() {
+    const cacheKey = 'sitecontent';
+    const cached = getCached(cacheKey);
+    if (cached) return cached;
+
     try {
         await connectDB();
 
@@ -126,7 +188,7 @@ export async function getSiteContentServer() {
 
         if (!content) {
             // Return default values if no content exists
-            return {
+            const defaults = {
                 heroTitle: 'Premium Precast Concrete Solutions for Infrastructure',
                 heroSubtitle: 'Engineering excellence meets manufacturing precision. From BESS foundations to custom grade beams, we deliver infrastructure components that power renewable energy and modern utilities.',
                 heroDescription: 'Serving solar farms, battery storage facilities, and utility systems across North America.',
@@ -150,6 +212,8 @@ export async function getSiteContentServer() {
                 ctaTitle: 'Ready for Your Project?',
                 ctaSubtitle: "Let's discuss how Lindsay Precast can deliver precision-engineered solutions",
             };
+            setCache(cacheKey, defaults);
+            return defaults;
         }
 
         // Merge with defaults to ensure all fields exist
@@ -178,7 +242,9 @@ export async function getSiteContentServer() {
             ctaSubtitle: "Let's discuss how Lindsay Precast can deliver precision-engineered solutions",
         };
 
-        return { ...defaults, ...content.data };
+        const result = { ...defaults, ...content.data };
+        setCache(cacheKey, result);
+        return result;
     } catch (error) {
         console.error('Error fetching site content:', error);
         return null;
@@ -190,6 +256,10 @@ export async function getSiteContentServer() {
 // ============================================================================
 
 export async function getFormSubmissionsServer(status?: string) {
+    const cacheKey = `submissions:${status || 'all'}`;
+    const cached = getCached(cacheKey);
+    if (cached) return cached;
+
     try {
         await connectDB();
 
@@ -202,6 +272,7 @@ export async function getFormSubmissionsServer(status?: string) {
             .sort({ createdAt: -1 })
             .lean();
 
+        setCache(cacheKey, submissions);
         return submissions;
     } catch (error) {
         console.error('Error fetching form submissions:', error);
