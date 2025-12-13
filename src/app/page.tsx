@@ -70,11 +70,23 @@ function stripHtmlTags(html: string): string {
 
 export default async function Home() {
   // Fetch all data server-side
-  const [projects, testimonials, siteContent] = await Promise.all([
+  const [projects, testimonials, teamMembers, siteContent] = await Promise.all([
     getContentServer('projects'),
     getContentServer('testimonials'),
+    getContentServer('team'),
     getSiteContentServer(),
   ]);
+
+  // Transform team members for the carousel and sort by order
+  const carouselTeamMembers: TeamMember[] = teamMembers
+    .sort((a: any, b: any) => (a.data?.order || 0) - (b.data?.order || 0))
+    .map((member: any) => ({
+      id: member.contentId,
+      name: member.data?.name || '',
+      role: member.data?.role || '',
+      description: stripHtmlTags(member.data?.description || ''),
+      avatar: member.data?.avatar || '',
+    }));
 
   const defaultStats: StatItem[] = [
     { id: 'stat_1', value: '500+', label: 'Projects Completed' },
@@ -268,70 +280,15 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Team Carousel - QCELLS Project Team */}
-      <TeamCarousel 
-        title="QCELLS Project Team"
-        subtitle="Meet the dedicated professionals who brought the QCELLS solar facility to life"
-        speed={40}
-        members={[
-          {
-            id: '1',
-            name: 'John Martinez',
-            role: 'Project Manager',
-            description: 'Led the overall project coordination, ensuring timelines and quality standards were met throughout the construction phase.',
-            avatar: '',
-          },
-          {
-            id: '2',
-            name: 'Sarah Chen',
-            role: 'Structural Engineer',
-            description: 'Designed and validated the precast concrete foundation systems to withstand environmental loads and optimize solar panel efficiency.',
-            avatar: '',
-          },
-          {
-            id: '3',
-            name: 'Michael Thompson',
-            role: 'Quality Control Lead',
-            description: 'Implemented rigorous testing protocols to ensure all precast components met ASTM standards and project specifications.',
-            avatar: '',
-          },
-          {
-            id: '4',
-            name: 'Emily Rodriguez',
-            role: 'Site Supervisor',
-            description: 'Coordinated on-site installation teams and managed logistics for the delivery and placement of over 500 precast units.',
-            avatar: '',
-          },
-          {
-            id: '5',
-            name: 'David Park',
-            role: 'Design Engineer',
-            description: 'Created detailed CAD drawings and 3D models for custom precast solutions tailored to the unique site requirements.',
-            avatar: '',
-          },
-          {
-            id: '6',
-            name: 'Lisa Williams',
-            role: 'Safety Coordinator',
-            description: 'Maintained zero-incident safety record by implementing comprehensive safety protocols and daily site inspections.',
-            avatar: '',
-          },
-          {
-            id: '7',
-            name: 'Robert Kim',
-            role: 'Logistics Manager',
-            description: 'Orchestrated the transportation and scheduling of precast deliveries, optimizing routes for efficiency and cost savings.',
-            avatar: '',
-          },
-          {
-            id: '8',
-            name: 'Amanda Foster',
-            role: 'Client Liaison',
-            description: 'Served as the primary point of contact with QCELLS, ensuring clear communication and exceeding client expectations.',
-            avatar: '',
-          },
-        ]}
-      />
+      {/* Team Carousel - Project Team */}
+      {carouselTeamMembers.length > 0 && (
+        <TeamCarousel 
+          title="Project Team"
+          subtitle="Meet the dedicated professionals who make our projects successful"
+          speed={40}
+          members={carouselTeamMembers}
+        />
+      )}
 
       {/* Testimonials */}
       <section id="testimonials" className="py-16 px-4 sm:px-6 lg:px-8 bg-white scroll-mt-40">

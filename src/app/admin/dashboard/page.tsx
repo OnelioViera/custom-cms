@@ -22,7 +22,8 @@ import {
     Trash2,
     ExternalLink,
     Type,
-    Film
+    Film,
+    Users
 } from 'lucide-react';
 import { useToast } from '@/components/Toast';
 
@@ -208,6 +209,15 @@ function AdminDashboardContent() {
                             {sidebarOpen && <span className="font-medium">{item.label}</span>}
                         </button>
                     ))}
+                    
+                    {/* Team Link */}
+                    <Link
+                        href="/admin/team"
+                        className="w-full flex items-center gap-3 px-4 py-3 rounded-lg transition text-gray-400 hover:bg-gray-800 hover:text-white"
+                    >
+                        <Users className="w-5 h-5 flex-shrink-0" />
+                        {sidebarOpen && <span className="font-medium">Team</span>}
+                    </Link>
                     
                     {/* Testimonials Link */}
                     <Link
