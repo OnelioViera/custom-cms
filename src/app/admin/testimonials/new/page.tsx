@@ -9,6 +9,7 @@ import {
     Eye,
     Save,
     Send,
+    Clock,
     PanelRightClose,
     PanelRightOpen,
 } from 'lucide-react';
@@ -132,37 +133,43 @@ export default function NewTestimonialPage() {
         }
     };
 
+    const handlePreviewNewTab = () => {
+        window.open('/#testimonials', '_blank');
+    };
+
     return (
         <div className="min-h-screen bg-gray-100 flex">
-            {/* Left Sidebar */}
-            <aside className="w-64 bg-white border-r border-gray-200 flex flex-col fixed h-full z-10">
-                {/* Header */}
+            {/* Left Sidebar - Stationary */}
+            <aside className="w-64 bg-white border-r border-gray-200 fixed left-0 top-0 h-full z-20 flex flex-col">
+                {/* Sidebar Header */}
                 <div className="p-4 border-b border-gray-200">
                     <Link
                         href="/admin/testimonials"
-                        className="flex items-center gap-2 text-gray-600 hover:text-gray-900 text-sm mb-3"
+                        className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition mb-3"
                     >
                         <ArrowLeft className="w-4 h-4" />
-                        Back to testimonials
+                        <span className="text-sm font-medium">Back to Testimonials</span>
                     </Link>
-                    <h1 className="font-semibold text-gray-900">New Testimonial</h1>
+                    <h2 className="text-base font-bold text-gray-900">New Testimonial</h2>
                     <p className="text-xs text-gray-500 mt-1">Create a new customer testimonial</p>
                 </div>
 
-                {/* Actions */}
-                <div className="p-4 space-y-3 border-b border-gray-200">
+                {/* Action Buttons */}
+                <div className="p-3 space-y-2 border-b border-gray-200">
+                    {/* Preview in New Tab Button */}
                     <button
-                        onClick={() => setShowPreview(!showPreview)}
-                        className="w-full flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-medium text-sm transition"
+                        onClick={handlePreviewNewTab}
+                        className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition text-sm font-medium"
                     >
                         <Eye className="w-4 h-4" />
-                        {showPreview ? 'Hide Preview' : 'Show Preview'}
+                        Open in New Tab
                     </button>
 
+                    {/* Save Draft Button */}
                     <button
                         onClick={handleSaveDraft}
-                        disabled={saving}
-                        className="w-full flex items-center justify-center gap-2 px-4 py-2 border border-yellow-600 text-yellow-600 rounded-lg hover:bg-yellow-50 font-medium text-sm transition disabled:opacity-50"
+                        disabled={saving || publishing}
+                        className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition text-sm font-medium disabled:opacity-50"
                     >
                         {saving ? (
                             <Loader2 className="w-4 h-4 animate-spin" />
@@ -172,10 +179,11 @@ export default function NewTestimonialPage() {
                         Save Draft
                     </button>
 
+                    {/* Publish Button */}
                     <button
                         onClick={handlePublish}
-                        disabled={publishing}
-                        className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 font-medium text-sm transition disabled:opacity-50"
+                        disabled={saving || publishing}
+                        className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm font-medium disabled:opacity-50"
                     >
                         {publishing ? (
                             <Loader2 className="w-4 h-4 animate-spin" />
@@ -186,80 +194,61 @@ export default function NewTestimonialPage() {
                     </button>
                 </div>
 
-                {/* Tips */}
-                <div className="flex-1 p-4">
-                    <h3 className="text-sm font-medium text-gray-900 mb-3">Tips</h3>
-                    <ul className="space-y-2 text-xs text-gray-600">
-                        <li className="flex items-start gap-2">
-                            <span className="text-yellow-500 mt-0.5">•</span>
-                            Keep testimonials concise and impactful
-                        </li>
-                        <li className="flex items-start gap-2">
-                            <span className="text-yellow-500 mt-0.5">•</span>
-                            Include the author&apos;s title for credibility
-                        </li>
-                        <li className="flex items-start gap-2">
-                            <span className="text-yellow-500 mt-0.5">•</span>
-                            Featured testimonials appear first on the homepage
-                        </li>
-                    </ul>
+                {/* Activity Section - Empty for new */}
+                <div className="flex-1 overflow-y-auto p-3">
+                    <h3 className="text-xs font-semibold text-gray-900 mb-3 flex items-center gap-2 uppercase tracking-wide">
+                        <Clock className="w-3 h-3" />
+                        Activity
+                    </h3>
+                    <p className="text-sm text-gray-500">No activity yet</p>
                 </div>
             </aside>
 
             {/* Main Content */}
-            <main className={`flex-1 ml-64 ${showPreview ? 'mr-[400px]' : ''} transition-all duration-300`}>
-                <div className="p-8">
-                    <div className="max-w-3xl mx-auto">
-                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                            <div className="p-6 border-b border-gray-200 bg-gray-50">
-                                <h2 className="text-lg font-semibold text-gray-900">Create Testimonial</h2>
-                                <p className="text-sm text-gray-600 mt-1">
-                                    Add a new customer testimonial to showcase on your website
-                                </p>
-                            </div>
+            <main className={`flex-1 ml-64 transition-all duration-300 ${showPreview ? 'mr-[450px]' : ''}`}>
+                <div className="p-6">
+                    {/* Header */}
+                    <div className="flex items-center justify-between mb-6">
+                        <div>
+                            <h1 className="text-2xl font-bold text-gray-900">Create Testimonial</h1>
+                            <p className="text-gray-600">Add a new customer testimonial to showcase on your website</p>
+                        </div>
+                        <button
+                            onClick={() => setShowPreview(!showPreview)}
+                            className="flex items-center gap-2 px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition text-sm"
+                        >
+                            {showPreview ? (
+                                <>
+                                    <PanelRightClose className="w-4 h-4" />
+                                    Hide Preview
+                                </>
+                            ) : (
+                                <>
+                                    <PanelRightOpen className="w-4 h-4" />
+                                    Show Preview
+                                </>
+                            )}
+                        </button>
+                    </div>
 
-                            <div className="p-6">
-                                <TestimonialFormFields
-                                    ref={formRef}
-                                    onFormChange={handleFormChange}
-                                />
-                            </div>
+                    {/* Form Card */}
+                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                        <div className="p-6">
+                            <TestimonialFormFields
+                                ref={formRef}
+                                onFormChange={handleFormChange}
+                            />
                         </div>
                     </div>
                 </div>
             </main>
 
-            {/* Preview Panel */}
+            {/* Right Preview Panel */}
             {showPreview && (
-                <aside className="w-[400px] bg-gray-50 border-l border-gray-200 fixed right-0 top-0 h-full overflow-hidden">
-                    <div className="h-full flex flex-col">
-                        <div className="p-4 border-b border-gray-200 flex items-center justify-between bg-white">
-                            <h3 className="font-medium text-gray-900">Preview</h3>
-                            <button
-                                onClick={() => setShowPreview(false)}
-                                className="p-1 text-gray-400 hover:text-gray-600"
-                            >
-                                <PanelRightClose className="w-5 h-5" />
-                            </button>
-                        </div>
-                        <div className="flex-1 overflow-hidden">
-                            <TestimonialPreview data={previewData} />
-                        </div>
-                    </div>
+                <aside className="w-[450px] bg-white border-l border-gray-200 fixed right-0 top-0 h-full overflow-hidden">
+                    <TestimonialPreview data={previewData} />
                 </aside>
-            )}
-
-            {/* Show Preview Button when hidden */}
-            {!showPreview && (
-                <button
-                    onClick={() => setShowPreview(true)}
-                    className="fixed right-4 top-4 p-2 bg-white border border-gray-200 rounded-lg shadow-sm hover:bg-gray-50 z-20"
-                    title="Show Preview"
-                >
-                    <PanelRightOpen className="w-5 h-5 text-gray-600" />
-                </button>
             )}
         </div>
     );
 }
-
