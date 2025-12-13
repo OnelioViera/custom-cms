@@ -19,9 +19,6 @@ import TeamCarousel, { TeamMember } from '@/components/TeamCarousel';
 
 // Enable static generation with revalidation
 export const revalidate = 60; // Revalidate every 60 seconds
-
-export const dynamic = 'force-dynamic';
-
 interface Project {
   _id: string;
   contentId: string;
