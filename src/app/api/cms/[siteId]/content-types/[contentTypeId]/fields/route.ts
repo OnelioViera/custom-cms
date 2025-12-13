@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
-import { ContentType } from "@/lib/cms-models";
+import { CmsContentType } from "@/lib/cms-models";
 import {
     sendSuccess,
     sendError,
@@ -55,7 +55,7 @@ export async function POST(
             }
 
             // Find the content type
-            const contentType = await ContentType.findOne({ siteId, contentTypeId });
+            const contentType = await CmsContentType.findOne({ siteId, contentTypeId });
 
             if (!contentType) {
                 return sendError("Content type not found", 404);

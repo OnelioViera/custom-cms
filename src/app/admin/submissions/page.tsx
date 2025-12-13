@@ -66,7 +66,7 @@ export default function SubmissionsPage() {
 
     return (
         <div className="min-h-screen bg-gray-100 flex">
-            <AdminSidebar activePage="submissions" />
+            <AdminSidebar />
 
             <main className="flex-1 overflow-auto ml-64 transition-all duration-300">
                 <div className="p-8">
@@ -135,12 +135,12 @@ export default function SubmissionsPage() {
                                                     value={submission.status}
                                                     onChange={(e) => updateStatus(submission.submissionId, e.target.value)}
                                                     className={`text-xs font-semibold px-3 py-1 rounded-full border-0 ${submission.status === 'new'
-                                                            ? 'bg-blue-100 text-blue-800'
-                                                            : submission.status === 'contacted'
-                                                                ? 'bg-yellow-100 text-yellow-800'
-                                                                : submission.status === 'qualified'
-                                                                    ? 'bg-green-100 text-green-800'
-                                                                    : 'bg-gray-100 text-gray-800'
+                                                        ? 'bg-blue-100 text-blue-800'
+                                                        : submission.status === 'contacted'
+                                                            ? 'bg-yellow-100 text-yellow-800'
+                                                            : submission.status === 'qualified'
+                                                                ? 'bg-green-100 text-green-800'
+                                                                : 'bg-gray-100 text-gray-800'
                                                         }`}
                                                 >
                                                     <option value="new">New</option>

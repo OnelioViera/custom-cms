@@ -1,13 +1,14 @@
 import { NextRequest } from 'next/server';
-import { db } from '@/lib/db';
-import { contentTypes } from '@/lib/db/schema';
-import { eq, and } from 'drizzle-orm';
+import { connectDB } from '@/lib/mongodb';
+import { CmsContentType } from '@/lib/cms-models';
 import { sendSuccess, sendError } from '@/lib/cms-utils';
 
-const SITE_ID = 'lindsayprecast';
+import { getSiteId } from '@/lib/env';
+const SITE_ID = getSiteId();
 
 export async function GET(request: NextRequest) {
     try {
+        await connectDB();
         console.log('Setting up content types...\n');
 
         const types = [
@@ -67,25 +68,15 @@ export async function GET(request: NextRequest) {
 
         for (const type of types) {
             // Check if content type already exists
-            const existing = await db
-                .select()
-                .from(contentTypes)
-                .where(
-                    and(
-                        eq(contentTypes.siteId, SITE_ID),
-                        eq(contentTypes.contentTypeId, type.contentTypeId)
-                    )
-                )
-                .limit(1);
-
-            if (existing.length > 0) {
+            const existing = await CmsContentType.findOne({ siteId: SITE_ID, contentTypeId: type.contentTypeId });
+            if (existing) {
                 console.log(`✓ Content type "${type.name}" already exists`);
                 results.push({ name: type.name, status: 'exists' });
                 continue;
             }
 
             // Create content type
-            await db.insert(contentTypes).values({
+            await CmsContentType.create({
                 siteId: SITE_ID,
                 contentTypeId: type.contentTypeId,
                 name: type.name,

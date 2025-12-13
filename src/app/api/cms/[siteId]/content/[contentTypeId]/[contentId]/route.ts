@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/mongodb';
-import { ContentType, Content, Revision } from '@/lib/cms-models';
+import { CmsContentType, Content, Revision } from '@/lib/cms-models';
 import {
     sendSuccess,
     sendError,
@@ -75,7 +75,7 @@ export async function PUT(
             }
 
             // Get content type for validation
-            const contentType = await ContentType.findOne({ siteId, contentTypeId });
+            const contentType = await CmsContentType.findOne({ siteId, contentTypeId });
 
             if (!contentType) {
                 return sendError('Content type not found', 404);
@@ -101,7 +101,7 @@ export async function PUT(
                 if (data !== undefined) content.draftData = data;
                 content.hasDraft = true;
                 // Keep status as published so it stays on the website
-                
+
                 await content.save();
 
                 // Create revision record for draft
@@ -127,7 +127,7 @@ export async function PUT(
                     if (title !== undefined) content.title = title;
                     if (data !== undefined) content.data = data;
                 }
-                
+
                 // Clear draft fields
                 content.draftTitle = undefined;
                 content.draftData = undefined;

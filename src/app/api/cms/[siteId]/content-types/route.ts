@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/mongodb';
-import { ContentType } from '@/lib/cms-models';
+import { CmsContentType } from '@/lib/cms-models';
 import {
     sendSuccess,
     sendError,
@@ -26,12 +26,12 @@ export async function GET(
         try {
             const { limit, skip } = getPaginationParams(request);
 
-            const contentTypes = await ContentType.find({ siteId })
+            const contentTypes = await CmsContentType.find({ siteId })
                 .limit(limit)
                 .skip(skip)
                 .sort({ createdAt: -1 });
 
-            const total = await ContentType.countDocuments({ siteId });
+            const total = await CmsContentType.countDocuments({ siteId });
 
             return sendSuccess({
                 contentTypes,
@@ -78,13 +78,13 @@ export async function POST(
             }
 
             // Check if content type already exists
-            const existing = await ContentType.findOne({ siteId, contentTypeId });
+            const existing = await CmsContentType.findOne({ siteId, contentTypeId });
             if (existing) {
                 return sendError('Content type with this ID already exists', 409);
             }
 
             // Create new content type
-            const newContentType = new ContentType({
+            const newContentType = new CmsContentType({
                 siteId,
                 contentTypeId,
                 name,

@@ -179,7 +179,7 @@ mediaSchema.index({ siteId: 1, tags: 1 })
 
 // Create or get models
 const Website = mongoose.models.Website || mongoose.model("Website", websiteSchema)
-const ContentType = mongoose.models.ContentType || mongoose.model("ContentType", contentTypeSchema)
+const CmsContentType = mongoose.models.ContentType || mongoose.model("ContentType", contentTypeSchema)
 const Content = mongoose.models.Content || mongoose.model("Content", contentSchema)
 const FormSubmission = mongoose.models.FormSubmission || mongoose.model("FormSubmission", formSubmissionSchema)
 const User = mongoose.models.User || mongoose.model("User", userSchema)
@@ -188,4 +188,4 @@ const WebhookLog = mongoose.models.WebhookLog || mongoose.model("WebhookLog", we
 const Revision = mongoose.models.Revision || mongoose.model("Revision", revisionSchema)
 const Media = mongoose.models.Media || mongoose.model("Media", mediaSchema)
 
-export { Website, ContentType, Content, FormSubmission, User, Webhook, WebhookLog, Revision, Media }
+export { Website, CmsContentType, Content, FormSubmission, User, Webhook, WebhookLog, Revision, Media }

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { connectDB } from './mongodb';
-import { Content, ContentType, Webhook, WebhookLog } from './cms-models';
+import { Content, CmsContentType, Webhook, WebhookLog } from './cms-models';
 import { ContentTypeField } from '@/types/cms';
 
 // ============================================================================

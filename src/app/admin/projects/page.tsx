@@ -71,7 +71,7 @@ export default function ProjectsPage() {
 
     return (
         <div className="min-h-screen bg-gray-100 flex">
-            <AdminSidebar activePage="projects" />
+            <AdminSidebar />
 
             <main className="flex-1 overflow-auto ml-64 transition-all duration-300">
                 <div className="p-8">
@@ -141,8 +141,8 @@ export default function ProjectsPage() {
                                             <td className="px-6 py-4">
                                                 <span
                                                     className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${project.status === 'published'
-                                                            ? 'bg-green-100 text-green-800'
-                                                            : 'bg-yellow-100 text-yellow-800'
+                                                        ? 'bg-green-100 text-green-800'
+                                                        : 'bg-yellow-100 text-yellow-800'
                                                         }`}
                                                 >
                                                     {project.status}

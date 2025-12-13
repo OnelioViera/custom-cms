@@ -1,6 +1,7 @@
 // Environment variable validation and access
 // This file should be imported early in the application lifecycle
 
+
 // Server-side only environment variables
 const serverEnv = {
     MONGODB_URI: process.env.MONGODB_URI,

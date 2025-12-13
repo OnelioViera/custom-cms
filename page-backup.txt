@@ -17,8 +17,216 @@ import Navigation from '@/components/Navigation';
 import VideoBackground, { VideoBackgroundConfig, defaultVideoConfig } from '@/components/VideoBackground';
 import TeamCarousel, { TeamMember } from '@/components/TeamCarousel';
 
+// Add this at the TOP of your src/app/page.tsx file, right after imports
+
 // Enable static generation with revalidation
-export const revalidate = 60; // Revalidate every 60 seconds
+
+export
+
+  const
+  revalidate
+    =
+
+    60
+  ;
+
+// Revalidate every 60 seconds
+
+// Or for dynamic pages, use this instead:
+
+// export const dynamic = 'force-dynamic';
+
+// Better: Use parallel data fetching
+
+// Find your data fetching code and wrap it like this:
+
+async
+
+function
+
+  getPageData
+  (
+) {
+
+
+  // Fetch all data in parallel instead of sequentially
+
+
+  const
+
+    [
+      siteContent
+      ,
+      projects
+      ,
+      testimonials
+      ,
+      team
+    ]
+
+      =
+
+      await
+
+  Promise
+    .
+    all
+    (
+      [
+
+
+        getSiteContentServer
+          (
+        )
+          .
+          catch
+          (
+            (
+            )
+
+              =>
+
+              null
+          )
+        ,
+
+
+        getContentServer
+          (
+            'projects'
+            ,
+
+            {
+              limit
+                :
+
+                6
+
+            }
+          )
+          .
+          catch
+          (
+            (
+            )
+
+              =>
+
+              [
+              ]
+          )
+        ,
+
+
+        getContentServer
+          (
+            'testimonials'
+            ,
+
+            {
+              limit
+                :
+
+                3
+
+            }
+          )
+          .
+          catch
+          (
+            (
+            )
+
+              =>
+
+              [
+              ]
+          )
+        ,
+
+
+        getContentServer
+          (
+            'team'
+            ,
+
+            {
+              limit
+                :
+
+                4
+
+            }
+          )
+          .
+          catch
+          (
+            (
+            )
+
+              =>
+
+              [
+              ]
+          )
+        ,
+
+
+      ]
+    )
+    ;
+
+
+  return
+
+  {
+    siteContent
+      ,
+      projects
+      ,
+      testimonials
+      ,
+      team
+  }
+  ;
+
+}
+
+// Then in your page component:
+
+export
+
+  default
+
+  async
+
+function
+
+  Home
+  (
+) {
+
+
+  const
+
+    {
+      siteContent
+      ,
+      projects
+      ,
+      testimonials
+      ,
+      team
+    }
+
+      =
+
+      await
+
+  getPageData
+    (
+  )
+    :
 
 export const dynamic = 'force-dynamic';
 
@@ -72,12 +280,12 @@ function stripHtmlTags(html: string): string {
 }
 
 export default async function Home() {
-  // Fetch all data server-side in parallel
+  // Fetch all data server-side
   const [projects, testimonials, teamMembers, siteContent] = await Promise.all([
-    getContentServer('projects').catch(() => []),
-    getContentServer('testimonials').catch(() => []),
-    getContentServer('team').catch(() => []),
-    getSiteContentServer().catch(() => null),
+    getContentServer('projects'),
+    getContentServer('testimonials'),
+    getContentServer('team'),
+    getSiteContentServer(),
   ]);
 
   // Transform team members for the carousel and sort by order
@@ -105,40 +313,42 @@ export default async function Home() {
 
   const stats = siteContent?.stats && siteContent.stats.length > 0 ? siteContent.stats : defaultStats;
   const heroButtons = siteContent?.heroButtons && siteContent.heroButtons.length > 0 ? siteContent.heroButtons : defaultButtons;
-
+  
   // Video background configuration
   const videoConfig: VideoBackgroundConfig = siteContent?.heroVideoConfig || defaultVideoConfig;
 
   return (
     <main>
       <Navigation currentPage="home" showTestimonials={true} />
+    
 
       {/* Hero Section */}
-      <section className={`relative pt-32 pb-16 px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[600px] ${!videoConfig.enabled ? 'bg-gradient-to-b from-gray-50 to-white' : ''
-        }`}>
+      <section className={`relative pt-32 pb-16 px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[600px] ${
+        !videoConfig.enabled ? 'bg-gradient-to-b from-gray-50 to-white' : ''
+      }`}>
         {/* Video Background */}
         <VideoBackground config={videoConfig} />
-
+        
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="grid gap-12 items-center md:grid-cols-2">
             {/* Text Content */}
             <div className="animate-fadeIn">
-              <div
+              <div 
                 className="font-serif text-5xl font-bold mb-6 leading-tight text-gray-900 rich-text-content [&_p]:m-0"
-                dangerouslySetInnerHTML={{
-                  __html: siteContent?.heroTitle || 'Premium Precast Concrete Solutions for Infrastructure'
+                dangerouslySetInnerHTML={{ 
+                  __html: siteContent?.heroTitle || 'Premium Precast Concrete Solutions for Infrastructure' 
                 }}
               />
-              <div
+              <div 
                 className="text-lg text-gray-700 mb-4 rich-text-content [&_p]:m-0"
-                dangerouslySetInnerHTML={{
-                  __html: siteContent?.heroSubtitle || 'Engineering excellence meets manufacturing precision. From BESS foundations to custom grade beams, we deliver infrastructure components that power renewable energy and modern utilities.'
+                dangerouslySetInnerHTML={{ 
+                  __html: siteContent?.heroSubtitle || 'Engineering excellence meets manufacturing precision. From BESS foundations to custom grade beams, we deliver infrastructure components that power renewable energy and modern utilities.' 
                 }}
               />
-              <div
+              <div 
                 className="text-gray-700 mb-8 rich-text-content [&_p]:m-0"
-                dangerouslySetInnerHTML={{
-                  __html: siteContent?.heroDescription || 'Serving solar farms, battery storage facilities, and utility systems across North America.'
+                dangerouslySetInnerHTML={{ 
+                  __html: siteContent?.heroDescription || 'Serving solar farms, battery storage facilities, and utility systems across North America.' 
                 }}
               />
               <div className="flex flex-wrap gap-4">
@@ -197,9 +407,9 @@ export default async function Home() {
               <div
                 key={stat.id}
                 className={`text-center animate-fadeInUp ${index === 0 ? 'animation-delay-200' :
-                  index === 1 ? 'animation-delay-250' :
-                    index === 2 ? 'animation-delay-300' :
-                      'animation-delay-350'
+                    index === 1 ? 'animation-delay-250' :
+                      index === 2 ? 'animation-delay-300' :
+                        'animation-delay-350'
                   }`}
               >
                 <h3 className="text-3xl md:text-4xl font-bold text-orange-500 mb-2">{stat.value}</h3>
@@ -226,8 +436,8 @@ export default async function Home() {
 
           {projects.length > 0 ? (
             <div className={`grid gap-8 ${projects.slice(0, 3).length === 1 ? 'grid-cols-1 max-w-md mx-auto' :
-              projects.slice(0, 3).length === 2 ? 'grid-cols-1 md:grid-cols-2 max-w-4xl mx-auto' :
-                'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
+                projects.slice(0, 3).length === 2 ? 'grid-cols-1 md:grid-cols-2 max-w-4xl mx-auto' :
+                  'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
               }`}>
               {projects.slice(0, 3).map((project: Project, index: number) => (
                 <ScrollAnimation
@@ -284,7 +494,7 @@ export default async function Home() {
 
       {/* Team Carousel - Project Team */}
       {carouselTeamMembers.length > 0 && (
-        <TeamCarousel
+        <TeamCarousel 
           title="Project Team"
           subtitle="Meet the dedicated professionals who make our projects successful"
           speed={40}
@@ -313,12 +523,13 @@ export default async function Home() {
                   <div className="bg-white rounded-lg border border-gray-200 p-8 hover:shadow-lg transition h-full flex flex-col">
                     <div className="flex gap-1 mb-4">
                       {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
-                          className={`w-5 h-5 ${i < (testimonial.data.rating || 5)
-                              ? 'text-yellow-500 fill-yellow-500'
+                        <Star 
+                          key={i} 
+                          className={`w-5 h-5 ${
+                            i < (testimonial.data.rating || 5) 
+                              ? 'text-yellow-500 fill-yellow-500' 
                               : 'text-gray-200'
-                            }`}
+                          }`} 
                         />
                       ))}
                     </div>

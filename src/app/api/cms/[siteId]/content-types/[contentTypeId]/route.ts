@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/mongodb';
-import { ContentType } from '@/lib/cms-models';
+import { CmsContentType } from '@/lib/cms-models';
 import {
     sendSuccess,
     sendError,
@@ -23,7 +23,7 @@ export async function GET(
         }
 
         try {
-            const contentType = await ContentType.findOne({ siteId, contentTypeId });
+            const contentType = await CmsContentType.findOne({ siteId, contentTypeId });
 
             if (!contentType) {
                 return sendError('Content type not found', 404);
@@ -70,7 +70,7 @@ export async function PUT(
             }
 
             // Find and update content type
-            const contentType = await ContentType.findOneAndUpdate(
+            const contentType = await CmsContentType.findOneAndUpdate(
                 { siteId, contentTypeId },
                 {
                     ...(name && { name }),
@@ -108,7 +108,7 @@ export async function DELETE(
         }
 
         try {
-            const contentType = await ContentType.findOneAndDelete({
+            const contentType = await CmsContentType.findOneAndDelete({
                 siteId,
                 contentTypeId,
             });

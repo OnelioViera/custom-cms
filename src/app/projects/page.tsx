@@ -5,7 +5,8 @@ import ImageLightbox from '@/components/ImageLightbox';
 import Footer from '@/components/Footer';
 import Navigation from '@/components/Navigation';
 
-export const dynamic = 'force-dynamic';
+// Add static generation with revalidation
+export const revalidate = 60; // Cache for 60 seconds
 
 interface Project {
     _id: string;
@@ -21,122 +22,99 @@ interface Project {
 }
 
 export default async function ProjectsPage() {
+    // Fetch data in parallel with error handling
     const [projects, siteContent] = await Promise.all([
-        getContentServer('projects') as Promise<Project[]>,
-        getSiteContentServer(),
+        getContentServer('projects').catch(() => [] as Project[]),
+        getSiteContentServer().catch(() => null),
     ]);
 
     return (
-        <main suppressHydrationWarning>
+        <>
             <Navigation currentPage="projects" />
 
-            {/* Header */}
-            <div className="pt-32 pb-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-gray-50 to-white">
-                <div className="max-w-7xl mx-auto text-center">
-                    <h1 className="font-serif text-5xl font-bold mb-4 text-gray-900">
-                        {siteContent?.projectsTitle || 'Our Projects'}
-                    </h1>
-                    <p className="text-lg text-gray-700">
-                        {siteContent?.projectsSubtitle || 'Precision-engineered precast solutions delivered across North America'}
-                    </p>
+            <main>
+                {/* Header */}
+                <div className="pt-32 pb-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-gray-50 to-white">
+                    <div className="max-w-7xl mx-auto text-center">
+                        <h1 className="font-serif text-5xl font-bold mb-4 text-gray-900">
+                            {siteContent?.projectsTitle || 'Our Projects'}
+                        </h1>
+                        <p className="text-lg text-gray-700">
+                            {siteContent?.projectsSubtitle || 'Precision-engineered precast solutions delivered across North America'}
+                        </p>
+                    </div>
                 </div>
-            </div>
 
-            {/* Projects Grid */}
-            <div className="py-16 px-4 sm:px-6 lg:px-8">
-                <div className="max-w-7xl mx-auto">
-                    {projects.length > 0 ? (
-                        <div className={`flex flex-wrap justify-center gap-8 ${
-                            projects.length === 1 ? 'max-w-xl mx-auto' : 
-                            projects.length === 2 ? 'max-w-4xl mx-auto' : ''
-                        }`}>
-                            {projects.map((project, index, arr) => (
-                                <div
-                                    key={project._id}
-                                    className={`bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-all ${
-                                        arr.length === 1 ? 'w-full' : 
-                                        arr.length === 2 ? 'w-full md:w-[calc(50%-1rem)]' : 
-                                        'w-full md:w-[calc(50%-1rem)] lg:w-[calc(33.333%-1.34rem)]'
-                                    }`}
-                                >
-                                    <div className="bg-gradient-to-br from-slate-100 to-slate-200 h-48 flex items-center justify-center overflow-hidden">
-                                        {project.data.projectImage ? (
-                                            <ImageLightbox
-                                                src={project.data.projectImage}
-                                                alt={project.title}
-                                                className="w-full h-full"
-                                            />
-                                        ) : (
-                                            <Sun className="w-16 h-16 text-slate-400" strokeWidth={1.5} />
-                                        )}
-                                    </div>
-                                    <div className="p-6">
-                                        <h3 className="font-semibold text-lg mb-2 text-gray-900">{project.title}</h3>
-                                        <p className="text-sm text-gray-700 mb-4">
-                                            {project.data.client}
-                                        </p>
-                                        {project.data.shortDescription && (
-                                            <p className="text-sm text-gray-700 mb-4">
-                                                {project.data.shortDescription}
-                                            </p>
-                                        )}
-                                        <div className="flex justify-between text-sm text-gray-500 mb-4">
-                                            {project.data.location && (
-                                                <span className="flex items-center gap-1">
-                                                    <MapPin className="w-4 h-4" />
-                                                    {project.data.location}
-                                                </span>
-                                            )}
-                                            {project.data.projectSize && (
-                                                <span className="flex items-center gap-1">
-                                                    <Ruler className="w-4 h-4" />
-                                                    {project.data.projectSize}
-                                                </span>
+                {/* Projects Grid */}
+                <div className="py-16 px-4 sm:px-6 lg:px-8">
+                    <div className="max-w-7xl mx-auto">
+                        {projects.length > 0 ? (
+                            <div className={`grid gap-8 ${projects.length === 1 ? 'grid-cols-1 max-w-md mx-auto' :
+                                projects.length === 2 ? 'grid-cols-1 md:grid-cols-2 max-w-4xl mx-auto' :
+                                    'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
+                                }`}>
+                                {projects.map((project: Project) => (
+                                    <div
+                                        key={project._id}
+                                        className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-all h-full flex flex-col"
+                                    >
+                                        <div className="bg-gradient-to-br from-blue-100 to-blue-200 h-48 flex items-center justify-center overflow-hidden flex-shrink-0">
+                                            {project.data.projectImage ? (
+                                                <ImageLightbox
+                                                    src={project.data.projectImage}
+                                                    alt={project.title}
+                                                    className="w-full h-full"
+                                                />
+                                            ) : (
+                                                <Sun className="w-16 h-16 text-blue-400" strokeWidth={1.5} />
                                             )}
                                         </div>
-                                        <Link
-                                            href={`/projects/${project.contentId}`}
-                                            className="w-full py-2 border-2 border-gray-900 rounded-lg font-medium hover:bg-gray-900 hover:text-white transition text-center block text-gray-900"
-                                        >
-                                            View Details
-                                        </Link>
+                                        <div className="p-6 flex flex-col flex-grow">
+                                            <h3 className="font-semibold text-lg text-gray-900 mb-2">{project.title}</h3>
+                                            <p className="text-sm text-gray-700 mb-2 font-medium">{project.data.client}</p>
+
+                                            {project.data.location && (
+                                                <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
+                                                    <MapPin className="w-4 h-4" />
+                                                    <span>{project.data.location}</span>
+                                                </div>
+                                            )}
+
+                                            {project.data.projectSize && (
+                                                <div className="flex items-center gap-2 text-sm text-gray-600 mb-4">
+                                                    <Ruler className="w-4 h-4" />
+                                                    <span>{project.data.projectSize}</span>
+                                                </div>
+                                            )}
+
+                                            {project.data.shortDescription && (
+                                                <p className="text-sm text-gray-600 mb-4 line-clamp-3">
+                                                    {project.data.shortDescription}
+                                                </p>
+                                            )}
+
+                                            <div className="mt-auto">
+                                                <Link
+                                                    href={`/projects/${project.contentId}`}
+                                                    className="w-full py-2 border-2 border-gray-900 text-gray-900 rounded-lg font-medium hover:bg-gray-50 transition text-center block"
+                                                >
+                                                    View Details
+                                                </Link>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                            ))}
-                        </div>
-                    ) : (
-                        <div className="text-center py-16">
-                            <p className="text-lg text-gray-700 mb-4">No projects available yet</p>
-                            <Link
-                                href="/"
-                                className="px-6 py-2 rounded-lg text-white bg-yellow-600 hover:bg-yellow-700 inline-block"
-                            >
-                                Back Home
-                            </Link>
-                        </div>
-                    )}
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="text-center py-12">
+                                <p className="text-gray-600">No projects available yet</p>
+                            </div>
+                        )}
+                    </div>
                 </div>
-            </div>
 
-            {/* CTA Section */}
-            <div className="py-16 px-4 sm:px-6 lg:px-8 bg-yellow-50">
-                <div className="max-w-7xl mx-auto text-center">
-                    <h2 className="font-serif text-3xl font-bold mb-4 text-gray-900">
-                        {siteContent?.ctaTitle || 'Ready for Your Project?'}
-                    </h2>
-                    <p className="text-gray-700 mb-8">
-                        {siteContent?.ctaSubtitle || "Let's discuss how Lindsay Precast can deliver precision-engineered solutions"}
-                    </p>
-                    <Link
-                        href="/#contact"
-                        className="px-8 py-3 rounded-lg text-white bg-yellow-600 hover:bg-yellow-700 inline-block font-medium"
-                    >
-                        Start a Project
-                    </Link>
-                </div>
-            </div>
-
-            <Footer />
-        </main>
+                <Footer />
+            </main>
+        </>
     );
 }

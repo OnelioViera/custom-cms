@@ -1,10 +1,10 @@
-// Server-side CMS data access - use this in Server Components
-// This directly queries the database instead of making HTTP requests
-
+// Server-side CMS data access using MongoDB (Mongoose)
 import { connectDB } from './mongodb';
-import { Content, ContentType, FormSubmission } from './cms-models';
+import { Content, CmsContentType, FormSubmission, User, Media } from './cms-models';
+import { nanoid } from 'nanoid';
+import { getSiteId } from './env';
 
-const SITE_ID = process.env.SITE_ID || 'lindsayprecast';
+const SITE_ID = getSiteId();
 
 // ============================================================================
 // CONTENT OPERATIONS (Server-side)
@@ -13,16 +13,16 @@ const SITE_ID = process.env.SITE_ID || 'lindsayprecast';
 export async function getContentServer(contentTypeId: string, status: string = 'published') {
     try {
         await connectDB();
-        
+
         const query: any = { siteId: SITE_ID, contentTypeId };
         if (status && status !== 'all') {
             query.status = status;
         }
-        
+
         const content = await Content.find(query)
             .sort({ createdAt: -1 })
             .lean();
-        
+
         return content;
     } catch (error) {
         console.error(`Error fetching ${contentTypeId}:`, error);
@@ -33,13 +33,13 @@ export async function getContentServer(contentTypeId: string, status: string = '
 export async function getContentByIdServer(contentTypeId: string, contentId: string) {
     try {
         await connectDB();
-        
+
         const content = await Content.findOne({
             siteId: SITE_ID,
             contentTypeId,
             contentId,
         }).lean();
-        
+
         return content;
     } catch (error) {
         console.error('Error fetching content:', error);
@@ -50,7 +50,7 @@ export async function getContentByIdServer(contentTypeId: string, contentId: str
 export async function searchContentServer(contentTypeId: string, query: string, status: string = 'published') {
     try {
         await connectDB();
-        
+
         const searchQuery: any = {
             siteId: SITE_ID,
             contentTypeId,
@@ -58,15 +58,15 @@ export async function searchContentServer(contentTypeId: string, query: string, 
                 { title: { $regex: query, $options: 'i' } },
             ],
         };
-        
+
         if (status && status !== 'all') {
             searchQuery.status = status;
         }
-        
+
         const content = await Content.find(searchQuery)
             .sort({ createdAt: -1 })
             .lean();
-        
+
         return content;
     } catch (error) {
         console.error('Error searching content:', error);
@@ -81,11 +81,11 @@ export async function searchContentServer(contentTypeId: string, query: string, 
 export async function getContentTypesServer() {
     try {
         await connectDB();
-        
-        const contentTypes = await ContentType.find({ siteId: SITE_ID })
+
+        const contentTypes = await CmsContentType.find({ siteId: SITE_ID })
             .sort({ createdAt: -1 })
             .lean();
-        
+
         return contentTypes;
     } catch (error) {
         console.error('Error fetching content types:', error);
@@ -96,12 +96,12 @@ export async function getContentTypesServer() {
 export async function getContentTypeByIdServer(contentTypeId: string) {
     try {
         await connectDB();
-        
-        const contentType = await ContentType.findOne({
+
+        const contentType = await CmsContentType.findOne({
             siteId: SITE_ID,
             contentTypeId,
         }).lean();
-        
+
         return contentType;
     } catch (error) {
         console.error('Error fetching content type:', error);
@@ -116,14 +116,14 @@ export async function getContentTypeByIdServer(contentTypeId: string) {
 export async function getSiteContentServer() {
     try {
         await connectDB();
-        
+
         // Get the first (and should be only) site content item
         const content = await Content.findOne({
             siteId: SITE_ID,
             contentTypeId: 'site-content',
             status: 'published',
         }).lean();
-        
+
         if (!content) {
             // Return default values if no content exists
             return {
@@ -151,7 +151,7 @@ export async function getSiteContentServer() {
                 ctaSubtitle: "Let's discuss how Lindsay Precast can deliver precision-engineered solutions",
             };
         }
-        
+
         // Merge with defaults to ensure all fields exist
         const defaults = {
             heroTitle: 'Premium Precast Concrete Solutions for Infrastructure',
@@ -177,7 +177,7 @@ export async function getSiteContentServer() {
             ctaTitle: 'Ready for Your Project?',
             ctaSubtitle: "Let's discuss how Lindsay Precast can deliver precision-engineered solutions",
         };
-        
+
         return { ...defaults, ...content.data };
     } catch (error) {
         console.error('Error fetching site content:', error);
@@ -192,16 +192,16 @@ export async function getSiteContentServer() {
 export async function getFormSubmissionsServer(status?: string) {
     try {
         await connectDB();
-        
+
         const query: any = { siteId: SITE_ID };
         if (status) {
             query.status = status;
         }
-        
+
         const submissions = await FormSubmission.find(query)
             .sort({ createdAt: -1 })
             .lean();
-        
+
         return submissions;
     } catch (error) {
         console.error('Error fetching form submissions:', error);
